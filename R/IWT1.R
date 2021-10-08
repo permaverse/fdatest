@@ -1,59 +1,70 @@
-#' @title One population Interval Wise Testing procedure
+#' One population Interval Wise Testing procedure
 #'
-#' @description The function implements the Interval Wise Testing procedure for testing the center of symmetry of a
-#' functional population. Functional data are tested locally and  unadjusted  and adjusted p-value
-#' functions are provided. The unadjusted p-value function controls the point-wise error rate. The adjusted p-value function controls the
-#' interval-wise error rate.
+#' The function implements the Interval Wise Testing procedure for testing the
+#' center of symmetry of a functional population. Functional data are tested
+#' locally and  unadjusted  and adjusted p-value functions are provided. The
+#' unadjusted p-value function controls the point-wise error rate. The adjusted
+#' p-value function controls the interval-wise error rate.
 #'
-#' @param data Either pointwise evaluations of the functional data set on a uniform grid, or a \code{fd} object from the package \code{fda}.
-#' If pointwise evaluations are provided, \code{data} is a matrix of dimensions \code{c(n,J)}, with \code{J} evaluations on columns and \code{n} units on rows.
+#' @param data Either pointwise evaluations of the functional data set on a
+#'   uniform grid, or an \code{\link[fda]{fd}}. If pointwise evaluations are
+#'   provided, `data` is a matrix of dimensions `c(n, J)`, with `J` evaluations
+#'   on columns and `n` units on rows.
+#' @param mu The center of symmetry under the null hypothesis. Three
+#'   possibilities are available for `mu`:
+#'   
+#' - a constant (in this case, a constant function is used);
+#' - a `J`-dimensional vector containing the evaluations on the same grid which
+#' `data` are evaluated;
+#' - a \code{\link[fda]{fd}} object containing one function.
+#' Defaults to `0`.
+#' @param B The number of iterations of the MC algorithm to evaluate the p-values of the permutation tests. Defaults to `1000L`.
+#' @param dx Used only if an \code{\link[fda]{fd}} object is provided. In this
+#'   case, `dx` is the size of the discretization step of the gridused to
+#'   evaluate functional data. If set to `NULL`, a grid of size `100L` is used.
+#'   Defaults to `NULL`.
+#' @param recycle Flag used to decide whether the recycled version of the IWT
+#'   should be used (see Pini and Vantini, 2017 for details). Defaults to
+#'   `TRUE`.
 #'
-#' @param mu The center of symmetry under the null hypothesis. Three possibilities are available for \code{mu}:
-#' a constant (in this case, a constant function is used);
-#' a \code{J}-dimensional vector containing the evaluations on the same grid which \code{data} are evaluated;
-#' a \code{fd} object from the package \code{fda} containing one function.
-#' The default is \code{mu=0}.
+#' @return An object of class \code{\link{IWT1}}, which is a list containing at least the following components:
+#' 
+#' - `test`: String vector indicating the type of test performed. In this case
+#' equal to `"1pop"`.
+#' - `mu`: Evaluation on a grid of the center of symmetry under the null
+#' hypothesis (as entered by the user).
+#' - `unadjusted_pval`: Evaluation on a grid of the unadjusted p-value function.
+#' - `pval_matrix`: Matrix of dimensions `c(p, p)` of the p-values of the
+#' multivariate tests. The element `(i,j)` of matrix `pval.matrix` contains the
+#' p-value of the joint NPC test of the components `(j,j+1,...,j+(p-i))`.
+#' - `adjusted_pval`: Evaluation on a grid of the adjusted p-value function.
+#' - `data.eval`: Evaluation on a grid of the functional data.
 #'
-#' @param B The number of iterations of the MC algorithm to evaluate the p-values of the permutation tests. The defualt is \code{B=1000}.
-#'
-#' @param dx Used only if a \code{fd} object is provided. In this case, \code{dx} is the size of the discretization step of the grid  used to evaluate functional data.
-#' If set to \code{NULL}, a grid of size 100 is used. Default is \code{NULL}.
-#'
-#' @param recycle Flag used to decide whether the recycled version of the IWT should be used (see Pini and Vantini, 2017 for details). Default is \code{TRUE}.
-#'
-#'
-#' @return \code{IWT1} returns an object of \code{\link{class}} "\code{IWT1}".
-#' An object of class "\code{IWT1}" is a list containing at least the following components:
-#' \item{test}{String vector indicating the type of test performed. In this case equal to \code{"1pop"}.}
-#' \item{mu}{Evaluation on a grid of the center of symmetry under the null hypothesis (as entered by the user).}
-#' \item{unadjusted_pval}{Evaluation on a grid of the unadjusted p-value function.}
-#' \item{pval_matrix}{Matrix of dimensions \code{c(p,p)} of the p-values of the multivariate tests. The element \code{(i,j)} of matrix \code{pval.matrix} contains the p-value of the joint NPC test of the components \code{(j,j+1,...,j+(p-i))}.}
-#' \item{adjusted_pval}{Evaluation on a grid of the adjusted p-value function.}
-#' \item{data.eval}{Evaluation on a grid of the functional data.}
-#'
-#' @seealso See also \code{\link{plot.IWT1}} and \code{\link{IWTimage}} for plotting the results.
+#' @seealso See also \code{\link{plot.IWT1}} and \code{\link{IWTimage}} for
+#'   plotting the results.
 #'
 #' @examples
 #' # Performing the IWT for one population
-#' IWT.result <- IWT1(NASAtemp$paris,mu=4)
+#' IWT.result <- IWT1(NASAtemp$paris, mu = 4)
 #'
 #' # Plotting the results of the IWT
-#' plot(IWT.result,xrange=c(0,12),main='Paris temperatures')
+#' plot(IWT.result, xrange = c(0, 12), main = 'Paris temperatures')
 #'
 #' # Plotting the p-value heatmap
-#' IWTimage(IWT.result,abscissa_range=c(0,12))
+#' IWTimage(IWT.result, abscissa_range = c(0, 12))
 #'
 #' # Selecting the significant components at 5% level
 #' which(IWT.result$adjusted_pval < 0.05)
 #'
-#' @references A. Pini and S. Vantini (2017).
-#' The Interval Testing Procedure: Inference for Functional Data Controlling the Family Wise Error Rate on Intervals. Biometrics 73(3): 835–845.
-#'
-#' Pini, A., & Vantini, S. (2017). Interval-wise testing for functional data. \emph{Journal of Nonparametric Statistics}, 29(2), 407-424
+#' @references 
+#' - A. Pini and S. Vantini (2017). The Interval Testing Procedure: Inference
+#' for Functional Data Controlling the Family Wise Error Rate on Intervals.
+#' *Biometrics*, 73(3): 835–845.
+#' - A. Pini and S. Vantini (2017). Interval-wise testing for functional data.
+#' *Journal of Nonparametric Statistics*, 29(2), 407-424.
 #'
 #' @export
-
-IWT1 <- function(data,mu=0,B=1000,dx=NULL,recycle=TRUE){
+IWT1 <- function(data, mu = 0, B = 1000, dx = NULL, recycle = TRUE) {
   pval.correct <- function(pval.matrix){
     matrice_pval_2_2x <- cbind(pval.matrix,pval.matrix)
     p <- dim(pval.matrix)[2]

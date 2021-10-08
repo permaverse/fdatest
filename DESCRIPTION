@@ -30,7 +30,9 @@ Description: Implementation of local inferential procedures for
 License: GPL (>= 3)
 Encoding: UTF-8
 LazyData: true
-Imports: fda
+Imports: 
+    fda,
+    lifecycle
 RoxygenNote: 7.1.2
 Roxygen: list(markdown = TRUE)
 Depends: 
