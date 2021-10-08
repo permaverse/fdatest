@@ -4,22 +4,21 @@
 \alias{IWTlm}
 \title{Interval-wise testing procedure for testing functional-on-scalar linear models}
 \usage{
-IWTlm(formula, B = 1000, method = "residuals", dx = NULL,
-  recycle = TRUE)
+IWTlm(formula, B = 1000, method = "residuals", dx = NULL, recycle = TRUE)
 }
 \arguments{
-\item{formula}{An object of class "\code{\link{formula}}" (or one that can be coerced to that class): a symbolic description of the model to be fitted. 
+\item{formula}{An object of class "\code{\link{formula}}" (or one that can be coerced to that class): a symbolic description of the model to be fitted.
 Example: y ~ A + B
-           where: y is a matrix of dimension n * p containing the point-wise evaluations of the n functional data on p points
-           or an object of class \code{fd} (see \code{fda} package) containing the functional data set
-           A, B are n-dimensional vectors containing the values of two covariates.
-           Covariates may be either scalar or factors.}
+where: y is a matrix of dimension n * p containing the point-wise evaluations of the n functional data on p points
+or an object of class \code{fd} (see \code{fda} package) containing the functional data set
+A, B are n-dimensional vectors containing the values of two covariates.
+Covariates may be either scalar or factors.}
 
 \item{B}{The number of iterations of the MC algorithm to evaluate the p-values of the permutation tests. The defualt is \code{B=1000}.}
 
 \item{method}{Permutation method used to calculate the p-value of permutation tests. Choose "\code{residuals}" for the permutations of residuals under the reduced model, according to the Freedman and Lane scheme, and "\code{responses}" for the permutation of the responses, according to the Manly scheme.}
 
-\item{dx}{step size for the point-wise evaluations of functional data. dx is only used ia an object of 
+\item{dx}{step size for the point-wise evaluations of functional data. dx is only used ia an object of
 class 'fd' is provided as response in the formula.}
 
 \item{recycle}{flag specifying whether the recycled version of IWT has to be used.}
@@ -31,12 +30,12 @@ An object of class "\code{ITPlm}" is a list containing at least the following co
 \item{design_matrix}{design matrix of the linear model.}
 \item{unadjusted_pval_F}{unadjusted p-value function of the F test.}
 \item{pval_matrix_F}{Matrix of dimensions c(p,p) of the p-values of the interval-wise F-tests.
-  The element (i,j) of matrix pval_matrix_F contains the p-value of the test on interval (j,j+1,...,j+(p-i)).}
+The element (i,j) of matrix pval_matrix_F contains the p-value of the test on interval (j,j+1,...,j+(p-i)).}
 \item{adjusted_pval_F}{adjusted p-value function of the F test.}
-\item{unadjusted_pval_part}{unadjusted p-value functions of the functional t-tests on each covariate, 
-                        separately (rows) on each domain point (columns).}
-\item{pval_matrix_part}{Array of dimensions c(L+1,p,p) of the p-values of the interval-wise t-tests on covariates. 
-                    The element (l,i,j) of array pval_matrix_part contains the p-value of the test of covariate l on interval (j,j+1,...,j+(p-i)).}
+\item{unadjusted_pval_part}{unadjusted p-value functions of the functional t-tests on each covariate,
+separately (rows) on each domain point (columns).}
+\item{pval_matrix_part}{Array of dimensions c(L+1,p,p) of the p-values of the interval-wise t-tests on covariates.
+The element (l,i,j) of array pval_matrix_part contains the p-value of the test of covariate l on interval (j,j+1,...,j+(p-i)).}
 \item{adjusted_pval_part}{adjusted p-values of the functional t-tests on each covariate (rows) on each domain point (columns).}
 \item{data.eval}{evaluation of functional data.}
 \item{coeff.regr.eval}{evaluation of the regression coefficients.}
@@ -45,14 +44,12 @@ An object of class "\code{ITPlm}" is a list containing at least the following co
 \item{R2.eval}{evaluation of the functional R-suared.}
 }
 \description{
-The function is used to fit and test functional linear models. 
-It can be used to carry out regression, and analysis of variance. 
-It implements the interval-wise testing procedure (IWT) for testing the significance of the effects of scalar 
+The function is used to fit and test functional linear models.
+It can be used to carry out regression, and analysis of variance.
+It implements the interval-wise testing procedure (IWT) for testing the significance of the effects of scalar
 covariates on a functional population.
 }
 \examples{
-# Importing the NASA temperatures data set
-data(NASAtemp)
 # Defining the covariates
 temperature <- rbind(NASAtemp$milan,NASAtemp$paris)
 groups <- c(rep(0,22),rep(1,22))
@@ -63,11 +60,11 @@ IWT.result <- IWTlm(temperature ~ groups,B=1000)
 summary(IWT.result)
 
 # Plot of the IWT results
-layout(1)
+graphics::layout(1)
 plot(IWT.result,main='NASA data', plot_adjpval = TRUE,xlab='Day',xrange=c(1,365))
 
 # All graphics on the same device
-layout(matrix(1:6,nrow=3,byrow=FALSE))
+graphics::layout(matrix(1:6,nrow=3,byrow=FALSE))
 plot(IWT.result,main='NASA data', plot_adjpval = TRUE,xlab='Day',xrange=c(1,365))
 
 

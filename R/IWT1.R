@@ -34,9 +34,6 @@
 #' @seealso See also \code{\link{plot.IWT1}} and \code{\link{IWTimage}} for plotting the results.
 #'
 #' @examples
-#' # Importing the NASA temperatures data set
-#' data(NASAtemp)
-#'
 #' # Performing the IWT for one population
 #' IWT.result <- IWT1(NASAtemp$paris,mu=4)
 #'
@@ -44,7 +41,7 @@
 #' plot(IWT.result,xrange=c(0,12),main='Paris temperatures')
 #'
 #' # Plotting the p-value heatmap
-#' IWTimage(IWT.result,abscissa.range=c(0,12))
+#' IWTimage(IWT.result,abscissa_range=c(0,12))
 #'
 #' # Selecting the significant components at 5% level
 #' which(IWT.result$adjusted_pval < 0.05)
@@ -79,20 +76,20 @@ IWT1 <- function(data,mu=0,B=1000,dx=NULL,recycle=TRUE){
   }
 
   # data preprocessing
-  if(is.fd(data)){ # data is a functional data object
+  if(fda::is.fd(data)){ # data is a functional data object
     rangeval <- data$basis$rangeval
     if(is.null(dx)){
       dx <- (rangeval[2]-rangeval[1])*0.01
     }
     abscissa <- seq(rangeval[1],rangeval[2],by=dx)
-    coeff <- t(eval.fd(fdobj=data,evalarg=abscissa))
+    coeff <- t(fda::eval.fd(fdobj=data,evalarg=abscissa))
   }else if(is.matrix(data)){
     coeff <- data
   }else{
     stop("First argument must be either a functional data object or a matrix.")
   }
 
-  if (is.fd(mu)){ # mu is a functional data
+  if (fda::is.fd(mu)){ # mu is a functional data
     rangeval.mu <- mu$basis$rangeval
     if(sum(rangeval.mu == rangeval)!=2){
       stop("rangeval of mu must be the same as rangeval of data.")
@@ -101,7 +98,7 @@ IWT1 <- function(data,mu=0,B=1000,dx=NULL,recycle=TRUE){
       dx <- (rangeval.mu[2]-rangeval.mu[1])*0.01
     }
     abscissa <- seq(rangeval.mu[1],rangeval.mu[2],by=dx)
-    mu.eval <- t(eval.fd(fdobj=mu,evalarg=abscissa))
+    mu.eval <- t(fda::eval.fd(fdobj=mu,evalarg=abscissa))
   }else if(is.vector(mu)){
     mu.eval <- mu
   }else{
@@ -117,7 +114,7 @@ IWT1 <- function(data,mu=0,B=1000,dx=NULL,recycle=TRUE){
   T0 <- abs(colMeans(coeff))^2  #sample mean
   T_coeff <- matrix(ncol=p,nrow=B)
   for (perm in 1:B){
-    signs <- rbinom(n,1,0.5)*2 - 1
+    signs <- stats::rbinom(n,1,0.5)*2 - 1
     coeff_perm <- coeff*signs
     T_coeff[perm,] <- abs(colMeans(coeff_perm))^2
   }

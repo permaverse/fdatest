@@ -20,7 +20,7 @@ plot.IWT2 <- function(x, xrange = c(0,1),
   colors[which(object$ord_labels == id_pop1)] <- col[1]
   colors[which(object$ord_labels == id_pop2)] <- col[2]
   
-  devAskNewPage(ask = TRUE) 
+  grDevices::devAskNewPage(ask = TRUE) 
   
   p <- length(object$unadjusted_pval)
   xmin <- xrange[1]
@@ -31,7 +31,7 @@ plot.IWT2 <- function(x, xrange = c(0,1),
   n_coeff <- dim(object$data.eval)[2]
   data_eval <- object$data.eval
   if (is.null(ylim)) ylim <- range(data_eval,na.rm=TRUE)
-  matplot(abscissa_pval, t(data_eval), type = 'l', main = main_data, 
+  fda::matplot(abscissa_pval, t(data_eval), type = 'l', main = main_data, 
           ylab = ylab, col = colors, lwd = lwd, ylim = ylim, ...)
   mean1 = colMeans(object$data.eval[which(object$ord_labels==id_pop1),],na.rm=TRUE)
   mean2 = colMeans(object$data.eval[which(object$ord_labels==id_pop2),],na.rm=TRUE)
@@ -41,10 +41,10 @@ plot.IWT2 <- function(x, xrange = c(0,1),
     for (j in 1:length(difference1)) {
       min_rect <- abscissa_pval[difference1[j]] - (abscissa_pval[2] - abscissa_pval[1])/2
       max_rect <- min_rect + (abscissa_pval[2] - abscissa_pval[1])
-      rect(min_rect, par("usr")[3], max_rect, par("usr")[4], col = "gray90", 
+      graphics::rect(min_rect, graphics::par("usr")[3], max_rect, graphics::par("usr")[4], col = "gray90", 
            density = -2, border = NA)
     }
-    rect(par("usr")[1], par("usr")[3], par("usr")[2], par("usr")[4], 
+    graphics::rect(graphics::par("usr")[1], graphics::par("usr")[3], graphics::par("usr")[2], graphics::par("usr")[4], 
          col = NULL, border = "black")
   }
   difference2 <- which(object$adjusted_pval < alpha2)
@@ -52,15 +52,15 @@ plot.IWT2 <- function(x, xrange = c(0,1),
     for (j in 1:length(difference2)) {
       min_rect <- abscissa_pval[difference2[j]] - (abscissa_pval[2] - abscissa_pval[1])/2
       max_rect <- min_rect + (abscissa_pval[2] - abscissa_pval[1])
-      rect(min_rect, par("usr")[3], max_rect, par("usr")[4], col = "gray80", 
+      graphics::rect(min_rect, graphics::par("usr")[3], max_rect, graphics::par("usr")[4], col = "gray80", 
            density = -2, border = NA)
     }
-    rect(par("usr")[1], par("usr")[3], par("usr")[2],par("usr")[4], 
+    graphics::rect(graphics::par("usr")[1], graphics::par("usr")[3], graphics::par("usr")[2],graphics::par("usr")[4], 
          col = NULL, border = "black")
   }
-  matplot(abscissa_pval, t(data_eval), type = 'l', main = main_data,
+  fda::matplot(abscissa_pval, t(data_eval), type = 'l', main = main_data,
           ylab = ylab, col = colors, lwd = lwd, add = TRUE, ...)
-  #matlines(abscissa_pval,cbind(mean1,mean2),col=col,lwd=2,lty=1)
+  #graphics::matlines(abscissa_pval,cbind(mean1,mean2),col=col,lwd=2,lty=1)
   
   #  adjusted p-values
   main_p <- paste(main,': Adjusted p-values')
@@ -72,10 +72,10 @@ plot.IWT2 <- function(x, xrange = c(0,1),
     for (j in 1:length(difference1)) {
       min_rect <- abscissa_pval[difference1[j]] - (abscissa_pval[2] - abscissa_pval[1])/2
       max_rect <- min_rect + (abscissa_pval[2] - abscissa_pval[1])
-      rect(min_rect, par("usr")[3], max_rect, par("usr")[4], col = "gray90", 
+      graphics::rect(min_rect, graphics::par("usr")[3], max_rect, graphics::par("usr")[4], col = "gray90", 
            density = -2, border = NA)
     }
-    rect(par("usr")[1], par("usr")[3], par("usr")[2],par("usr")[4], 
+    graphics::rect(graphics::par("usr")[1], graphics::par("usr")[3], graphics::par("usr")[2],graphics::par("usr")[4], 
          col = NULL, border = "black")
   }
   difference2 <- which(object$adjusted_pval < alpha2)
@@ -83,15 +83,15 @@ plot.IWT2 <- function(x, xrange = c(0,1),
     for (j in 1:length(difference2)) {
       min_rect <- abscissa_pval[difference2[j]] - (abscissa_pval[2] - abscissa_pval[1])/2
       max_rect <- min_rect + (abscissa_pval[2] - abscissa_pval[1])
-      rect(min_rect, par("usr")[3], max_rect, par("usr")[4], col = "gray80", 
+      graphics::rect(min_rect, graphics::par("usr")[3], max_rect, graphics::par("usr")[4], col = "gray80", 
            density = -2, border = NA)
     }
-    rect(par("usr")[1], par("usr")[3], par("usr")[2],par("usr")[4], col = NULL, border = "black")
+    graphics::rect(graphics::par("usr")[1], graphics::par("usr")[3], graphics::par("usr")[2],graphics::par("usr")[4], col = NULL, border = "black")
   }
   for (j in 0:10) {
-    abline(h = j / 10, col = 'lightgray', lty = "dotted")
+    graphics::abline(h = j / 10, col = 'lightgray', lty = "dotted")
   }
-  points(abscissa_pval, object$adjusted_pval, type=type,lwd=2)
+  graphics::points(abscissa_pval, object$adjusted_pval, type=type,lwd=2)
   
-  devAskNewPage(ask = FALSE)
+  grDevices::devAskNewPage(ask = FALSE)
 }

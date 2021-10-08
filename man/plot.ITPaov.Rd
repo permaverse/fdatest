@@ -4,19 +4,30 @@
 \alias{plot.ITPaov}
 \title{Plot method for ITP results on functional ANOVA}
 \usage{
-\method{plot}{ITPaov}(x, xrange = c(0, 1), alpha1 = 0.05, alpha2 = 0.01,
-  plot.adjpval = FALSE, ylim = range(x$data.eval), col = 1,
-  ylab = "Functional Data", main = NULL, lwd = 1, pch = 16, ...)
+\method{plot}{ITPaov}(
+  x,
+  xrange = c(0, 1),
+  alpha1 = 0.05,
+  alpha2 = 0.01,
+  plot.adjpval = FALSE,
+  ylim = range(x$data.eval),
+  col = 1,
+  ylab = "Functional Data",
+  main = NULL,
+  lwd = 1,
+  pch = 16,
+  ...
+)
 }
 \arguments{
-\item{x}{The object to be plotted. An object of class "\code{ITPaov}", usually, a result of a call 
+\item{x}{The object to be plotted. An object of class "\code{ITPaov}", usually, a result of a call
 to \code{\link{ITPaov}}.}
 
 \item{xrange}{Range of the \code{x} axis.}
 
 \item{alpha1}{First level of significance used to select and display significant effects. Default is \code{alpha1 = 0.05}.}
 
-\item{alpha2}{Second level of significance used to select and display significant effects. Default is \code{alpha1 = 0.01}. 
+\item{alpha2}{Second level of significance used to select and display significant effects. Default is \code{alpha1 = 0.01}.
 \code{alpha1} and \code{alpha2} are s.t. \code{alpha2 < alpha1}. Otherwise the two values are switched.}
 
 \item{plot.adjpval}{A logical indicating wether the plots of adjusted p-values have to be done. Default is \code{plot_adjpval = FALSE}.}
@@ -33,24 +44,21 @@ to \code{\link{ITPaov}}.}
 
 \item{pch}{Point character for the plot of adjusted p-values. Default is \code{pch=16}.}
 
-\item{...}{Additional plotting arguments that can be used with function \code{plot}, 
+\item{...}{Additional plotting arguments that can be used with function \code{plot},
 such as \code{\link{graphical parameters}} (see \code{\link{par}}).}
 }
 \value{
-No value returned. 
-The function produces a graphical output of the ITP results:  the plot of the functional data and the one of the adjusted p-values. 
-The portions of the domain selected as significant by the test at level \code{alpha1} and \code{alpha2} are highlighted in the plot of the adjusted p-value function and in the one of functional data by gray areas (light and dark gray, respectively). 
+No value returned.
+The function produces a graphical output of the ITP results:  the plot of the functional data and the one of the adjusted p-values.
+The portions of the domain selected as significant by the test at level \code{alpha1} and \code{alpha2} are highlighted in the plot of the adjusted p-value function and in the one of functional data by gray areas (light and dark gray, respectively).
 The first plot reports the gray areas corresponding to a significant F-test on the whole model. The remaining plots report the gray areas corresponding to significant F-tests on each factor (with colors corresponding to the levels of the factor).
 }
 \description{
 \code{plot} method for class "\code{ITPaov}".
-Plotting function creating a graphical output of the ITP for the test on a functional analysis of variance: 
+Plotting function creating a graphical output of the ITP for the test on a functional analysis of variance:
 functional data, and ITP-adjusted p-values of the F-tests on the whole model and on each factor are plotted.
 }
 \examples{
-# Importing the NASA temperatures data set
-data(NASAtemp)
-
 temperature <- rbind(NASAtemp$milan,NASAtemp$paris)
 groups <- c(rep(0,22),rep(1,22))
 
@@ -61,11 +69,11 @@ ITP.result <- ITPaovbspline(temperature ~ groups,B=1000,nknots=20,order=3)
 summary(ITP.result)
 
 # Plot of the ITP results
-layout(1)
+graphics::layout(1)
 plot(ITP.result)
 
 # All graphics on the same device
-layout(matrix(1:4,nrow=2,byrow=FALSE))
+graphics::layout(matrix(1:4,nrow=2,byrow=FALSE))
 plot(ITP.result,main='NASA data', plot_adjpval = TRUE,xlab='Day',xrange=c(1,365))
 
 }
@@ -78,7 +86,7 @@ Abramowicz, K., Hager, C. K., Pini, A., Schelin, L., Sjostedt de Luna, S., & Van
 Nonparametric inference for functional‐on‐scalar linear models applied to knee kinematic hop data after injury of the anterior cruciate ligament. \emph{Scandinavian Journal of Statistics} 45(4), 1036-1061.
 }
 \seealso{
-\code{\link{ITPimage}} for the plot of p-values heatmaps. 
-See also \code{\link{ITP1bspline}}, \code{\link{ITP2bspline}} to perform the ITP to test on the mean of one population and test of differences between two populations. 
+\code{\link{ITPimage}} for the plot of p-values heatmaps.
+See also \code{\link{ITP1bspline}}, \code{\link{ITP2bspline}} to perform the ITP to test on the mean of one population and test of differences between two populations.
 See \code{\link{IWTaov}} for functional ANOVA not based on B-spline basis representation
 }

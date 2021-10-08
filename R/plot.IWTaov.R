@@ -41,9 +41,6 @@
 #' See \code{\link{ITPaovbspline}} for functional ANOVA based on B-spline basis representation
 #' 
 #' @examples 
-#' # Importing the NASA temperatures data set
-#' data(NASAtemp)
-#' 
 #' temperature <- rbind(NASAtemp$milan,NASAtemp$paris)
 #' groups <- c(rep(0,22),rep(1,22))
 #' 
@@ -54,11 +51,11 @@
 #' summary(IWT.result)
 #' 
 #' # Plot of the IWT results
-#' layout(1)
+#' graphics::layout(1)
 #' plot(IWT.result)
 #' 
 #' # All graphics on the same device
-#' layout(matrix(1:4,nrow=2,byrow=FALSE))
+#' graphics::layout(matrix(1:4,nrow=2,byrow=FALSE))
 #' plot(IWT.result,main='NASA data', plot_adjpval = TRUE,xlab='Day',xrange=c(1,365))
 #' 
 #' @references
@@ -90,24 +87,24 @@ plot.IWTaov <- function(x, xrange = c(0,1),
   xmin <- xrange[1]
   xmax <- xrange[2]
   abscissa_pval = seq(xmin, xmax, len = p)
-  devAskNewPage(ask = TRUE)  
+  grDevices::devAskNewPage(ask = TRUE)  
   main_f <- paste(main, ': Functional Data and F-test')
   main_f <- sub("^ : +", "", main_f)
   
   if (is.null(ylim)) ylim <- range(object$data.eval)
   
   if(nvar>1){
-    matplot(abscissa_pval, t(object$data.eval), type = 'l', col = col, main = main_f, 
+    fda::matplot(abscissa_pval, t(object$data.eval), type = 'l', col = col, main = main_f, 
             ylab = ylab, ylim = ylim, lwd = lwd, ...)
     difference1 <- which(object$adjusted_pval_F < alpha1)
     if (length(difference1) > 0) {
       for (j in 1:length(difference1)) {
         min_rect <- abscissa_pval[difference1[j]] - (abscissa_pval[2] - abscissa_pval[1])/2
         max_rect <- min_rect + (abscissa_pval[2] - abscissa_pval[1])
-        rect(min_rect, par("usr")[3], max_rect, par("usr")[4], col = "gray90", 
+        graphics::rect(min_rect, graphics::par("usr")[3], max_rect, graphics::par("usr")[4], col = "gray90", 
              density = -2, border = NA)
       }
-      rect(par("usr")[1], par("usr")[3], par("usr")[2],par("usr")[4], col = NULL,
+      graphics::rect(graphics::par("usr")[1], graphics::par("usr")[3], graphics::par("usr")[2],graphics::par("usr")[4], col = NULL,
            border = "black")
     }
     difference2 <- which(object$adjusted_pval_F < alpha2)
@@ -115,13 +112,13 @@ plot.IWTaov <- function(x, xrange = c(0,1),
       for (j in 1:length(difference2)) {
         min_rect <- abscissa_pval[difference2[j]] - (abscissa_pval[2] - abscissa_pval[1])/2
         max_rect <- min_rect + (abscissa_pval[2] - abscissa_pval[1])
-        rect(min_rect, par("usr")[3], max_rect, par("usr")[4], col = "gray80", 
+        graphics::rect(min_rect, graphics::par("usr")[3], max_rect, graphics::par("usr")[4], col = "gray80", 
              density = -2, border = NA)
       }
-      rect(par("usr")[1], par("usr")[3], par("usr")[2],par("usr")[4], col = NULL,
+      graphics::rect(graphics::par("usr")[1], graphics::par("usr")[3], graphics::par("usr")[2],graphics::par("usr")[4], col = NULL,
            border = "black")
     }
-    matplot(abscissa_pval, t(object$data.eval), type = 'l', 
+    fda::matplot(abscissa_pval, t(object$data.eval), type = 'l', 
             col = col, add = TRUE, lwd = lwd, ...)
     
   }
@@ -154,17 +151,17 @@ plot.IWTaov <- function(x, xrange = c(0,1),
       }
       colors <- as.factor(colors)
     }
-    matplot(abscissa_pval, t(object$data.eval),type = 'l', col = colors, ylim = ylim,
+    fda::matplot(abscissa_pval, t(object$data.eval),type = 'l', col = colors, ylim = ylim,
             lwd = 1, main = main_t, ylab = ylab, ...)
     difference1 <- which(object$adjusted_pval_factors[var,] < alpha1)
     if (length(difference1) > 0) {
       for (j in 1:length(difference1)) {
         min_rect <- abscissa_pval[difference1[j]] - (abscissa_pval[2] - abscissa_pval[1])/2
         max_rect <- min_rect + (abscissa_pval[2] - abscissa_pval[1])
-        rect(min_rect, par("usr")[3], max_rect, par("usr")[4], col = "gray90", 
+        graphics::rect(min_rect, graphics::par("usr")[3], max_rect, graphics::par("usr")[4], col = "gray90", 
              density = -2, border = NA)
       }
-      rect(par("usr")[1], par("usr")[3], par("usr")[2],par("usr")[4], 
+      graphics::rect(graphics::par("usr")[1], graphics::par("usr")[3], graphics::par("usr")[2],graphics::par("usr")[4], 
            col = NULL, border = "black")
     }
     difference2 <- which(object$adjusted_pval_factors[var,] < alpha2)
@@ -172,14 +169,14 @@ plot.IWTaov <- function(x, xrange = c(0,1),
       for (j in 1:length(difference2)) {
         min_rect <- abscissa_pval[difference2[j]] - (abscissa_pval[2] - abscissa_pval[1])/2
         max_rect <- min_rect + (abscissa_pval[2] - abscissa_pval[1])
-        rect(min_rect, par("usr")[3], max_rect, par("usr")[4], col = "gray80", 
+        graphics::rect(min_rect, graphics::par("usr")[3], max_rect, graphics::par("usr")[4], col = "gray80", 
              density = -2, border = NA)
       }
-      rect(par("usr")[1], par("usr")[3], par("usr")[2],par("usr")[4], 
+      graphics::rect(graphics::par("usr")[1], graphics::par("usr")[3], graphics::par("usr")[2],graphics::par("usr")[4], 
            col = NULL, border = "black")
     }
-    matlines(abscissa_pval, t(object$data.eval), type='l', col=colors, ...)
-    abline(h = 0, lty = 2, col = 1)
+    graphics::matlines(abscissa_pval, t(object$data.eval), type='l', col=colors, ...)
+    graphics::abline(h = 0, lty = 2, col = 1)
   }
   # Plot adjusted p-values
   if (plot_adjpval == TRUE) {
@@ -192,10 +189,10 @@ plot.IWTaov <- function(x, xrange = c(0,1),
       for (j in 1:length(difference1)) {
         min_rect <- abscissa_pval[difference1[j]] - (abscissa_pval[2] - abscissa_pval[1])/2
         max_rect <- min_rect + (abscissa_pval[2] - abscissa_pval[1])
-        rect(min_rect, par("usr")[3], max_rect, par("usr")[4], col = "gray90", 
+        graphics::rect(min_rect, graphics::par("usr")[3], max_rect, graphics::par("usr")[4], col = "gray90", 
              density = -2, border = NA)
       }
-      rect(par("usr")[1], par("usr")[3], par("usr")[2],par("usr")[4], 
+      graphics::rect(graphics::par("usr")[1], graphics::par("usr")[3], graphics::par("usr")[2],graphics::par("usr")[4], 
            col = NULL, border = "black")
     }
     difference2 <- which(object$adjusted_pval_F < alpha2)
@@ -203,16 +200,16 @@ plot.IWTaov <- function(x, xrange = c(0,1),
       for (j in 1:length(difference2)) {
         min_rect <- abscissa_pval[difference2[j]] - (abscissa_pval[2] - abscissa_pval[1])/2
         max_rect <- min_rect + (abscissa_pval[2] - abscissa_pval[1])
-        rect(min_rect, par("usr")[3], max_rect, par("usr")[4], col = "gray80", 
+        graphics::rect(min_rect, graphics::par("usr")[3], max_rect, graphics::par("usr")[4], col = "gray80", 
              density = -2, border = NA)
       }
-      rect(par("usr")[1], par("usr")[3], par("usr")[2],par("usr")[4], 
+      graphics::rect(graphics::par("usr")[1], graphics::par("usr")[3], graphics::par("usr")[2],graphics::par("usr")[4], 
            col = NULL, border = "black")
     }
     for (j in 0:10) {
-      abline(h = j / 10, col = 'lightgray', lty = "dotted")
+      graphics::abline(h = j / 10, col = 'lightgray', lty = "dotted")
     }
-    lines(abscissa_pval, object$adjusted_pval_F, lwd=2, type=type,...)
+    graphics::lines(abscissa_pval, object$adjusted_pval_F, lwd=2, type=type,...)
     for (var in 1:(dim(object$adjusted_pval_factors)[1])) {
       var_name <- rownames(object$adjusted_pval_factors)[var]
       main_p <- paste(main, ': Adjusted p-values - factor', var_name)
@@ -224,10 +221,10 @@ plot.IWTaov <- function(x, xrange = c(0,1),
         for (j in 1:length(difference1)) {
           min_rect <- abscissa_pval[difference1[j]] - (abscissa_pval[2] - abscissa_pval[1])/2
           max_rect <- min_rect + (abscissa_pval[2] - abscissa_pval[1])
-          rect(min_rect, par("usr")[3], max_rect, par("usr")[4], col = "gray90", 
+          graphics::rect(min_rect, graphics::par("usr")[3], max_rect, graphics::par("usr")[4], col = "gray90", 
                density = -2, border = NA)
         }
-        rect(par("usr")[1], par("usr")[3], par("usr")[2],par("usr")[4], 
+        graphics::rect(graphics::par("usr")[1], graphics::par("usr")[3], graphics::par("usr")[2],graphics::par("usr")[4], 
              col = NULL, border = "black")
       }
       difference2 <- which(object$adjusted_pval_factors[var,] < alpha2)
@@ -235,17 +232,17 @@ plot.IWTaov <- function(x, xrange = c(0,1),
         for (j in 1:length(difference2)) {
           min_rect <- abscissa_pval[difference2[j]] - (abscissa_pval[2] - abscissa_pval[1])/2
           max_rect <- min_rect + (abscissa_pval[2] - abscissa_pval[1])
-          rect(min_rect, par("usr")[3], max_rect, par("usr")[4], col = "gray80", 
+          graphics::rect(min_rect, graphics::par("usr")[3], max_rect, graphics::par("usr")[4], col = "gray80", 
                density = -2, border = NA)
         }
-        rect(par("usr")[1], par("usr")[3], par("usr")[2],par("usr")[4], 
+        graphics::rect(graphics::par("usr")[1], graphics::par("usr")[3], graphics::par("usr")[2],graphics::par("usr")[4], 
              col = NULL, border = "black")
       }
       for (j in 0:10) {
-        abline(h = j / 10, col = 'lightgray', lty = "dotted")
+        graphics::abline(h = j / 10, col = 'lightgray', lty = "dotted")
       }
-      lines(abscissa_pval, object$adjusted_pval_factors[var,],type=type,lwd=2, ...)
+      graphics::lines(abscissa_pval, object$adjusted_pval_factors[var,],type=type,lwd=2, ...)
     }
   }
-  devAskNewPage(ask = FALSE)  
+  grDevices::devAskNewPage(ask = FALSE)  
 }

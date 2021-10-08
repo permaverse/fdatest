@@ -4,8 +4,16 @@
 \alias{IWT2}
 \title{Two population Interval Wise Testing procedure}
 \usage{
-IWT2(data1, data2, mu = 0, B = 1000, paired = FALSE, dx = NULL,
-  recycle = TRUE, alternative = "two.sided")
+IWT2(
+  data1,
+  data2,
+  mu = 0,
+  B = 1000,
+  paired = FALSE,
+  dx = NULL,
+  recycle = TRUE,
+  alternative = "two.sided"
+)
 }
 \arguments{
 \item{data1}{First population's data. Either pointwise evaluations of the functional data set on a uniform grid, or a \code{fd} object from the package \code{fda}.
@@ -49,9 +57,6 @@ functions are provided. The unadjusted p-value function controls the point-wise 
 interval-wise error rate.
 }
 \examples{
-# Importing the NASA temperatures data set
-data(NASAtemp)
-
 # Performing the IWT for two populations
 IWT.result <- IWT2(NASAtemp$paris,NASAtemp$milan)
 
@@ -59,7 +64,7 @@ IWT.result <- IWT2(NASAtemp$paris,NASAtemp$milan)
 plot(IWT.result,xrange=c(0,12),main='IWT results for testing mean differences')
 
 # Plotting the p-value heatmap
-IWTimage(IWT.result,abscissa.range=c(0,12))
+IWTimage(IWT.result,abscissa_range=c(0,12))
 
 # Selecting the significant components at 5\% level
 which(IWT.result$adjusted_pval < 0.05)

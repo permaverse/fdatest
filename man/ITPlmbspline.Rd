@@ -4,9 +4,13 @@
 \alias{ITPlmbspline}
 \title{Interval Testing Procedure for testing Functional-on-Scalar Linear Models with B-spline basis}
 \usage{
-ITPlmbspline(formula, order = 2,
-  nknots = dim(model.response(model.frame(formula)))[2], B = 10000,
-  method = "residuals")
+ITPlmbspline(
+  formula,
+  order = 2,
+  nknots = dim(stats::model.response(stats::model.frame(formula)))[2],
+  B = 10000,
+  method = "residuals"
+)
 }
 \arguments{
 \item{formula}{An object of class "\code{\link{formula}}" (or one that can be coerced to that class): a symbolic description of the model to be fitted.}
@@ -45,8 +49,6 @@ An object of class "\code{ITPlm}" is a list containing at least the following co
 The function is used to fit and test functional linear models. It can be used to carry out regression, and analysis of variance. It implements the Interval Testing Procedure for testing the significance of the effects of scalar covariates on a functional population evaluated on a uniform grid. Data are represented by means of the B-spline basis and the significance of each basis coefficient is tested with an interval-wise control of the Family Wise Error Rate. The default parameters of the basis expansion lead to the piece-wise interpolating function.
 }
 \examples{
-# Importing the NASA temperatures data set
-data(NASAtemp)
 # Defining the covariates
 temperature <- rbind(NASAtemp$milan,NASAtemp$paris)
 groups <- c(rep(0,22),rep(1,22))
@@ -57,11 +59,11 @@ ITP.result <- ITPlmbspline(temperature ~ groups,B=1000,nknots=20)
 summary(ITP.result)
 
 # Plot of the ITP results
-layout(1)
+graphics::layout(1)
 plot(ITP.result,main='NASA data', plot.adjpval = TRUE,xlab='Day',xrange=c(1,365))
 
 # All graphics on the same device
-layout(matrix(1:6,nrow=3,byrow=FALSE))
+graphics::layout(matrix(1:6,nrow=3,byrow=FALSE))
 plot(ITP.result,main='NASA data', plot.adjpval = TRUE,xlab='Day',xrange=c(1,365))
 
 

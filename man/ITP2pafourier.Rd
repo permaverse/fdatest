@@ -4,8 +4,13 @@
 \alias{ITP2pafourier}
 \title{Two populations Interval Testing Procedure with Fourier basis (phase-amplitude decomposition)}
 \usage{
-ITP2pafourier(data1, data2, maxfrequency = floor(dim(data1)[2]/2),
-  B = 10000, paired = FALSE)
+ITP2pafourier(
+  data1,
+  data2,
+  maxfrequency = floor(dim(data1)[2]/2),
+  B = 10000,
+  paired = FALSE
+)
 }
 \arguments{
 \item{data1}{Pointwise evaluations of the first population's functional data set on a uniform grid. \code{data1} is a matrix of dimensions \code{c(n1,J)}, with \code{J} evaluations on columns and \code{n1} units on rows.}
@@ -41,9 +46,6 @@ An object of class "\code{ITP2}" is a list containing at least the following com
 The function implements the Interval Testing Procedure for testing the difference between two functional populations evaluated on a uniform grid. Data are represented by means of the Fourier basis expansion with the phase-amplitude decomposition and the significance of the amplitude and phase of each frequency is tested with an interval-wise control of the Family Wise Error Rate.
 }
 \examples{
-# Importing the NASA temperatures data set
-data(NASAtemp)
-
 # Performing the ITP
 ITP.result <- ITP2pafourier(NASAtemp$milan,NASAtemp$paris,maxfrequency=20,B=1000,paired=TRUE)
 
@@ -63,7 +65,7 @@ The Interval Testing Procedure: Inference for Functional Data Controlling the Fa
 }
 \seealso{
 See also \code{\link{plot.ITP2}} and \code{\link{ITPimage}} for plotting the results,
- \code{\link{ITP2bspline}} for ITP based on B-spline basis, \code{\link{ITP2fourier}} for Fourier basis
- (without phase and amplitude decomposition), and \code{\link{IWT2}} for a two-sample test that is not based on
- an a-priori selected basis expansion.
+\code{\link{ITP2bspline}} for ITP based on B-spline basis, \code{\link{ITP2fourier}} for Fourier basis
+(without phase and amplitude decomposition), and \code{\link{IWT2}} for a two-sample test that is not based on
+an a-priori selected basis expansion.
 }

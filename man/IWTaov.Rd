@@ -4,8 +4,7 @@
 \alias{IWTaov}
 \title{Interval Wise Testing procedure for testing functional analysis of variance}
 \usage{
-IWTaov(formula, B = 1000, method = "residuals", dx = NULL,
-  recycle = TRUE)
+IWTaov(formula, B = 1000, method = "residuals", dx = NULL, recycle = TRUE)
 }
 \arguments{
 \item{formula}{An object of class "\code{\link{formula}}" (or one that can be coerced to that class): a symbolic description of the model to be fitted.
@@ -48,8 +47,6 @@ The adjusted p-value function controls the
 interval-wise error rate.
 }
 \examples{
-# Importing the NASA temperatures data set
-data(NASAtemp)
 temperature <- rbind(NASAtemp$milan,NASAtemp$paris)
 groups <- c(rep(0,22),rep(1,22))
 
@@ -60,11 +57,11 @@ IWT.result <- IWTaov(temperature ~ groups,B=1000)
 summary(IWT.result)
 
 # Plot of the IWT results
-layout(1)
+graphics::layout(1)
 plot(IWT.result)
 
 # All graphics on the same device
-layout(matrix(1:4,nrow=2,byrow=FALSE))
+graphics::layout(matrix(1:4,nrow=2,byrow=FALSE))
 plot(IWT.result,main='NASA data', plot.adjpval = TRUE,xlab='Day',xrange=c(1,365))
 
 }

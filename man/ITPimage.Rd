@@ -19,8 +19,6 @@ ITPimage(ITP.result, alpha = 0.05, abscissa.range = c(0, 1), nlevel = 20)
 Plotting function creating a graphical output of the ITP: the p-value heat-map, the plot of the corrected p-values, and the plot of the functional data.
 }
 \examples{
-# Importing the NASA temperatures data set
-data(NASAtemp)
 # Performing the ITP for two populations with the B-spline basis
 ITP.result <- ITP2bspline(NASAtemp$milan,NASAtemp$paris,nknots=20,B=1000)
 

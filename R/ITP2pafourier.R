@@ -36,9 +36,6 @@
 #'  an a-priori selected basis expansion.
 #'
 #' @examples
-#' # Importing the NASA temperatures data set
-#' data(NASAtemp)
-#'
 #' # Performing the ITP
 #' ITP.result <- ITP2pafourier(NASAtemp$milan,NASAtemp$paris,maxfrequency=20,B=1000,paired=TRUE)
 #'
@@ -106,7 +103,7 @@ function(data1,data2,maxfrequency=floor(dim(data1)[2]/2),B=10000,paired=FALSE){
     #indice <- 1
     data_temp <- eval[unit,]
     abscissa <- 0:(Period-1)
-    trasformata <- fft(data_temp)/length(abscissa)
+    trasformata <- stats::fft(data_temp)/length(abscissa)
     ak_hat <- rbind(ak_hat,2*Re(trasformata)[1:(maxfrequency+1)])
     bk_hat <- rbind(bk_hat,-2*Im(trasformata)[2:(maxfrequency+1)])
   }
@@ -146,15 +143,15 @@ function(data1,data2,maxfrequency=floor(dim(data1)[2]/2),B=10000,paired=FALSE){
   print('Second step: joint univariate tests')
   T0_phase <- rep(0,(p+1)/2)
   for(i in 1:((p+1)/2)){
-    m1 <- optimize(sum.dist.sq,interval=c(-pi,pi),phi=phase[1:n1,i])$minimum
-    m2 <- optimize(sum.dist.sq,interval=c(-pi,pi),phi=phase[(n1+1):n,i])$minimum
+    m1 <- stats::optimize(sum.dist.sq,interval=c(-pi,pi),phi=phase[1:n1,i])$minimum
+    m2 <- stats::optimize(sum.dist.sq,interval=c(-pi,pi),phi=phase[(n1+1):n,i])$minimum
     T0_phase[i] <- min(abs(m1-m2),abs(2*pi-m1+m2))
   }
   T0_amplitude <- abs(log(apply(amplitude[1:n1,],2,prod)^(1/n1) / apply(amplitude[(n1+1):n,],2,prod)^(1/n2)))
   T_amplitude <- T_phase <- matrix(nrow=B,ncol=(p+1)/2)
   for (perm in 1:B){
     if(paired==TRUE){
-      if.perm <- rbinom(n1,1,0.5)
+      if.perm <- stats::rbinom(n1,1,0.5)
       coeff_perm <- coeff
       for(couple in 1:n1){
         if(if.perm[couple]==1){
@@ -176,8 +173,8 @@ function(data1,data2,maxfrequency=floor(dim(data1)[2]/2),B=10000,paired=FALSE){
     phase_perm <- cbind(pi*(1-sign(a0_perm)),phase_perm)
     T_phase_temp <- rep(0,(p+1)/2)
     for(i in 1:((p+1)/2)){
-      m1 <- optimize(sum.dist.sq,interval=c(-pi,pi),phi=phase_perm[1:n1,i])$minimum
-      m2 <- optimize(sum.dist.sq,interval=c(-pi,pi),phi=phase_perm[(n1+1):n,i])$minimum
+      m1 <- stats::optimize(sum.dist.sq,interval=c(-pi,pi),phi=phase_perm[1:n1,i])$minimum
+      m2 <- stats::optimize(sum.dist.sq,interval=c(-pi,pi),phi=phase_perm[(n1+1):n,i])$minimum
       T_phase_temp[i] <- min(abs(m1-m2),abs(2*pi-m1+m2))
     }
     T_phase[perm,] <- T_phase_temp

@@ -37,9 +37,6 @@ An object of class "\code{ITP1}" is a list containing at least the following com
 The function implements the Interval Testing Procedure for testing the center of symmetry of a functional population evaluated on a uniform grid. Data are represented by means of the Fourier expansion and the significance of each basis coefficient is tested with an interval-wise control of the Family Wise Error Rate.
 }
 \examples{
-# Importing the NASA temperatures data set
-data(NASAtemp)
-
 # Performing the ITP
 ITP.result <- ITP1fourier(NASAtemp$milan,maxfrequency=20,B=1000)
 
@@ -59,6 +56,6 @@ The Interval Testing Procedure: Inference for Functional Data Controlling the Fa
 }
 \seealso{
 See also \code{\link{plot.ITP1}} and \code{\link{ITPimage}} for plotting the results,
- \code{\link{ITP1bspline}} for ITP based on B-spline basis, \code{\link{IWT1}} for a one-sample test that is not based on
- an a-priori selected basis expansion.
+\code{\link{ITP1bspline}} for ITP based on B-spline basis, \code{\link{IWT1}} for a one-sample test that is not based on
+an a-priori selected basis expansion.
 }

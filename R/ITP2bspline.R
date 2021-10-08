@@ -39,8 +39,6 @@
 #'  an a-priori selected basis expansion.
 #'
 #' @examples
-#' # Importing the NASA temperatures data set
-#' data(NASAtemp)
 #' # Performing the ITP
 #' ITP.result <- ITP2bspline(NASAtemp$milan,NASAtemp$paris,nknots=50,B=1000)
 #'
@@ -100,17 +98,17 @@ function(data1,data2,mu=0,order=2,nknots=dim(data1)[2],B=10000,paired=FALSE){
   print('First step: basis expansion')
   #splines coefficients:
   eval <- rbind(data1,data2)
-  bspl.basis <- create.bspline.basis(c(1,J),norder=order,breaks=seq(1,J,length.out=nknots))
+  bspl.basis <- fda::create.bspline.basis(c(1,J),norder=order,breaks=seq(1,J,length.out=nknots))
   ascissa <- seq(1,J,1)
 
-  data.fd <- Data2fd(t(eval),ascissa,bspl.basis)
+  data.fd <- fda::Data2fd(t(eval),ascissa,bspl.basis)
   coeff <- t(data.fd$coef)
   p <- dim(coeff)[2]
 
   #functional data
   npt <- 1000
   ascissa.2 <- seq(1,J,length.out=npt)
-  bspl.eval.smooth <- eval.basis(ascissa.2,bspl.basis)
+  bspl.eval.smooth <- fda::eval.basis(ascissa.2,bspl.basis)
   data.eval <- t(bspl.eval.smooth %*% t(coeff))
   data.eval[(n1+1):n,] <- data.eval[(n1+1):n,] + matrix(data=mu,nrow=n2,ncol=npt)
 
@@ -120,7 +118,7 @@ function(data1,data2,mu=0,order=2,nknots=dim(data1)[2],B=10000,paired=FALSE){
   T_coeff <- matrix(ncol=p,nrow=B)
   for (perm in 1:B){
     if(paired==TRUE){
-      if.perm <- rbinom(n1,1,0.5)
+      if.perm <- stats::rbinom(n1,1,0.5)
       coeff_perm <- coeff
       for(couple in 1:n1){
         if(if.perm[couple]==1){

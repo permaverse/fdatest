@@ -41,9 +41,6 @@ significance of each basis coefficient is tested with an interval-wise control o
 The default parameters of the basis expansion lead to the piece-wise interpolating function.
 }
 \examples{
-# Importing the NASA temperatures data set
-data(NASAtemp)
-
 # Performing the ITP for one population with the B-spline basis
 ITP.result <- ITP1bspline(NASAtemp$paris,mu=4,nknots=50,B=1000)
 
@@ -63,6 +60,6 @@ The Interval Testing Procedure: Inference for Functional Data Controlling the Fa
 }
 \seealso{
 See also \code{\link{plot.ITP1}} and \code{\link{ITPimage}} for plotting the results,
- \code{\link{ITP1fourier}} for ITP based on Fourier basis, \code{\link{IWT1}} for a one-sample test that is not based on
- an a-priori selected basis expansion.
+\code{\link{ITP1fourier}} for ITP based on Fourier basis, \code{\link{IWT1}} for a one-sample test that is not based on
+an a-priori selected basis expansion.
 }

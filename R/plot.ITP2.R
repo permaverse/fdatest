@@ -38,9 +38,6 @@
 #' See \code{\link{plot.ITP1}} and \code{\link{plot.ITPlm}} for the plot method applied to the ITP results of one-population tests and a linear models, respectively.
 #' 
 #' @examples 
-#' # Importing the NASA temperatures data set
-#' data(NASAtemp)
-#' 
 #' # Performing the ITP for two populations with the B-spline basis
 #' ITP.result.bspline <- ITP2bspline(NASAtemp$milan,NASAtemp$paris,nknots=30,B=1000)
 #' # Plotting the results of the ITP
@@ -73,7 +70,7 @@ function(x,xrange=c(0,1),alpha1=0.05,alpha2=0.01,
     alpha1 <- alpha2
     alpha2 <- temp
   }
-  par(ask=TRUE) 
+  graphics::par(ask=TRUE) 
   if(object$basis=='Fourier'){
     p <- length(object$pval)
     J <- dim(object$data.eval)[2]
@@ -88,7 +85,7 @@ function(x,xrange=c(0,1),alpha1=0.05,alpha2=0.01,
     colors[which(object$labels==1)] <- col[1]
     colors[which(object$labels==2)] <- col[2]
     
-    matplot(Abscissa,t(object$data.eval),type='l',main=main.data,ylab=ylab,col=colors,lwd=lwd,ylim=ylim,...)
+    fda::matplot(Abscissa,t(object$data.eval),type='l',main=main.data,ylab=ylab,col=colors,lwd=lwd,ylim=ylim,...)
     
     ################################################################
     # pval
@@ -100,23 +97,23 @@ function(x,xrange=c(0,1),alpha1=0.05,alpha2=0.01,
       for(j in 1:length(difference1)){
         min.rect <- abscissa.pval[difference1[j]] - 0.5
         max.rect <- min.rect + 1
-        rect(min.rect, par("usr")[3], max.rect, par("usr")[4], col = 'gray90',density=-2,border = NA)
+        graphics::rect(min.rect, graphics::par("usr")[3], max.rect, graphics::par("usr")[4], col = 'gray90',density=-2,border = NA)
       }
-      rect(par("usr")[1], par("usr")[3], par("usr")[2], par("usr")[4], col = NULL,border='black')
+      graphics::rect(graphics::par("usr")[1], graphics::par("usr")[3], graphics::par("usr")[2], graphics::par("usr")[4], col = NULL,border='black')
     }
     difference2 <- which(object$adjusted.pval<alpha2)
     if(length(difference2)>0){
       for(j in 1:length(difference2)){
         min.rect <- abscissa.pval[difference2[j]] - 0.5
         max.rect <- min.rect + 1
-        rect(min.rect, par("usr")[3], max.rect, par("usr")[4], col = 'gray80',density=-2,border = NA)
+        graphics::rect(min.rect, graphics::par("usr")[3], max.rect, graphics::par("usr")[4], col = 'gray80',density=-2,border = NA)
       }
-      rect(par("usr")[1], par("usr")[3], par("usr")[2], par("usr")[4], col = NULL,border='black')
+      graphics::rect(graphics::par("usr")[1], graphics::par("usr")[3], graphics::par("usr")[2], graphics::par("usr")[4], col = NULL,border='black')
     }
     for(j in 0:10){
-      abline(h=j/10,col='lightgray',lty="dotted")
+      graphics::abline(h=j/10,col='lightgray',lty="dotted")
     }
-    points(1:p,object$adjusted.pval,pch=pch)
+    graphics::points(1:p,object$adjusted.pval,pch=pch)
     
     
     
@@ -134,26 +131,26 @@ function(x,xrange=c(0,1),alpha1=0.05,alpha2=0.01,
     colors[which(object$labels==1)] <- col[1]
     colors[which(object$labels==2)] <- col[2]
     
-    matplot(Abscissa,t(object$data.eval),type='l',main=main.data,ylab=ylab,col=colors,lwd=lwd,ylim=ylim,...)
+    fda::matplot(Abscissa,t(object$data.eval),type='l',main=main.data,ylab=ylab,col=colors,lwd=lwd,ylim=ylim,...)
     difference1 <- which(object$adjusted.pval<alpha1)
     if (length(difference1) > 0) {
       for (j in 1:length(difference1)) {
         min.rect <- abscissa.pval[difference1[j]] - (abscissa.pval[2] - abscissa.pval[1])/2
         max.rect <- min.rect + (abscissa.pval[2] - abscissa.pval[1])
-        rect(min.rect, par("usr")[3], max.rect, par("usr")[4], col = "gray90", density = -2, border = NA)
+        graphics::rect(min.rect, graphics::par("usr")[3], max.rect, graphics::par("usr")[4], col = "gray90", density = -2, border = NA)
       }
-      rect(par("usr")[1], par("usr")[3], par("usr")[2],par("usr")[4], col = NULL, border = "black")
+      graphics::rect(graphics::par("usr")[1], graphics::par("usr")[3], graphics::par("usr")[2],graphics::par("usr")[4], col = NULL, border = "black")
     }
     difference2 <- which(object$adjusted.pval<alpha2)
     if (length(difference2) > 0) {
       for (j in 1:length(difference2)) {
         min.rect <- abscissa.pval[difference2[j]] - (abscissa.pval[2] - abscissa.pval[1])/2
         max.rect <- min.rect + (abscissa.pval[2] - abscissa.pval[1])
-        rect(min.rect, par("usr")[3], max.rect, par("usr")[4], col = "gray80", density = -2, border = NA)
+        graphics::rect(min.rect, graphics::par("usr")[3], max.rect, graphics::par("usr")[4], col = "gray80", density = -2, border = NA)
       }
-      rect(par("usr")[1], par("usr")[3], par("usr")[2],par("usr")[4], col = NULL, border = "black")
+      graphics::rect(graphics::par("usr")[1], graphics::par("usr")[3], graphics::par("usr")[2],graphics::par("usr")[4], col = NULL, border = "black")
     }
-    matplot(Abscissa,t(object$data.eval),type='l',main=main.data,ylab=ylab,col=colors,lwd=lwd,add=TRUE,...)
+    fda::matplot(Abscissa,t(object$data.eval),type='l',main=main.data,ylab=ylab,col=colors,lwd=lwd,add=TRUE,...)
     
     
     ################################################################
@@ -166,23 +163,23 @@ function(x,xrange=c(0,1),alpha1=0.05,alpha2=0.01,
       for (j in 1:length(difference1)) {
         min.rect <- abscissa.pval[difference1[j]] - (abscissa.pval[2] - abscissa.pval[1])/2
         max.rect <- min.rect + (abscissa.pval[2] - abscissa.pval[1])
-        rect(min.rect, par("usr")[3], max.rect, par("usr")[4], col = "gray90", density = -2, border = NA)
+        graphics::rect(min.rect, graphics::par("usr")[3], max.rect, graphics::par("usr")[4], col = "gray90", density = -2, border = NA)
       }
-      rect(par("usr")[1], par("usr")[3], par("usr")[2],par("usr")[4], col = NULL, border = "black")
+      graphics::rect(graphics::par("usr")[1], graphics::par("usr")[3], graphics::par("usr")[2],graphics::par("usr")[4], col = NULL, border = "black")
     }
     difference2 <- which(object$adjusted.pval<alpha2)
     if (length(difference2) > 0) {
       for (j in 1:length(difference2)) {
         min.rect <- abscissa.pval[difference2[j]] - (abscissa.pval[2] - abscissa.pval[1])/2
         max.rect <- min.rect + (abscissa.pval[2] - abscissa.pval[1])
-        rect(min.rect, par("usr")[3], max.rect, par("usr")[4], col = "gray80", density = -2, border = NA)
+        graphics::rect(min.rect, graphics::par("usr")[3], max.rect, graphics::par("usr")[4], col = "gray80", density = -2, border = NA)
       }
-      rect(par("usr")[1], par("usr")[3], par("usr")[2],par("usr")[4], col = NULL, border = "black")
+      graphics::rect(graphics::par("usr")[1], graphics::par("usr")[3], graphics::par("usr")[2],graphics::par("usr")[4], col = NULL, border = "black")
     }
     for(j in 0:10){
-      abline(h=j/10,col='lightgray',lty="dotted")
+      graphics::abline(h=j/10,col='lightgray',lty="dotted")
     }
-    points(abscissa.pval,object$adjusted.pval,pch=pch)
+    graphics::points(abscissa.pval,object$adjusted.pval,pch=pch)
     
   }else if(object$basis=='paFourier'){
     p <- length(object$pval_phase)
@@ -198,7 +195,7 @@ function(x,xrange=c(0,1),alpha1=0.05,alpha2=0.01,
     colors[which(object$labels==1)] <- col[1]
     colors[which(object$labels==2)] <- col[2]
     
-    matplot(Abscissa,t(object$data.eval),type='l',main=main.data,ylab=ylab,col=colors,lwd=lwd,ylim=ylim,...)
+    fda::matplot(Abscissa,t(object$data.eval),type='l',main=main.data,ylab=ylab,col=colors,lwd=lwd,ylim=ylim,...)
     
     ################################################################
     # pval phase
@@ -210,23 +207,23 @@ function(x,xrange=c(0,1),alpha1=0.05,alpha2=0.01,
       for(j in 1:length(difference1)){
         min.rect <- abscissa.pval[difference1[j]] - 0.5
         max.rect <- min.rect + 1
-        rect(min.rect, par("usr")[3], max.rect, par("usr")[4], col = 'gray90',density=-2,border = NA)
+        graphics::rect(min.rect, graphics::par("usr")[3], max.rect, graphics::par("usr")[4], col = 'gray90',density=-2,border = NA)
       }
-      rect(par("usr")[1], par("usr")[3], par("usr")[2], par("usr")[4], col = NULL,border='black')
+      graphics::rect(graphics::par("usr")[1], graphics::par("usr")[3], graphics::par("usr")[2], graphics::par("usr")[4], col = NULL,border='black')
     }
     difference2 <- which(object$adjusted.pval_phase<alpha2)
     if(length(difference2)>0){
       for(j in 1:length(difference2)){
         min.rect <- abscissa.pval[difference2[j]] - 0.5
         max.rect <- min.rect + 1
-        rect(min.rect, par("usr")[3], max.rect, par("usr")[4], col = 'gray80',density=-2,border = NA)
+        graphics::rect(min.rect, graphics::par("usr")[3], max.rect, graphics::par("usr")[4], col = 'gray80',density=-2,border = NA)
       }
-      rect(par("usr")[1], par("usr")[3], par("usr")[2], par("usr")[4], col = NULL,border='black')
+      graphics::rect(graphics::par("usr")[1], graphics::par("usr")[3], graphics::par("usr")[2], graphics::par("usr")[4], col = NULL,border='black')
     }
     for(j in 0:10){
-      abline(h=j/10,col='lightgray',lty="dotted")
+      graphics::abline(h=j/10,col='lightgray',lty="dotted")
     }
-    points(1:p,object$adjusted.pval_phase,pch=pch)
+    graphics::points(1:p,object$adjusted.pval_phase,pch=pch)
     
     ################################################################
     # pval amplitude
@@ -238,25 +235,25 @@ function(x,xrange=c(0,1),alpha1=0.05,alpha2=0.01,
       for(j in 1:length(difference1)){
         min.rect <- abscissa.pval[difference1[j]] - 0.5
         max.rect <- min.rect + 1
-        rect(min.rect, par("usr")[3], max.rect, par("usr")[4], col = 'gray90',density=-2,border = NA)
+        graphics::rect(min.rect, graphics::par("usr")[3], max.rect, graphics::par("usr")[4], col = 'gray90',density=-2,border = NA)
       }
-      rect(par("usr")[1], par("usr")[3], par("usr")[2], par("usr")[4], col = NULL,border='black')
+      graphics::rect(graphics::par("usr")[1], graphics::par("usr")[3], graphics::par("usr")[2], graphics::par("usr")[4], col = NULL,border='black')
     }
     difference2 <- which(object$adjusted.pval_amplitude<alpha2)
     if(length(difference2)>0){
       for(j in 1:length(difference2)){
         min.rect <- abscissa.pval[difference2[j]] - 0.5
         max.rect <- min.rect + 1
-        rect(min.rect, par("usr")[3], max.rect, par("usr")[4], col = 'gray80',density=-2,border = NA)
+        graphics::rect(min.rect, graphics::par("usr")[3], max.rect, graphics::par("usr")[4], col = 'gray80',density=-2,border = NA)
       }
-      rect(par("usr")[1], par("usr")[3], par("usr")[2], par("usr")[4], col = NULL,border='black')
+      graphics::rect(graphics::par("usr")[1], graphics::par("usr")[3], graphics::par("usr")[2], graphics::par("usr")[4], col = NULL,border='black')
     }
     for(j in 0:10){
-      abline(h=j/10,col='lightgray',lty="dotted")
+      graphics::abline(h=j/10,col='lightgray',lty="dotted")
     }
-    points(1:p,object$adjusted.pval_amplitude,pch=pch)
+    graphics::points(1:p,object$adjusted.pval_amplitude,pch=pch)
     
     
   }
-  par(ask=FALSE)
+  graphics::par(ask=FALSE)
 }

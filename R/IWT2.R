@@ -41,9 +41,6 @@
 #' @seealso See also \code{\link{plot.IWT2}} and \code{\link{IWTimage}} for plotting the results.
 #'
 #' @examples
-#' # Importing the NASA temperatures data set
-#' data(NASAtemp)
-#'
 #' # Performing the IWT for two populations
 #' IWT.result <- IWT2(NASAtemp$paris,NASAtemp$milan)
 #'
@@ -51,7 +48,7 @@
 #' plot(IWT.result,xrange=c(0,12),main='IWT results for testing mean differences')
 #'
 #' # Plotting the p-value heatmap
-#' IWTimage(IWT.result,abscissa.range=c(0,12))
+#' IWTimage(IWT.result,abscissa_range=c(0,12))
 #'
 #' # Selecting the significant components at 5% level
 #' which(IWT.result$adjusted_pval < 0.05)
@@ -96,7 +93,7 @@ IWT2 <- function(data1,data2,mu=0,B=1000,paired=FALSE,dx=NULL,recycle=TRUE,alter
   }
 
   # data preprocessing
-  if(is.fd(data1)){ # data1 is a functional data object
+  if(fda::is.fd(data1)){ # data1 is a functional data object
     rangeval1 <- data1$basis$rangeval
     rangeval2 <- data2$basis$rangeval
     if(is.null(dx)){
@@ -106,8 +103,8 @@ IWT2 <- function(data1,data2,mu=0,B=1000,paired=FALSE,dx=NULL,recycle=TRUE,alter
       stop("rangeval of data1 and data2 must coincide.")
     }
     abscissa <- seq(rangeval1[1],rangeval1[2],by=dx)
-    coeff1 <- t(eval.fd(fdobj=data1,evalarg=abscissa))
-    coeff2 <- t(eval.fd(fdobj=data2,evalarg=abscissa))
+    coeff1 <- t(fda::eval.fd(fdobj=data1,evalarg=abscissa))
+    coeff2 <- t(fda::eval.fd(fdobj=data2,evalarg=abscissa))
 
   }else if(is.matrix(data1)){
     coeff1 <- data1
@@ -116,7 +113,7 @@ IWT2 <- function(data1,data2,mu=0,B=1000,paired=FALSE,dx=NULL,recycle=TRUE,alter
     stop("First argument must be either a functional data object or a matrix.")
   }
 
-  if (is.fd(mu)){ # mu is a functional data
+  if (fda::is.fd(mu)){ # mu is a functional data
     rangeval.mu <- mu$basis$rangeval
     if(sum(rangeval.mu == rangeval1)!=2){
       stop("rangeval of mu must be the same as rangeval of data.")
@@ -125,7 +122,7 @@ IWT2 <- function(data1,data2,mu=0,B=1000,paired=FALSE,dx=NULL,recycle=TRUE,alter
       dx <- (rangeval.mu[2]-rangeval.mu[1])*0.01
     }
     abscissa <- seq(rangeval.mu[1],rangeval.mu[2],by=dx)
-    mu.eval <- t(eval.fd(fdobj=mu,evalarg=abscissa))
+    mu.eval <- t(fda::eval.fd(fdobj=mu,evalarg=abscissa))
   }else if(is.vector(mu)){
     mu.eval <- mu
   }else{
@@ -159,7 +156,7 @@ IWT2 <- function(data1,data2,mu=0,B=1000,paired=FALSE,dx=NULL,recycle=TRUE,alter
   T_coeff <- matrix(ncol=p,nrow=B)
   for (perm in 1:B){
     if(paired){
-      if.perm <- rbinom(n1,1,0.5)
+      if.perm <- stats::rbinom(n1,1,0.5)
       coeff_perm <- coeff
       for(couple in 1:n1){
         if(if.perm[couple]==1){

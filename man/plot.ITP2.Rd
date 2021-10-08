@@ -4,13 +4,23 @@
 \alias{plot.ITP2}
 \title{Plot method for ITP results on two-population tests}
 \usage{
-\method{plot}{ITP2}(x, xrange = c(0, 1), alpha1 = 0.05, alpha2 = 0.01,
-  ylab = "Functional Data", main = NULL, lwd = 1, col = c(1, 2),
-  pch = 16, ylim = range(object$data.eval), ...)
+\method{plot}{ITP2}(
+  x,
+  xrange = c(0, 1),
+  alpha1 = 0.05,
+  alpha2 = 0.01,
+  ylab = "Functional Data",
+  main = NULL,
+  lwd = 1,
+  col = c(1, 2),
+  pch = 16,
+  ylim = range(object$data.eval),
+  ...
+)
 }
 \arguments{
 \item{x}{The object to be plotted.
-An object of class "\code{ITP2}", that is, a result of an ITP for comparison between two populations. 
+An object of class "\code{ITP2}", that is, a result of an ITP for comparison between two populations.
 Usually a call to \code{\link{ITP2bspline}}, \code{\link{ITP2fourier}} or \code{\link{ITP2pafourier}}.}
 
 \item{xrange}{Range of the \code{x} axis. Default is \code{xrange=c(0,1)}.}
@@ -34,20 +44,17 @@ Usually a call to \code{\link{ITP2bspline}}, \code{\link{ITP2fourier}} or \code{
 \item{\dots}{Additional plotting arguments that can be used with function \code{plot}, such as \code{\link{graphical parameters}} (see \code{\link{par}}).}
 }
 \value{
-No value returned. 
-The function produces a graphical output of the ITP results:  the plot of the functional data and the one of the adjusted p-values. 
-The basis components selected as significant by the test at level \code{alpha1} and \code{alpha2} are highlighted in the plot of the adjusted p-values and in the one of functional data (in case the test is based on a local basis, such as B-splines) by gray areas (light and dark gray, respectively). 
+No value returned.
+The function produces a graphical output of the ITP results:  the plot of the functional data and the one of the adjusted p-values.
+The basis components selected as significant by the test at level \code{alpha1} and \code{alpha2} are highlighted in the plot of the adjusted p-values and in the one of functional data (in case the test is based on a local basis, such as B-splines) by gray areas (light and dark gray, respectively).
 In the case of a Fourier basis with amplitude and phase decomposition, two plots of adjusted p-values are done, one for phase and one for amplitude.
 }
 \description{
 \code{plot} method for class "\code{ITP2}".
-Plotting function creating a graphical output of the ITP for the test of comparison between two populations: 
+Plotting function creating a graphical output of the ITP for the test of comparison between two populations:
 functional data and ITP-adjusted p-values are plotted.
 }
 \examples{
-# Importing the NASA temperatures data set
-data(NASAtemp)
-
 # Performing the ITP for two populations with the B-spline basis
 ITP.result.bspline <- ITP2bspline(NASAtemp$milan,NASAtemp$paris,nknots=30,B=1000)
 # Plotting the results of the ITP
@@ -68,7 +75,7 @@ Abramowicz, K., Hager, C. K., Pini, A., Schelin, L., Sjostedt de Luna, S., & Van
 Nonparametric inference for functional‐on‐scalar linear models applied to knee kinematic hop data after injury of the anterior cruciate ligament. \emph{Scandinavian Journal of Statistics} 45(4), 1036-1061.
 }
 \seealso{
-\code{\link{ITPimage}} for the plot of p-values heatmaps. 
-See also \code{\link{ITP2bspline}}, \code{\link{ITP2fourier}}, \code{\link{ITP2pafourier}} to perform the ITP to test for differences between two populations. 
+\code{\link{ITPimage}} for the plot of p-values heatmaps.
+See also \code{\link{ITP2bspline}}, \code{\link{ITP2fourier}}, \code{\link{ITP2pafourier}} to perform the ITP to test for differences between two populations.
 See \code{\link{plot.ITP1}} and \code{\link{plot.ITPlm}} for the plot method applied to the ITP results of one-population tests and a linear models, respectively.
 }

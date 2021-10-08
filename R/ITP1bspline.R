@@ -36,9 +36,6 @@
 #'  an a-priori selected basis expansion.
 #'
 #' @examples
-#' # Importing the NASA temperatures data set
-#' data(NASAtemp)
-#'
 #' # Performing the ITP for one population with the B-spline basis
 #' ITP.result <- ITP1bspline(NASAtemp$paris,mu=4,nknots=50,B=1000)
 #'
@@ -92,10 +89,10 @@ function(data,mu=0,order=2,nknots=dim(data)[2],B=1000){
 
   print('First step: basis expansion')
   #splines coefficients:
-  bspl.basis <- create.bspline.basis(c(1,J),norder=order,breaks=seq(1,J,length.out=nknots))
+  bspl.basis <- fda::create.bspline.basis(c(1,J),norder=order,breaks=seq(1,J,length.out=nknots))
   ascissa <- seq(1,J,1)
 
-  data.fd <- Data2fd(t(data),ascissa,bspl.basis)
+  data.fd <- fda::Data2fd(t(data),ascissa,bspl.basis)
   coeff <- t(data.fd$coef)
 
   p <- dim(coeff)[2]
@@ -103,7 +100,7 @@ function(data,mu=0,order=2,nknots=dim(data)[2],B=1000){
   #functional data
   npt <- 1000
   ascissa.2 <- seq(1,J,length.out=npt)
-  bspl.eval.smooth <- eval.basis(ascissa.2,bspl.basis)
+  bspl.eval.smooth <- fda::eval.basis(ascissa.2,bspl.basis)
   data.eval <- t(bspl.eval.smooth %*% t(coeff) )
   data.eval <- data.eval + matrix(data=mu,nrow=n,ncol=npt)
 
@@ -112,7 +109,7 @@ function(data,mu=0,order=2,nknots=dim(data)[2],B=1000){
   T0 <- abs(colMeans(coeff))  #sample mean
   T_coeff <- matrix(ncol=p,nrow=B)
   for (perm in 1:B){
-    signs <- rbinom(n,1,0.5)*2 - 1
+    signs <- stats::rbinom(n,1,0.5)*2 - 1
     coeff_perm <- coeff*signs
     T_coeff[perm,] <- abs(colMeans(coeff_perm))
   }

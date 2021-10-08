@@ -37,9 +37,6 @@
 #'  an a-priori selected basis expansion.
 #'
 #' @examples
-#' # Importing the NASA temperatures data set
-#' data(NASAtemp)
-#'
 #' # Performing the ITP
 #' ITP.result <- ITP2fourier(NASAtemp$milan,NASAtemp$paris,maxfrequency=20,B=1000,paired=TRUE)
 #'
@@ -69,8 +66,8 @@ function(data1,data2,mu=0,maxfrequency=floor(dim(data1)[2]/2),B=10000,paired=FAL
   calcola_hotelling_2pop <- function(pop1,pop2,delta.0){ #calcola T^2 pooled per due pop
     mean1 <- colMeans(pop1)
     mean2 <- colMeans(pop2)
-    cov1 <- cov(pop1)
-    cov2 <- cov(pop2)
+    cov1 <- stats::cov(pop1)
+    cov2 <- stats::cov(pop2)
     n1 <- dim(pop1)[1]
     n2 <- dim(pop2)[1]
     p <- dim(pop1)[2]
@@ -120,7 +117,7 @@ function(data1,data2,mu=0,maxfrequency=floor(dim(data1)[2]/2),B=10000,paired=FAL
     #indice <- 1
     data_temp <- eval[unit,]
     abscissa <- 0:(Period-1)
-    trasformata <- fft(data_temp)/length(abscissa)
+    trasformata <- stats::fft(data_temp)/length(abscissa)
     ak_hat <- rbind(ak_hat,2*Re(trasformata)[1:(maxfrequency+1)])
     bk_hat <- rbind(bk_hat,-2*Im(trasformata)[2:(maxfrequency+1)])
   }
@@ -161,7 +158,7 @@ function(data1,data2,mu=0,maxfrequency=floor(dim(data1)[2]/2),B=10000,paired=FAL
   T_hotelling <- matrix(nrow=B,ncol=dim)
   for (perm in 1:B){
     if(paired==TRUE){
-      if.perm <- rbinom(n1,1,0.5)
+      if.perm <- stats::rbinom(n1,1,0.5)
       coeff_perm <- coeff
       for(couple in 1:n1){
         if(if.perm[couple]==1){

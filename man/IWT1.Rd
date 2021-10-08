@@ -40,9 +40,6 @@ functions are provided. The unadjusted p-value function controls the point-wise 
 interval-wise error rate.
 }
 \examples{
-# Importing the NASA temperatures data set
-data(NASAtemp)
-
 # Performing the IWT for one population
 IWT.result <- IWT1(NASAtemp$paris,mu=4)
 
@@ -50,7 +47,7 @@ IWT.result <- IWT1(NASAtemp$paris,mu=4)
 plot(IWT.result,xrange=c(0,12),main='Paris temperatures')
 
 # Plotting the p-value heatmap
-IWTimage(IWT.result,abscissa.range=c(0,12))
+IWTimage(IWT.result,abscissa_range=c(0,12))
 
 # Selecting the significant components at 5\% level
 which(IWT.result$adjusted_pval < 0.05)

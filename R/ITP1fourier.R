@@ -32,9 +32,6 @@
 #'  an a-priori selected basis expansion.
 #'
 #' @examples
-#' # Importing the NASA temperatures data set
-#' data(NASAtemp)
-#'
 #' # Performing the ITP
 #' ITP.result <- ITP1fourier(NASAtemp$milan,maxfrequency=20,B=1000)
 #'
@@ -63,7 +60,7 @@ function(data,mu=0,maxfrequency=floor(dim(data)[2]/2),B=10000){
   }
   calcola_hotelling <- function(mean0,x){
     x_mean <- colMeans(x)
-    x_cov <- cov(x)
+    x_cov <- stats::cov(x)
     x_invcov <- solve(x_cov)
     x_T2 <- n * (x_mean-mean0) %*% x_invcov %*% (x_mean-mean0)
     return(x_T2)
@@ -104,7 +101,7 @@ function(data,mu=0,maxfrequency=floor(dim(data)[2]/2),B=10000){
     data_temp <- data[unit,]
     Period <- length(data_temp)
     abscissa <- 0:(Period-1)
-    trasformata <- fft(data_temp)/length(abscissa)
+    trasformata <- stats::fft(data_temp)/length(abscissa)
     ak_hat <- rbind(ak_hat,2*Re(trasformata)[1:(maxfrequency+1)])
     bk_hat <- rbind(bk_hat,-2*Im(trasformata)[2:(maxfrequency+1)])
   }
@@ -146,7 +143,7 @@ function(data,mu=0,maxfrequency=floor(dim(data)[2]/2),B=10000){
   T_hotelling <- matrix(nrow=B,ncol=dim)
 
   for (perm in 1:B){
-    signs <- rbinom(n,1,0.5)*2-1
+    signs <- stats::rbinom(n,1,0.5)*2-1
     coeff_perm <- coeff*signs
     ak_perm <- coeff_perm[,2:((p+1)/2)]
     bk_perm <- coeff_perm[,((p+1)/2+1):p]

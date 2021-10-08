@@ -45,8 +45,6 @@
 #'
 #'
 #' @examples
-#' # Importing the NASA temperatures data set
-#' data(NASAtemp)
 #' temperature <- rbind(NASAtemp$milan,NASAtemp$paris)
 #' groups <- c(rep(0,22),rep(1,22))
 #'
@@ -57,11 +55,11 @@
 #' summary(IWT.result)
 #'
 #' # Plot of the IWT results
-#' layout(1)
+#' graphics::layout(1)
 #' plot(IWT.result)
 #'
 #' # All graphics on the same device
-#' layout(matrix(1:4,nrow=2,byrow=FALSE))
+#' graphics::layout(matrix(1:4,nrow=2,byrow=FALSE))
 #' plot(IWT.result,main='NASA data', plot.adjpval = TRUE,xlab='Day',xrange=c(1,365))
 #'
 #' @references
@@ -105,7 +103,7 @@ IWTaov <- function(formula,B=1000,method='residuals',dx=NULL,recycle=TRUE){
   }
 
   stat_lm_glob <- function(anova){
-    result <- summary.lm(anova)$f[1]
+    result <- stats::summary.lm(anova)$f[1]
     return(result)
   }
   stat_aov_part <- function(anova){
@@ -128,33 +126,33 @@ IWTaov <- function(formula,B=1000,method='residuals',dx=NULL,recycle=TRUE){
   env <- environment(formula)
   variables = all.vars(formula)
   y.name = variables[1]
-  covariates.names <- colnames(attr(terms(formula),"factors"))
-  #data.all = model.frame(formula)
+  covariates.names <- colnames(attr(stats::terms(formula),"factors"))
+  #data.all = stats::model.frame(formula)
   cl <- match.call()
   data <- get(y.name,envir = env)
-  if(is.fd(data)){ # data is a functional data object
+  if(fda::is.fd(data)){ # data is a functional data object
     rangeval <- data$basis$rangeval
     if(is.null(dx)){
       dx <- (rangeval[2]-rangeval[1])*0.01
     }
     abscissa <- seq(rangeval[1],rangeval[2],by=dx)
-    coeff <- t(eval.fd(fdobj=data,evalarg=abscissa))
+    coeff <- t(fda::eval.fd(fdobj=data,evalarg=abscissa))
   }else if(is.matrix(data)){
     coeff <- data
   }else{
     stop("First argument of the formula must be either a functional data object or a matrix.")
   }
 
-  #design.matrix = model.matrix(formula)
-  #mf = model.frame(formula)
-  #data = model.response(mf)
+  #design.matrix = stats::model.matrix(formula)
+  #mf = stats::model.frame(formula)
+  #data = stats::model.response(mf)
 
-  dummynames.all <- colnames(attr(terms(formula),"factors"))
+  dummynames.all <- colnames(attr(stats::terms(formula),"factors"))
   formula.const <- deparse(formula[[3]],width.cutoff = 500L) #extracting the part after ~ on formula. this will not work if the formula is longer than 500 char
 
-  formula.discrete <- as.formula(paste('coeff ~',formula.const),env=environment())
-  design.matrix = model.matrix(formula.discrete)
-  mf = model.frame(formula.discrete)
+  formula.discrete <- stats::as.formula(paste('coeff ~',formula.const),env=environment())
+  design.matrix = stats::model.matrix(formula.discrete)
+  mf = stats::model.frame(formula.discrete)
 
   #var.names = variables[-1]
   #nvar = length(var.names)
@@ -169,9 +167,9 @@ IWTaov <- function(formula,B=1000,method='residuals',dx=NULL,recycle=TRUE){
   #univariate permutations
   coeffnames <- paste('coeff[,',as.character(1:p),']',sep='')
   formula.coeff <- paste(coeffnames,'~',formula.const)
-  formula.coeff <- sapply(formula.coeff,as.formula,env=environment())
+  formula.coeff <- sapply(formula.coeff,stats::as.formula,env=environment())
 
-  aovcoeff1 <- aov(formula.coeff[[1]],data=mf)
+  aovcoeff1 <- stats::aov(formula.coeff[[1]],data=mf)
   var.names <- rownames(summary(aovcoeff1)[[1]])
   df.vars <- summary(aovcoeff1)[[1]][,1]
   df.residuals <- df.vars[length(df.vars)]
@@ -182,7 +180,7 @@ IWTaov <- function(formula,B=1000,method='residuals',dx=NULL,recycle=TRUE){
   }
 
   index.vars <- cbind(c(2,(cumsum(df.vars)+2)[-length(df.vars)]),cumsum(df.vars)+1)
-  regr0 = lm.fit(design.matrix,coeff)
+  regr0 = stats::lm.fit(design.matrix,coeff)
   #pval_parametric <- sapply(aov0,extract.pval)
   MS0 <- matrix(nrow=nvar+1,ncol=p)
   for(var in 1:(nvar+1)){
@@ -252,8 +250,8 @@ IWTaov <- function(formula,B=1000,method='residuals',dx=NULL,recycle=TRUE){
       }
 
       formula.coeff.temp <- paste(coeffnames,'~',formula.temp)
-      formula.coeff_part[[ii]] <- sapply(formula.coeff.temp,as.formula,env=environment())
-      regr0_part[[ii]] = lapply(formula.coeff_part[[ii]],lm)
+      formula.coeff_part[[ii]] <- sapply(formula.coeff.temp,stats::as.formula,env=environment())
+      regr0_part[[ii]] = lapply(formula.coeff_part[[ii]],stats::lm)
 
       residui[ii,,] = simplify2array(lapply(regr0_part[[ii]],extract.residuals))
       fitted_part[ii,,] = simplify2array(lapply(regr0_part[[ii]],extract.fitted))
@@ -271,11 +269,11 @@ IWTaov <- function(formula,B=1000,method='residuals',dx=NULL,recycle=TRUE){
       permutazioni <- sample(n)
       coeff_perm <- coeff[permutazioni,]
     }else{ # testing intercept -> permute signs
-      signs <- rbinom(n,1,0.5)*2 - 1
+      signs <- stats::rbinom(n,1,0.5)*2 - 1
       coeff_perm <- coeff*signs
     }
 
-    regr_perm = lm.fit(design.matrix,coeff_perm)
+    regr_perm = stats::lm.fit(design.matrix,coeff_perm)
     Sigma <- chol2inv(regr_perm$qr$qr)
     resvar <- colSums(regr_perm$residuals^2)/regr0$df.residual
 
@@ -296,7 +294,7 @@ IWTaov <- function(formula,B=1000,method='residuals',dx=NULL,recycle=TRUE){
       aov_perm_part = vector('list',nvar)
       for(ii in 1:(nvar)){
         coeff_perm = fitted_part[ii,,] + residui_perm[ii,,]
-        regr_perm = lm.fit(design.matrix,coeff_perm)
+        regr_perm = stats::lm.fit(design.matrix,coeff_perm)
         MSperm <- matrix(nrow=nvar+1,ncol=p)
         for(var in 1:(nvar+1)){
           MSperm[var,] <- colSums(rbind(regr_perm$effects[index.vars[var,1]:index.vars[var,2],]^2))/df.vars[var]
