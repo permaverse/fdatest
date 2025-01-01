@@ -72,24 +72,8 @@
 
 
 TWTaov <- function(formula,B=1000,method='residuals',dx=NULL){
-  env <- environment(formula)
-  variables = all.vars(formula)
-  y.name = variables[1]
-  covariates.names <- colnames(attr(stats::terms(formula),"factors"))
   cl <- match.call()
-  data <- get(y.name,envir = env)
-  if(fda::is.fd(data)){ # data is a functional data object
-    rangeval <- data$basis$rangeval
-    if(is.null(dx)){
-      dx <- (rangeval[2]-rangeval[1])*0.01
-    }
-    abscissa <- seq(rangeval[1],rangeval[2],by=dx)
-    coeff <- t(fda::eval.fd(fdobj=data,evalarg=abscissa))
-  }else if(is.matrix(data)){
-    coeff <- data
-  }else{
-    stop("First argument of the formula must be either a functional data object or a matrix.")
-  }
+  coeff <- formula2coeff(formula, dx = dx)
   
   dummynames.all <- colnames(attr(stats::terms(formula),"factors"))
   formula.const <- deparse(formula[[3]],width.cutoff = 500L) #extracting the part after ~ on formula. this will not work if the formula is longer than 500 char

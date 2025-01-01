@@ -11,6 +11,60 @@ stat_aov_part <- function(anova) {
 extract_residuals <- function(x) {
   x$residuals
 }
+
 extract_fitted <- function(x) {
   x$fitted
+}
+
+pval_correct <- function(pval.matrix) {
+  matrice_pval_2_2x <- cbind(pval.matrix, pval.matrix)
+  p <- dim(pval.matrix)[2]
+  matrice_pval_2_2x <- matrice_pval_2_2x[, (2 * p):1]
+  corrected.pval.matrix <- matrix(nrow = p, ncol = p)
+  corrected.pval.matrix[p, ] <- pval.matrix[p, p:1]
+  for (var in 1:p) {
+    pval_var <- matrice_pval_2_2x[p, var]
+    inizio <- var
+    fine <- var #inizio fisso, fine aumenta salendo nelle righe
+    for (riga in (p - 1):1) {
+      fine <- fine + 1
+      pval_cono <- matrice_pval_2_2x[riga, inizio:fine]
+      pval_var <- max(pval_var, pval_cono, na.rm = TRUE)
+      corrected.pval.matrix[riga, var] <- pval_var
+    }
+  }
+  corrected.pval.matrix[, p:1]
+}
+
+formula2coeff <- function(formula, dx = NULL) {
+  env <- environment(formula)
+  variables <- all.vars(formula)
+  y.name <- variables[1]
+  covariates.names <- colnames(attr(stats::terms(formula), "factors"))
+  data <- get(y.name, envir = env)
+  if (fda::is.fd(data)) { # data is a functional data object
+    rangeval <- data$basis$rangeval
+    if (is.null(dx)) {
+      dx <- (rangeval[2] - rangeval[1]) * 0.01
+    }
+    abscissa <- seq(rangeval[1], rangeval[2], by = dx)
+    coeff <- t(fda::eval.fd(fdobj = data, evalarg = abscissa))
+  } else if (is.matrix(data)) {
+    coeff <- data
+  } else {
+    stop("First argument of the formula must be either a functional data object or a matrix.")
+  }
+  
+  coeff
+}
+
+formula2design_matrix <- function(formula, coeff) {
+  # extracting the part after ~ on formula. this will not work if the formula is
+  # longer than 500 char
+  formula.const <- deparse(formula[[3]], width.cutoff = 500L) 
+  formula.discrete <- stats::as.formula(
+    paste('coeff ~', formula.const), 
+    env = environment()
+  )
+  stats::model.matrix(formula.discrete)
 }

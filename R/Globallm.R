@@ -103,24 +103,9 @@ Globallm <- function(formula,
                      recycle = TRUE,
                      method = 'residuals',
                      stat = 'Integral') {
-  env <- environment(formula)
-  variables <- all.vars(formula)
-  y.name <- variables[1]
-  covariates.names <- colnames(attr(stats::terms(formula), "factors"))
   cl <- match.call()
-  data <- get(y.name, envir = env)
-  if (fda::is.fd(data)) { # data is a functional data object
-    rangeval <- data$basis$rangeval
-    if (is.null(dx)) {
-      dx <- (rangeval[2] - rangeval[1]) * 0.01
-    }
-    abscissa <- seq(rangeval[1], rangeval[2], by = dx)
-    coeff <- t(fda::eval.fd(fdobj = data, evalarg = abscissa))
-  } else if(is.matrix(data)) {
-    coeff <- data
-  } else {
-    stop("First argument of the formula must be either a functional data object or a matrix.")
-  }
+  coeff <- formula2coeff(formula, dx = dx)
+  design_matrix <- formula2design_matrix(formula, coeff)
   
   possible_statistics <- c("Integral", "Max")
   if (!(stat %in% possible_statistics)) {
@@ -129,16 +114,6 @@ Globallm <- function(formula,
       paste0(possible_statistics, collapse = ', ')
     ))
   }
-  
-  dummynames.all <- colnames(attr(stats::terms(formula), "factors"))
-  formula.const <- deparse(formula[[3]], width.cutoff = 500L) #extracting the part after ~ on formula. this will not work if the formula is longer than 500 char
-  
-  formula.discrete <- stats::as.formula(
-    paste('coeff ~', formula.const), 
-    env = environment()
-  )
-  design_matrix <- stats::model.matrix(formula.discrete)
-  mf <- stats::model.frame(formula.discrete)
   
   nvar <- dim(design_matrix)[2] - 1
   var_names <- colnames(design_matrix)
