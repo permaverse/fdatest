@@ -1,3 +1,24 @@
+#' Plot the results of the ITPlm function
+#' 
+#' @param x Results of the ITPlm function
+#' @param xrange Range of the plot abscissa. The default is \code{c(0,1)}.
+#' @param alpha1 Threshold for the interval-wise error rate used for the
+#'   hypothesis test. The default is \code{alpha1}=0.05.
+#' @param alpha2 Threshold for the interval-wise error rate used for the
+#'   hypothesis test. The default is \code{alpha2}=0.01.
+#' @param plot.adjpval Logical. If \code{TRUE}, the plot of the corrected
+#'   p-values is displayed. The default is \code{plot.adjpval=FALSE}.
+#' @param col Color of the lines in the plot. The default is
+#'   \code{col=rainbow(dim(x$adjusted.pval.t)[1])}.
+#' @param ylim Range of the plot ordinate. The default is `range(x$data.eval)`.
+#' @param ylab Label of the plot ordinate. The default is `'Functional Data'`.
+#' @param main Title of the plot. The default is \code{main=NULL}.
+#' @param lwd Width of the lines in the plot. The default is \code{lwd=1}.
+#' @param pch Symbol of the points in the plot. The default is \code{pch=16}.
+#' @param ... Additional arguments to be passed to the plot function.
+#'  
+#' @return NULL
+#'  
 #' @export
 plot.ITPlm <- function(x, 
                        xrange = c(0, 1), 

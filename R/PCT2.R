@@ -1,12 +1,76 @@
-# Partition closed testing function
-# arguments:
-# data1 and data2: functional data sets of the two groups. They can be either data of class fd or matrices with pointwise evaluations. 
-# mu: mean difference under the null hypothesis
-# B: number of permutations
-# paired: whether the test is paired or not
-# dx: optional. If data1 and data2 are fd objects, dx is used as grid step to evaluate them
-# partition: vector defining the partition of the domain
-PCT2 <- function(data1,data2,mu=0,B=1000,paired=FALSE,dx=NULL,partition){
+#' @title Two population Partition Closed Testing procedure
+#'
+#' @description The function implements the Partition Closed Testing procedure for testing mean differences between two
+#' functional populations. Functional data are tested locally and unadjusted and adjusted p-value
+#' functions are provided. The unadjusted p-value function controls the point-wise error rate. The adjusted p-value function controls the
+#' family-wise error rate asymptotically.
+#'
+#' @param data1 First population's data. Either pointwise evaluations of the functional data set on a uniform grid, or a \code{fd} object from the package \code{fda}.
+#' If pointwise evaluations are provided, \code{data2} is a matrix of dimensions \code{c(n1,J)}, with \code{J} evaluations on columns and \code{n1} units on rows.
+#'
+#' @param data2 Second population's data. Either pointwise evaluations of the functional data set on a uniform grid, or a \code{fd} object from the package \code{fda}.
+#' If pointwise evaluations are provided, \code{data2} is a matrix of dimensions \code{c(n1,J)}, with \code{J} evaluations on columns and \code{n2} units on rows.
+#'
+#' @param mu Functional mean difference under the null hypothesis. Three possibilities are available for \code{mu}:
+#' a constant (in this case, a constant function is used);
+#' a \code{J}-dimensional vector containing the evaluations on the same grid which \code{data} are evaluated;
+#' a \code{fd} object from the package \code{fda} containing one function.
+#' The default is \code{mu=0}.
+#'
+#' @param B The number of iterations of the MC algorithm to evaluate the p-values of the permutation tests. The defualt is \code{B=1000}.
+#'
+#' @param paired Flag indicating whether a paired test has to be performed. Default is \code{FALSE}.
+#'
+#' @param dx Used only if a \code{fd} object is provided. In this case, \code{dx} is the size of the discretization step of the grid  used to evaluate functional data.
+#' If set to \code{NULL}, a grid of size 100 is used. Default is \code{NULL}.
+#'
+#' @param partition Vector of length \code{J} containing the labels assigning each point of the domain to an element of the partition.  
+#' 
+#' @param alternative A character string specifying the alternative hypothesis, must be one of "\code{two.sided}" (default), "\code{greater}" or "\code{less}".
+#'
+#' @return \code{PCT2} returns an object of \code{\link{class}} "\code{fdatest2}" containing the following components:
+#' \item{test}{String vector indicating the type of test performed. In this case equal to \code{"2pop"}.}
+#' \item{mu}{Evaluation on a grid of the functional mean difference under the null hypothesis (as entered by the user).}
+#' \item{unadjusted_pval}{Evaluation on a grid of the unadjusted p-value function.}
+#' \item{adjusted_pval}{Evaluation on a grid of the adjusted p-value function.}
+#' \item{data.eval}{Evaluation on a grid of the functional data.}
+#' \item{ord_labels}{Vector of labels indicating the group membership of data.eval}
+#'
+#' @seealso See also \code{\link{plot.fdatest2}} for plotting the results.
+#'
+#' @examples
+#' # Importing the NASA temperatures data set
+#' data(NASAtemp)
+#'
+#' # Performing the PCT for two populations
+#' # Choosing as partition the 4 seasons of the year
+#' partition = c(rep(1,31+28+21),rep(2,10+30+31+21),rep(3,9+31+31+23),rep(4,7+31+30+21),rep(1,10))
+#' partition = factor(partition)
+#' 
+#' PCT.result <- PCT2(NASAtemp$paris,NASAtemp$milan,partition=partition)
+#'
+#' # Plotting the results of the PCT
+#' plot(PCT.result,xrange=c(0,12),main='PCT results for testing mean differences')
+#'
+#'
+#' # Selecting the significant components at 5% level
+#' which(PCT.result$adjusted_pval < 0.05)
+#'
+#' @references
+#' Abramowicz, K., Pini, A., Schelin, L., Stamm, A., & Vantini, S. (2022).
+#' “Domain selection and familywise error rate for functional data: A unified framework. 
+#' \emph{Biometrics} 79(2), 1119-1132.
+#'
+#' Pini, A., & Vantini, S. (2017). Interval-wise testing for functional data. \emph{Journal of Nonparametric Statistics}, 29(2), 407-424
+#'
+#' @export
+
+PCT2 <- function(data1,data2,mu=0,B=1000,paired=FALSE,dx=NULL,partition,alternative="two.sided"){
+  possible_alternatives <- c("two.sided", "less", "greater")
+  if(!(alternative %in% possible_alternatives)){
+    stop(paste0('Possible alternatives are ',paste0(possible_alternatives,collapse=', ')))
+  }
+  
   if(fda::is.fd(data1)){ # data1 is a functional data object
     rangeval1 <- data1$basis$rangeval
     rangeval2 <- data2$basis$rangeval
@@ -61,7 +125,16 @@ PCT2 <- function(data1,data2,mu=0,B=1000,paired=FALSE,dx=NULL,partition){
   
   #print('Point-wise tests')
   #univariate permutations
-  T0 <- (colMeans(coeff[1:n1,,drop=F]) - colMeans(coeff[(n1+1):n,,drop=F]))^2 #sample mean difference
+  
+  meandiff <- colMeans(coeff[1:n1,,drop=FALSE],na.rm=TRUE) - colMeans(coeff[(n1+1):n,,drop=FALSE],na.rm=TRUE)
+  sign.diff <- sign(meandiff)
+  sign.diff[which(sign.diff==-1)] <- 0
+  T0 <- switch(alternative,
+               two.sided =  (meandiff)^2,
+               greater   =  (meandiff*sign.diff)^2,
+               less      =  (meandiff*(sign.diff-1))^2)
+  
+  
   T_coeff <- matrix(ncol=p,nrow=B)
   for (perm in 1:B){
     if(paired==TRUE){
@@ -76,7 +149,16 @@ PCT2 <- function(data1,data2,mu=0,B=1000,paired=FALSE,dx=NULL,partition){
       permutazioni <- sample(n)
       coeff_perm <- coeff[permutazioni,]
     }
-    T_coeff[perm,] <- (colMeans(coeff_perm[1:n1,,drop=F]) - colMeans(coeff_perm[(n1+1):n,,drop=F]))^2
+    
+    meandiff <- colMeans(coeff_perm[1:n1,,drop=FALSE],na.rm=TRUE) - colMeans(coeff_perm[(n1+1):n,,drop=FALSE],na.rm=TRUE)
+    sign.diff <- sign(meandiff)
+    sign.diff[which(sign.diff==-1)] <- 0
+    T_coeff[perm,] <- switch(alternative,
+                             two.sided =  (meandiff)^2,
+                             greater   =  (meandiff*sign.diff)^2,
+                             less      =  (meandiff*(sign.diff-1))^2)
+    
+    
   }
   pval <- numeric(p)
   for(i in 1:p){
@@ -121,11 +203,13 @@ PCT2 <- function(data1,data2,mu=0,B=1000,paired=FALSE,dx=NULL,partition){
   
   
   result = list(
-    test = '2pop', mu = mu.eval,
+    test = '2pop', 
+    mu = mu.eval,
     adjusted_pval = adjusted.pval,
     unadjusted_pval = pval,
     data.eval=data.eval,
     ord_labels = etichetta_ord
   )
+  class(result) = 'fdatest2'
   return(result)
 }

@@ -1,8 +1,31 @@
+#' Plot the p-values of the ITP1 test
+#' 
+#' @param x An object of class `ITP1`.
+#' @param xrange Range of the x-axis.
+#' @param alpha1 Significance level for the first type of error.
+#' @param alpha2 Significance level for the second type of error.
+#' @param ylab Label for the y-axis.
+#' @param main Title of the plot.
+#' @param lwd Line width.
+#' @param col Color of the lines.
+#' @param pch Symbol for the points.
+#' @param ylim Range of the y-axis.
+#' @param ... Additional arguments to be passed to the `matplot` function.
+#' 
+#' @return A plot of the p-values of the ITP1 test.
+#' 
 #' @export
-plot.ITP1 <-
-function(x,xrange=c(0,1),alpha1=0.05,alpha2=0.01,
-                      ylab='Functional Data',main=NULL,lwd=1,col=1,pch=16,ylim=range(object$data.eval),
-                      ...){
+plot.ITP1 <- function(x, 
+                      xrange = c(0, 1),
+                      alpha1 = 0.05, 
+                      alpha2 = 0.01,
+                      ylab = "Functional Data", 
+                      main = NULL, 
+                      lwd = 1, 
+                      col = 1, 
+                      pch = 16, 
+                      ylim = range(object$data.eval),
+                      ...) {
   if(alpha1 < alpha2){
     temp <- alpha1
     alpha1 <- alpha2

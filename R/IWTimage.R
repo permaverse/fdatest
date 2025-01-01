@@ -16,20 +16,10 @@
 #' 
 #' @return No value returned.
 #' 
-#' @seealso See \code{\link{plot.IWT1}}, \code{\link{plot.IWT2}},
+#' @seealso See \code{\link{plot.IWT1}}, \code{\link{plot.fdatest2}},
 #'   \code{\link{plot.IWTlm}}, and \code{\link{plot.IWTaov}} for the plot method
 #'   applied to the IWT results of one- and two-population tests, linear models,
 #'   and ANOVA, respectively.
-#' 
-#' @examples
-#' # Performing the IWT for two populations 
-#' IWT.result <- IWT2(NASAtemp$milan,NASAtemp$paris)
-#' 
-#' # Plotting the results of the IWT
-#' IWTimage(IWT.result,abscissa_range=c(0,12))
-#' 
-#' # Selecting the significant components for the radius at 5\% level
-#' which(IWT.result$corrected.pval < 0.05)
 #' 
 #' @references
 #' Pini, A., & Vantini, S. (2018). Interval-wise testing for functional data.
@@ -47,13 +37,24 @@
 #' 1036-1061.
 #'
 #' @export
+#' @examples
+#' # Performing the IWT for two populations 
+#' IWT.result <- IWT2(NASAtemp$milan, NASAtemp$paris, B = 10L)
+#' 
+#' # Plotting the results of the IWT
+#' IWTimage(IWT.result, abscissa_range = c(0, 12))
+#' 
+#' # Selecting the significant components for the radius at 5\% level
+#' which(IWT.result$corrected.pval < 0.05)
 IWTimage <- function(IWT_result, 
                      alpha = 0.05,  
-                     abscissa_range = c(0, 1), nlevel = 20,plot_unadjusted=FALSE) {
+                     abscissa_range = c(0, 1), 
+                     nlevel = 20, 
+                     plot_unadjusted = FALSE) {
   min_ascissa <- abscissa_range[1] - (abscissa_range[2] - abscissa_range[1]) / 2
   max_ascissa <- abscissa_range[2] + (abscissa_range[2] - abscissa_range[1]) / 2
   
-  if(class(IWT_result)=='IWT1' | class(IWT_result)=='IWT2'){
+  if(inherits(IWT_result, "IWT1") | inherits(IWT_result, "IWT2")){
     p <- length(IWT_result$adjusted_pval)
     
     # heatmap matrix
@@ -145,7 +146,7 @@ IWTimage <- function(IWT_result,
       }
       graphics::lines(abscissa_pval, mu_eval, col = 'blue')
     }
-  }else if(class(IWT_result)=='IWTaov'){
+  }else if(inherits(IWT_result, "IWTaov")){
     p <- length(IWT_result$adjusted_pval_F)
     
     # heatmap matrix

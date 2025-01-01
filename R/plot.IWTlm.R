@@ -1,42 +1,95 @@
+#' Plot method for IWT results on functional on scalar linear model
+#' 
+#' \code{plot} method for class "\code{IWTlm}". Plotting function creating a
+#' graphical output of the IWT for the test on a functional on scalar linear
+#' model: functional data, and IWT-adjusted p-values of the F-tests on the whole
+#' model and of t-tests on all covariates' effects.
+#' 
+#' @param x  The object to be plotted. An object of class "\code{IWTlm}",
+#'   usually, a result of a call to \code{\link{IWTlm}}.
+#' @param xrange Range of the \code{x} axis.
+#' @param alpha1 First level of significance used to select and display
+#'   significant effects. Default is \code{alpha1 = 0.05}.
+#' @param alpha2 Second level of significance used to select and display
+#'   significant effects. Default is \code{alpha1 = 0.01}. \code{alpha1} and
+#'   \code{alpha2} are s.t. \code{alpha2 < alpha1}. Otherwise the two values are
+#'   switched.
+#' @param plot_adjpval A logical indicating wether the plots of adjusted
+#'   p-values have to be done. Default is \code{plot_adjpval = FALSE}.
+#' @param ylim Range of the \code{y} axis. Default is \code{NULL}, giving a plot
+#'   with authomatic range for functional data.
+#' @param col Colors for the plot of functional data. Default is \code{col = 1}.
+#' @param ylab Label of \code{y} axis of the plot of functional data. Default is
+#'   "\code{Functional Data}".
+#' @param main An overall title for the plots (it will be pasted to "Functional
+#'   Data and F-test" for the first plot and to covariates names for the other
+#'   plots).
+#' @param lwd Line width for the plot of the adjusted p-value function. Default
+#'   is \code{lwd=1}.
+#' @param type line type for the plot of the adjusted p-value function. Default
+#'   is type='l'.
+#' @param ... Additional plotting arguments that can be used with function
+#'   \code{plot}, such as \code{\link{graphical parameters}} (see
+#'   \code{\link{par}}).
+#' 
+#' @return No value returned. The function produces a graphical output of the
+#'   IWT results:  the plot of the functional data and the one of the adjusted
+#'   p-values. The portions of the domain selected as significant by the test at
+#'   level \code{alpha1} and \code{alpha2} are highlighted in the plot of the
+#'   adjusted p-value function and in the one of functional data by gray areas
+#'   (light and dark gray, respectively). The first plot reports the gray areas
+#'   corresponding to a significant F-test on the whole model. The remaining
+#'   plots report the gray areas corresponding to significant t-tests on each
+#'   covariate's effect.
+#' 
+#' @seealso \code{\link{IWTimage}} for the plot of p-values heatmaps. See also
+#'   \code{\link{IWT1}}, \code{\link{IWT2}} to perform the ITP to test on the
+#'   mean of one population and test of differences between two populations. See
+#'   \code{\link{ITPlmbspline}} for functional on scalar linear model based on
+#'   B-spline basis representation.
+#' 
+#' @references
+#' Pini, A., & Vantini, S. (2017). Interval-wise testing for functional data.
+#' \emph{Journal of Nonparametric Statistics}, 29(2), 407-424.
+#'
+#' Pini, A., Vantini, S., Colosimo, B. M., & Grasso, M. (2018). Domain‐selective
+#' functional analysis of variance for supervised statistical profile monitoring
+#' of signal data. \emph{Journal of the Royal Statistical Society: Series C
+#' (Applied Statistics)} 67(1), 55-81.
+#'
+#' Abramowicz, K., Hager, C. K., Pini, A., Schelin, L., Sjostedt de Luna, S., &
+#' Vantini, S. (2018). Nonparametric inference for functional‐on‐scalar linear
+#' models applied to knee kinematic hop data after injury of the anterior
+#' cruciate ligament. \emph{Scandinavian Journal of Statistics} 45(4),
+#' 1036-1061.
+#'
 #' @export
-###################################################################################################################################################
-# Nonparametric inference for functional-on-scalar linear models applied to knee kinematic hop data after injury of the anterior cruciate ligament
-# Plot IWT results in Linear Models framework
-# By: A. Pini
-# last modified: 09/06/2016
-###################################################################################################################################################
-
-# Inputs: 
-# x:            Object of class 'IWTlm' obtained from function IWTlm
-# xrange:       Range of the plotted x axis. Default is c(0,1)
-# alpha1:       First level of significance used to select and display significant differences. 
-#               Default is alpha1 = 0.05.
-# alpha2:       Second level of significance used to select and display significant differences. 
-#               Default is alpha2 = 0.01.
-# plot.adjpval: A logical indicating wether the plots of adjusted p-values have to be done. 
-#               Default is plot.adjpval = FALSE.
-# col:          Vector of colors for the plot of functional data (first element), and functional coefficients (following elements).
-#               Default is c(1,grDevices::rainbow(dim(x$adjusted_pval_part)[1]))
-# ylim:         Range of the y axis. If set to NULL, the range of the data evaluations is used.
-#               Default is ylim = NULL.
-# ylab:         Label of y axis of the plot of functional data. Default is "Functional Data".
-# main:         An overall title for the plots (it will be pasted to "Functional Data and F-test" for the first plot 
-#               and "t-test" for the other plots).
-# lwd:          Line width for the plot of functional data. Default is lwd=1.
-# type:         Type of lines to be used for the plot of functional data. Default is type='l'.
-# ...:          Additional plotting arguments that can be used with function plot, such as graphical parameters (see par).
-
-
-# Value:
-# No value returned. The function produces a graphical output of the IWT results: 
-# the plot of the functional data, functional regression coefficients, and IWT-adjusted p-values 
-# for the F-test and t-tests. The basis components selected as significant by the tests at level 
-# alpha1 and alpha2 are highlighted in the plot of the corrected p-values and in the one of 
-# functional data by gray areas (light and dark gray, respectively). The plot of functional data 
-# reports the gray areas corresponding to a significant F-test. The plots of functional regression 
-# coefficients report the gray areas corresponding to significant t-tests for the corresponding 
-# covariate.
-
+#' @examples 
+#' # Importing the NASA temperatures data set
+#' data(NASAtemp)
+#' 
+#' temperature <- rbind(NASAtemp$milan, NASAtemp$paris)
+#' groups <- c(rep(0, 22), rep(1, 22))
+#' 
+#' # Performing the IWT
+#' IWT.result <- IWTlm(temperature ~ groups, B = 3L)
+#' 
+#' # Summary of the IWT results
+#' summary(IWT.result)
+#' 
+#' # Plot of the IWT results
+#' layout(1)
+#' plot(IWT.result)
+#' 
+#' # All graphics on the same device
+#' layout(matrix(1:4, nrow = 2, byrow = FALSE))
+#' plot(
+#'   IWT.result, 
+#'   main = 'NASA data', 
+#'   plot_adjpval = TRUE, 
+#'   xlab = 'Day', 
+#'   xrange = c(1, 365)
+#' )
 plot.IWTlm <- function(x, 
                        xrange = c(0,1), 
                        alpha1 = 0.05, 
@@ -49,7 +102,6 @@ plot.IWTlm <- function(x,
                        lwd = 1, 
                        type='l',
                        ...) {
-  if (class(x) != "IWTlm") stop("x should be an object of the class ITPlm")
   if (alpha1 < alpha2) {
     temp <- alpha1
     alpha1 <- alpha2
@@ -193,3 +245,7 @@ plot.IWTlm <- function(x,
   }
   grDevices::devAskNewPage(ask = FALSE)   
 }
+
+#' @rdname plot.IWTlm
+#' @export
+plot.TWTlm <- plot.IWTlm

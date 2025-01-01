@@ -5,7 +5,7 @@
 #' functional data, and ITP-adjusted p-values of the F-tests on the whole model and on each factor are plotted.
 #' 
 #' @param x  The object to be plotted. An object of class "\code{ITPaov}", usually, a result of a call 
-#' to \code{\link{ITPaov}}.
+#' to \code{\link{ITPaovbspline}}.
 #' 
 #' @param xrange Range of the \code{x} axis.
 #' 
@@ -45,7 +45,7 @@
 #' groups <- c(rep(0,22),rep(1,22))
 #' 
 #' # Performing the ITP
-#' ITP.result <- ITPaovbspline(temperature ~ groups,B=1000,nknots=20,order=3)
+#' ITP.result <- ITPaovbspline(temperature ~ groups,B=100,nknots=20,order=3)
 #' 
 #' # Summary of the ITP results
 #' summary(ITP.result)

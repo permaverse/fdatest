@@ -14,11 +14,22 @@
 #'   functional data set on a uniform grid, or an \code{\link[fda]{fd}} object.
 #'   If pointwise evaluations are provided, it should be a matrix of dimensions
 #'   `c(n2, J)`, with `J` evaluations on columns and `n2` units on rows.
+#' @param mu Functional mean difference under the null hypothesis. Three
+#'   possibilities are available for \code{mu}: 
+#'   
+#'   - a constant (in this case, a constant function is used);
+#'   - a \code{J}-dimensional vector containing the evaluations on the same grid
+#'   which \code{data} are evaluated;
+#'   - a \code{fd} object from the package \code{fda} containing one function.
+#'   
+#'   Defaults to `mu = 0`.
 #' @inheritParams IWT1
 #' @param paired Flag indicating whether a paired test has to be performed.
 #'   Defaults to `FALSE`.
 #' @param alternative A character string specifying the alternative hypothesis.
 #'   Must be one of `"two.sided"` (default), `"greater"` or `"less"`.
+#' @param verbose Logical: if \code{FALSE}, reduces the amount of output.
+#'   Default is \code{TRUE}.
 #'
 #' @return An object of class \code{\link{IWT2}}, which is a list containing at
 #'   least the following components:
@@ -36,12 +47,21 @@
 #' - `ord_labels`: Vector of labels indicating the group membership of
 #' `data.eval`.
 #'
-#' @seealso See also \code{\link{plot.IWT2}} and \code{\link{IWTimage}} for
+#' @seealso See also \code{\link{plot.fdatest2}} and \code{\link{IWTimage}} for
 #'   plotting the results.
 #'
+#' @references 
+#' A. Pini and S. Vantini (2017). The Interval Testing Procedure: Inference
+#' for Functional Data Controlling the Family Wise Error Rate on Intervals.
+#' *Biometrics*, 73(3): 835–845.
+#' 
+#' A. Pini and S. Vantini (2017). Interval-wise testing for functional data.
+#' *Journal of Nonparametric Statistics*, 29(2), 407-424.
+#'
+#' @export
 #' @examples
 #' # Performing the IWT for two populations
-#' IWT.result <- IWT2(NASAtemp$paris, NASAtemp$milan)
+#' IWT.result <- IWT2(NASAtemp$paris, NASAtemp$milan, B = 10L)
 #'
 #' # Plotting the results of the IWT
 #' plot(
@@ -55,22 +75,14 @@
 #'
 #' # Selecting the significant components at 5% level
 #' which(IWT.result$adjusted_pval < 0.05)
-#'
-#' @references 
-#' - A. Pini and S. Vantini (2017). The Interval Testing Procedure: Inference
-#' for Functional Data Controlling the Family Wise Error Rate on Intervals.
-#' *Biometrics*, 73(3): 835–845.
-#' - A. Pini and S. Vantini (2017). Interval-wise testing for functional data.
-#' *Journal of Nonparametric Statistics*, 29(2), 407-424.
-#'
-#' @export
 IWT2 <- function(data1, data2, 
                  mu = 0, 
-                 B = 1000, 
+                 B = 1000L, 
                  dx = NULL, 
                  recycle = TRUE, 
                  paired = FALSE, 
-                 alternative = "two.sided") {
+                 alternative = "two.sided", 
+                 verbose = TRUE) {
   pval.correct <- function(pval.matrix){
     matrice_pval_2_2x <- cbind(pval.matrix,pval.matrix)
     p <- dim(pval.matrix)[2]
@@ -142,16 +154,17 @@ IWT2 <- function(data1, data2,
   p <- dim(coeff1)[2]
   n <- n1+n2
   etichetta_ord <- c(rep(1,n1),rep(2,n2))
-  coeff1 <- coeff1 - matrix(data=mu,nrow=n1,ncol=p)
+  coeff1 <- coeff1 - matrix(data=mu.eval,nrow=n1,ncol=p)
 
   #print('First step: basis expansion')
   #splines coefficients:
   eval <- coeff <- rbind(coeff1,coeff2)
 
   data.eval <- eval
-  data.eval[1:n1,] <- data.eval[1:n1,] + matrix(data=mu,nrow=n1,ncol=p)
+  data.eval[1:n1,] <- data.eval[1:n1,] + matrix(data=mu.eval,nrow=n1,ncol=p)
 
-  print('Point-wise tests')
+  if(verbose)
+    print('Point-wise tests')
   #univariate permutations
   meandiff <- colMeans(coeff[1:n1,,drop=FALSE],na.rm=TRUE) - colMeans(coeff[(n1+1):n,,drop=FALSE],na.rm=TRUE)
   sign.diff <- sign(meandiff)
@@ -189,7 +202,8 @@ IWT2 <- function(data1, data2,
   }
 
   #combination
-  print('Interval-wise tests')
+  if(verbose)
+    print('Interval-wise tests')
 
   #asymmetric combination matrix:
   matrice_pval_asymm <- matrix(nrow=p,ncol=p)
@@ -211,7 +225,8 @@ IWT2 <- function(data1, data2,
         pval_temp <- sum(T_temp>=T0_temp)/B
         matrice_pval_asymm[i,j] <- pval_temp
       }
-      print(paste('creating the p-value matrix: end of row ',as.character(p-i+1),' out of ',as.character(p),sep=''))
+      if(verbose)
+        print(paste('creating the p-value matrix: end of row ',as.character(p-i+1),' out of ',as.character(p),sep=''))
     }
   }else{ # without recycling
     for(i in (p-1):maxrow){ # rows
@@ -223,14 +238,16 @@ IWT2 <- function(data1, data2,
         pval_temp <- sum(T_temp>=T0_temp)/B
         matrice_pval_asymm[i,j] <- pval_temp
       }
-      print(paste('creating the p-value matrix: end of row ',as.character(p-i+1),' out of ',as.character(p),sep=''))
+      if(verbose)
+        print(paste('creating the p-value matrix: end of row ',as.character(p-i+1),' out of ',as.character(p),sep=''))
     }
   }
 
   corrected.pval.matrix <- pval.correct(matrice_pval_asymm)
   corrected.pval <- corrected.pval.matrix[1,]
 
-  print('Interval-Wise Testing completed')
+  if(verbose)
+    print('Interval-Wise Testing completed')
   IWT.result <- list(
     test = '2pop', mu = mu.eval,
     adjusted_pval = corrected.pval,
@@ -238,7 +255,7 @@ IWT2 <- function(data1, data2,
     pval_matrix = matrice_pval_asymm,
     data.eval=data.eval,
     ord_labels = etichetta_ord)
-  class(IWT.result) = 'IWT2'
+  class(IWT.result) = 'fdatest2'
   return(IWT.result)
 }
 

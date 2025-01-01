@@ -1,10 +1,9 @@
-#' Interval-wise testing procedure for testing functional-on-scalar linear
-#' models
+#' Global testing procedure for testing functional-on-scalar linear models
 #'
 #' The function is used to fit and test functional linear models. It can be used
-#' to carry out regression, and analysis of variance. It implements the
-#' interval-wise testing procedure (IWT) for testing the significance of the
-#' effects of scalar covariates on a functional population.
+#' to carry out regression, and analysis of variance. It implements the global
+#' testing procedure for testing the significance of the effects of scalar
+#' covariates on a functional population.
 #'
 #' @param formula An object of class "\code{\link{formula}}" (or one that can be
 #'   coerced to that class): a symbolic description of the model to be fitted.
@@ -13,40 +12,33 @@
 #'   class \code{fd} (see \code{fda} package) containing the functional data set
 #'   A, B are n-dimensional vectors containing the values of two covariates.
 #'   Covariates may be either scalar or factors.
-#' @param B The number of iterations of the MC algorithm to evaluate the
-#'   p-values of the permutation tests. The defualt is \code{B=1000}.
+#' @inheritParams IWT1
 #' @param method Permutation method used to calculate the p-value of permutation
 #'   tests. Choose "\code{residuals}" for the permutations of residuals under
 #'   the reduced model, according to the Freedman and Lane scheme, and
 #'   "\code{responses}" for the permutation of the responses, according to the
-#'   Manly scheme.
-#' @param dx step size for the point-wise evaluations of functional data. dx is
-#'   only used ia an object of class 'fd' is provided as response in the
-#'   formula.
-#' @param recycle flag specifying whether the recycled version of IWT has to be
-#'   used.
+#'   Manly scheme. 
+#' @param stat Type of test statistic used for the global test. Possible values
+#'   are: \code{'Integral'} (default) for the integral over the domain of the F-
+#'   and t-test statistics; \code{'Max'} for max over the domain of the F- and
+#'   t-test statistics.
 #'
-#' @return \code{IWTlm} returns an object of \code{\link{class}} "\code{IWTlm}".
-#'   The function \code{summary} is used to obtain and print a summary of the
-#'   results. An object of class "\code{ITPlm}" is a list containing at least
+#' @return An object of class `IWTlm`. The function \code{summary} is used to
+#'   obtain and print a summary of the results. This object is a list containing
 #'   the following components:
 #'   
 #'   - `call`: Call of the function.
 #'   - `design_matrix`: Design matrix of the linear model.
 #'   - `unadjusted_pval_F`: Unadjusted p-value function of the F test.
-#'   - `pval_matrix_F`: Matrix of dimensions `c(p,p)` of the p-values of the
-#'   interval-wise F-tests. The element \eqn{(i,j)} of matrix `pval_matrix_F`
-#'   contains the p-value of the test on interval \eqn{(j,j+1,...,j+(p-i))}.
 #'   - `adjusted_pval_F`: Adjusted p-value function of the F test.
 #'   - `unadjusted_pval_part`: Unadjusted p-value functions of the functional
 #'   t-tests on each covariate, separately (rows) on each domain point
 #'   (columns).
-#'   - `pval_matrix_part`: Array of dimensions `c(L+1,p,p)` of the p-values of
-#'   the interval-wise t-tests on covariates. The element \eqn{(l,i,j)} of array
-#'   `pval_matrix_part` contains the p-value of the test of covariate `l` on
-#'   interval \eqn{(j,j+1,...,j+(p-i))}.
 #'   - `adjusted_pval_part`: Adjusted p-values of the functional t-tests on each
 #'   covariate (rows) on each domain point (columns).
+#'   - `Global_pval_F`: Global p-value of the overall test F.
+#'   - `Global_pval_part`: Global p-value of t-test involving each covariate
+#'   separately.
 #'   - `data.eval`: Evaluation of functional data.
 #'   - `coeff.regr.eval`: Evaluation of the regression coefficients.
 #'   - `fitted.eval`: Evaluation of the fitted values.
@@ -62,20 +54,9 @@
 #'   two-population tests.
 #'
 #' @references
-#' A. Pini and S. Vantini (2017). The Interval Testing Procedure: Inference for
-#' Functional Data Controlling the Family Wise Error Rate on Intervals.
-#' Biometrics 73(3): 835–845.
-#'
-#' Pini, A., Vantini, S., Colosimo, B. M., & Grasso, M. (2018). Domain‐selective
-#' functional analysis of variance for supervised statistical profile monitoring
-#' of signal data. \emph{Journal of the Royal Statistical Society: Series C
-#' (Applied Statistics)} 67(1), 55-81.
-#'
-#' Abramowicz, K., Hager, C. K., Pini, A., Schelin, L., Sjostedt de Luna, S., &
-#' Vantini, S. (2018). Nonparametric inference for functional‐on‐scalar linear
-#' models applied to knee kinematic hop data after injury of the anterior
-#' cruciate ligament. \emph{Scandinavian Journal of Statistics} 45(4),
-#' 1036-1061.
+#' Abramowicz, K., Pini, A., Schelin, L., Stamm, A., & Vantini, S. (2022).
+#' “Domain selection and familywise error rate for functional data: A unified
+#' framework. \emph{Biometrics} 79(2), 1119-1132.
 #'
 #' D. Freedman and D. Lane (1983). A Nonstochastic Interpretation of Reported
 #' Significance Levels. \emph{Journal of Business & Economic Statistics} 1(4),
@@ -86,19 +67,21 @@
 #'
 #' @export
 #' @examples
+#' # Importing the NASA temperatures data set
+#' data(NASAtemp)
 #' # Defining the covariates
 #' temperature <- rbind(NASAtemp$milan, NASAtemp$paris)
 #' groups <- c(rep(0, 22), rep(1, 22))
 #'
 #' # Performing the IWT
-#' IWT.result <- IWTlm(temperature ~ groups, B = 3L)
+#' Global.result <- Globallm(temperature ~ groups, B = 1000)
 #' # Summary of the IWT results
-#' summary(IWT.result)
+#' summary(Global.result)
 #'
 #' # Plot of the IWT results
-#' graphics::layout(1)
+#' layout(1)
 #' plot(
-#'   IWT.result, 
+#'   Global.result, 
 #'   main = 'NASA data', 
 #'   plot_adjpval = TRUE, 
 #'   xlab = 'Day', 
@@ -106,42 +89,20 @@
 #' )
 #'
 #' # All graphics on the same device
-#' graphics::layout(matrix(1:6, nrow = 3, byrow = FALSE))
+#' layout(matrix(1:6, nrow = 3, byrow = FALSE))
 #' plot(
-#'   IWT.result, 
+#'   Global.result, 
 #'   main = 'NASA data', 
 #'   plot_adjpval = TRUE, 
 #'   xlab = 'Day', 
 #'   xrange = c(1, 365)
 #' )
-IWTlm <- function(formula,
-                  B = 1000,
-                  method = 'residuals',
-                  dx=NULL,
-                  recycle=TRUE){
-  pval.correct <- function(pval.matrix){
-    matrice_pval_2_2x <- cbind(pval.matrix,pval.matrix)
-    p <- dim(pval.matrix)[2]
-    matrice_pval_2_2x <- matrice_pval_2_2x[,(2*p):1]
-    corrected.pval <- numeric(p)
-    corrected.pval.matrix <- matrix(nrow=p,ncol=p)
-    corrected.pval.matrix[p,] <- pval.matrix[p,p:1]
-    for(var in 1:p){
-      pval_var <- matrice_pval_2_2x[p,var]
-      inizio <- var
-      fine <- var 
-      for(riga in (p-1):1){
-        fine <- fine + 1
-        pval_cono <- matrice_pval_2_2x[riga,inizio:fine]
-        pval_var <- max(pval_var,pval_cono,na.rm=TRUE)
-        corrected.pval.matrix[riga,var] <- pval_var
-      }
-      corrected.pval[var] <- pval_var
-    }
-    corrected.pval <- corrected.pval[p:1]
-    corrected.pval.matrix <- corrected.pval.matrix[,p:1]
-    return(corrected.pval.matrix)
-  }
+Globallm <- function(formula,
+                     B = 1000L,
+                     dx = NULL,
+                     recycle = TRUE,
+                     method = 'residuals',
+                     stat = 'Integral') {
   extract_residuals <- function(regr){
     return(regr$residuals)
   }
@@ -153,7 +114,6 @@ IWTlm <- function(formula,
   variables = all.vars(formula)
   y.name = variables[1]
   covariates.names <- colnames(attr(stats::terms(formula),"factors"))
-  #data.all = stats::model.frame(formula)
   cl <- match.call()
   data <- get(y.name,envir = env)
   if(fda::is.fd(data)){ # data is a functional data object
@@ -168,6 +128,12 @@ IWTlm <- function(formula,
   }else{
     stop("First argument of the formula must be either a functional data object or a matrix.")
   }
+  
+  possible_statistics <- c("Integral",  "Max")
+  if(!(stat %in% possible_statistics)){
+    stop(paste0('Possible statistics are ',paste0(possible_statistics,collapse=', ')))
+  }
+  
   
   dummynames.all <- colnames(attr(stats::terms(formula),"factors"))
   formula.const <- deparse(formula[[3]],width.cutoff = 500L) #extracting the part after ~ on formula. this will not work if the formula is longer than 500 char
@@ -186,7 +152,7 @@ IWTlm <- function(formula,
   Sigma <- chol2inv(regr0$qr$qr)
   resvar <- colSums(regr0$residuals ^ 2) / regr0$df.residual
   se <- sqrt(matrix(diag(Sigma), nrow = nvar + 1, ncol = p, byrow = FALSE) 
-        * matrix(resvar, nrow = nvar + 1, ncol = p, byrow = TRUE))
+             * matrix(resvar, nrow = nvar + 1, ncol = p, byrow = TRUE))
   T0_part <- abs(regr0$coeff / se)^2
   if (nvar > 0) {
     T0_glob <- colSums((regr0$fitted - matrix(colMeans(regr0$fitted),
@@ -211,7 +177,7 @@ IWTlm <- function(formula,
     coeffnames <- paste('coeff[,', as.character(1:p),']', sep = '')
     formula_temp <- coeff ~ design_matrix
     mf_temp <- cbind(stats::model.frame(formula_temp)[-((p + 1):(p + nvar + 1))], 
-                    as.data.frame(design_matrix[, -1]))
+                     as.data.frame(design_matrix[, -1]))
     if (length(grep('factor', formula_const)) > 0) {
       index_factor <- grep('factor', var_names)
       replace_names <- paste('group', (1:length(index_factor)), sep = '')
@@ -234,7 +200,7 @@ IWTlm <- function(formula,
       }
       formula_temp2 <- coeff ~ design_matrix_names2
       mf_temp2 <- cbind(stats::model.frame(formula_temp2)[-((p + 1):(p + nvar + 1))], 
-                       as.data.frame(design_matrix_names2[,-1]))
+                        as.data.frame(design_matrix_names2[,-1]))
       formula_coeff_temp <- paste(coeffnames, '~', formula_temp) 
       formula_coeff_part[[ii]] <- sapply(formula_coeff_temp, stats::as.formula)
       regr0_part[[ii]] <- lapply(formula_coeff_part[[ii]], stats::lm, data = mf_temp2)
@@ -297,75 +263,48 @@ IWTlm <- function(formula,
     pval_part[, i] <- colSums(T_part[, , i] >= matrix(T0_part[, i],nrow = B, ncol = nvar + 1,byrow = TRUE)) / B
   }
   
-  print('Interval-wise tests')
-  
-  matrice_pval_asymm_glob <- matrix(nrow=p,ncol=p)
-  matrice_pval_asymm_glob[p,] <- pval_glob[1:p]
-  pval_2x_glob <- c(pval_glob,pval_glob)
-  T0_2x_glob <- c(T0_glob,T0_glob)
-  T_2x_glob <- cbind(T_glob,T_glob)
+  print('Global test')
   
   
-  matrice_pval_asymm_part <- array(dim=c(nvar+1,p,p))
-  pval_2x_part <- cbind(pval_part,pval_part)
-  T0_2x_part <- cbind(T0_part,T0_part)
-  T_2x_part = array(dim = c(B,nvar+1, p*2))
-  for(ii in 1:(nvar+1)){
-    matrice_pval_asymm_part[ii,p,] <- pval_part[ii,1:p]
-    T_2x_part[,ii,] <- cbind(T_part[,ii,],T_part[,ii,])
-  }
-  
-  if(recycle==TRUE){
-    for(i in (p-1):1){
-      for(j in 1:p){
-        inf <- j
-        sup <- (p-i)+j
-        T0_temp <- sum(T0_2x_glob[inf:sup])
-        T_temp <- rowSums(T_2x_glob[,inf:sup])
-        pval_temp <- sum(T_temp>=T0_temp)/B
-        matrice_pval_asymm_glob[i,j] <- pval_temp
-        for(ii in 1:(nvar + 1)){
-          T0_temp <- sum(T0_2x_part[ii,inf:sup])
-          T_temp <- rowSums(T_2x_part[,ii,inf:sup])
-          pval_temp <- sum(T_temp>=T0_temp)/B
-          matrice_pval_asymm_part[ii,i,j] <- pval_temp
-        }
-        
-      }
-      print(paste('creating the p-value matrix: end of row ',as.character(p-i+1),' out of ',as.character(p),sep=''))
+  if(stat=='Integral'){
+    T0_temp <- sum(T0_glob[1:p])
+    T_temp <- rowSums(T_glob[,1:p])
+    Global_pval_F <- sum(T_temp>=T0_temp)/B
+    
+    Global_pval_part = numeric(nvar + 1)
+    for(ii in 1:(nvar + 1)){
+      T0_temp <- sum(T0_part[ii,1:p])
+      T_temp <- rowSums(T_part[,ii,1:p])
+      Global_pval_part[ii] <- sum(T_temp>=T0_temp)/B
     }
     
-  }else{
-    for(i in (p-1):1){
-      for(j in 1:i){
-        inf <- j
-        sup <- (p-i)+j
-        T0_temp <- sum(T0_2x_glob[inf:sup])
-        T_temp <- rowSums(T_2x_glob[,inf:sup])
-        pval_temp <- sum(T_temp>=T0_temp)/B
-        matrice_pval_asymm_glob[i,j] <- pval_temp
-        for(ii in 1:(nvar + 1)){
-          T0_temp <- sum(T0_2x_part[ii,inf:sup])
-          T_temp <- rowSums(T_2x_part[,ii,inf:sup])
-          pval_temp <- sum(T_temp>=T0_temp)/B
-          matrice_pval_asymm_part[ii,i,j] <- pval_temp
-        }
-        
-      }
-      print(paste('creating the p-value matrix: end of row ',as.character(p-i+1),' out of ',as.character(p),sep=''))
+    corrected.pval_glob = rep(Global_pval_F,p)
+    
+    corrected.pval_part = matrix(nrow=nvar+1,ncol=p)
+    for(ii in 1:(nvar + 1)){
+      corrected.pval_part[ii,] = rep(Global_pval_part[ii],p)
+    }
+  }else if(stat=='Max'){
+    T0_temp <- max(T0_glob)
+    T_temp <- apply(T_glob,1,max)
+    Global_pval_F <- sum(T_temp>=T0_temp)/B
+    
+    Global_pval_part = numeric(nvar + 1)
+    for(ii in 1:(nvar + 1)){
+      T0_temp <- max(T0_part[ii,])
+      T_temp <- apply(T_part[,ii,],1,max)
+      Global_pval_part[ii] <- sum(T_temp>=T0_temp)/B
+    }
+    
+    corrected.pval_glob = rep(Global_pval_F,p)
+    corrected.pval_part = matrix(nrow=nvar+1,ncol=p)
+    for(ii in 1:(nvar + 1)){
+      corrected.pval_part[ii,] = rep(Global_pval_part[ii],p)
     }
     
   }
   
-  corrected.pval.matrix_glob <- pval.correct(matrice_pval_asymm_glob)
-  corrected.pval_glob <- corrected.pval.matrix_glob[1,]
   
-  corrected.pval_part = matrix(nrow=nvar+1,ncol=p)  
-  corrected.pval.matrix_part = array(dim=c(nvar+1,p,p))
-  for(ii in 1:(nvar+1)){
-    corrected.pval.matrix_part[ii,,] = pval.correct(matrice_pval_asymm_part[ii,,])
-    corrected.pval_part[ii,] <- corrected.pval.matrix_part[ii,1,]
-  }
   
   coeff.regr = regr0$coeff
   coeff.t <- ((coeff.regr))
@@ -384,17 +323,17 @@ IWTlm <- function(formula,
   npt <- p
   R2.t = colSums((fitted.t - matrix(data=ybar.t,nrow=n,ncol=npt,byrow=TRUE))^2)/colSums((data.eval - matrix(data=ybar.t,nrow=n,ncol=npt,byrow=TRUE))^2)
   
-  print('Interval-Wise Testing completed')
+  print('Global Testing completed')
   
   
   ITP_result <- list(call=cl,
                      design_matrix=design_matrix,
                      unadjusted_pval_F=pval_glob,
-                     pval_matrix_F=matrice_pval_asymm_glob,
                      adjusted_pval_F=corrected.pval_glob,
                      unadjusted_pval_part=pval_part,
-                     pval_matrix_part=matrice_pval_asymm_part,
                      adjusted_pval_part=corrected.pval_part,
+                     Global_pval_F = Global_pval_F,
+                     Global_pval_part = Global_pval_part,
                      data.eval=coeff,
                      coeff.regr.eval=coeff.t,
                      fitted.eval=fitted.t,

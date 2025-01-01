@@ -17,5 +17,12 @@ ITP2bspline <- function(data1, data2,
     with = "IWT2()"
   )
   
-  IWT2(data1 = data1, data2 = data2, mu = mu, B = B, paired = paired)
+  IWT2(
+    data1 = data1,
+    data2 = data2,
+    mu = mu,
+    B = B,
+    paired = paired,
+    verbose = FALSE
+  )
 }

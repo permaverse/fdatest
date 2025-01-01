@@ -1,10 +1,20 @@
-#' @export
+#' S3 specialization of summary function for ITPlm objects
 #' 
-summary.ITPlm <-
-function(object, ...){
+#' @param object An object of class `ITPlm`.
+#' @inheritParams base::summary
+#'
+#' @return A list with the following components:
+#' 
+#' - `call`: The matched call.
+#' - `ttest`: A data frame with the minimum p-values of the t-tests and the
+#'  corresponding significance level.
+#' - `R2`: The R-squared value of the model.
+#' - `ftest`: The p-value of the F-test.
+#' 
+#' @export
+summary.ITPlm <- function(object, ...){
   printresult = vector('list')
   printresult$call = object$call
-  #class(printresult) <- "lm"
   printresult$ttest = matrix(data=apply(object$adjusted.pval.t,1,min),ncol=1)
   var.names = rownames(object$adjusted.pval.t)
   rownames(printresult$ttest) = var.names
@@ -30,5 +40,4 @@ function(object, ...){
   printresult$ftest[,2] = signif.f
   colnames(printresult$ftest) = c('Minimum p-value','')
   printresult
-  
 }

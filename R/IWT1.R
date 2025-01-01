@@ -18,7 +18,8 @@
 #' `data` are evaluated;
 #' - a \code{\link[fda]{fd}} object containing one function.
 #' Defaults to `0`.
-#' @param B The number of iterations of the MC algorithm to evaluate the p-values of the permutation tests. Defaults to `1000L`.
+#' @param B The number of iterations of the MC algorithm to evaluate the
+#'   p-values of the permutation tests. Defaults to `1000L`.
 #' @param dx Used only if an \code{\link[fda]{fd}} object is provided. In this
 #'   case, `dx` is the size of the discretization step of the gridused to
 #'   evaluate functional data. If set to `NULL`, a grid of size `100L` is used.
@@ -27,7 +28,8 @@
 #'   should be used (see Pini and Vantini, 2017 for details). Defaults to
 #'   `TRUE`.
 #'
-#' @return An object of class \code{\link{IWT1}}, which is a list containing at least the following components:
+#' @return An object of class \code{\link{IWT1}}, which is a list containing at
+#'   least the following components:
 #' 
 #' - `test`: String vector indicating the type of test performed. In this case
 #' equal to `"1pop"`.
@@ -43,9 +45,18 @@
 #' @seealso See also \code{\link{plot.IWT1}} and \code{\link{IWTimage}} for
 #'   plotting the results.
 #'
+#' @references 
+#' A. Pini and S. Vantini (2017). The Interval Testing Procedure: Inference
+#' for Functional Data Controlling the Family Wise Error Rate on Intervals.
+#' *Biometrics*, 73(3): 835–845.
+#' 
+#' A. Pini and S. Vantini (2017). Interval-wise testing for functional data.
+#' *Journal of Nonparametric Statistics*, 29(2), 407-424.
+#'
+#' @export
 #' @examples
 #' # Performing the IWT for one population
-#' IWT.result <- IWT1(NASAtemp$paris, mu = 4)
+#' IWT.result <- IWT1(NASAtemp$paris, mu = 4, B = 10L)
 #'
 #' # Plotting the results of the IWT
 #' plot(IWT.result, xrange = c(0, 12), main = 'Paris temperatures')
@@ -55,15 +66,6 @@
 #'
 #' # Selecting the significant components at 5% level
 #' which(IWT.result$adjusted_pval < 0.05)
-#'
-#' @references 
-#' - A. Pini and S. Vantini (2017). The Interval Testing Procedure: Inference
-#' for Functional Data Controlling the Family Wise Error Rate on Intervals.
-#' *Biometrics*, 73(3): 835–845.
-#' - A. Pini and S. Vantini (2017). Interval-wise testing for functional data.
-#' *Journal of Nonparametric Statistics*, 29(2), 407-424.
-#'
-#' @export
 IWT1 <- function(data, mu = 0, B = 1000, dx = NULL, recycle = TRUE) {
   pval.correct <- function(pval.matrix){
     matrice_pval_2_2x <- cbind(pval.matrix,pval.matrix)

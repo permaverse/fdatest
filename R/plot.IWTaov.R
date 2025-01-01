@@ -1,51 +1,75 @@
-#' @title Plot method for IWT results on functional ANOVA
+#' Plot method for IWT results on functional ANOVA
 #' 
-#' @description \code{plot} method for class "\code{IWTaov}".
-#' Plotting function creating a graphical output of the IWT for the test on a functional analysis of variance: 
-#' functional data, and IWT-adjusted p-values of the F-tests on the whole model and on each factor are plotted.
+#' \code{plot} method for class "\code{IWTaov}". Plotting function creating a
+#' graphical output of the IWT for the test on a functional analysis of
+#' variance: functional data, and IWT-adjusted p-values of the F-tests on the
+#' whole model and on each factor are plotted.
 #' 
-#' @param x  The object to be plotted. An object of class "\code{IWTaov}", usually, a result of a call 
-#' to \code{\link{IWTaov}}.
-#' 
+#' @param x  The object to be plotted. An object of class "\code{IWTaov}",
+#'   usually, a result of a call to \code{\link{IWTaov}}.
 #' @param xrange Range of the \code{x} axis.
-#' 
-#' @param alpha1 First level of significance used to select and display significant effects. Default is \code{alpha1 = 0.05}.
-#' 
-#' @param alpha2 Second level of significance used to select and display significant effects. Default is \code{alpha1 = 0.01}. 
-#' \code{alpha1} and \code{alpha2} are s.t. \code{alpha2 < alpha1}. Otherwise the two values are switched.
-#' 
-#' @param plot_adjpval A logical indicating wether the plots of adjusted p-values have to be done. Default is \code{plot_adjpval = FALSE}.
-#' 
-#' @param ylim Range of the \code{y} axis. Default is \code{NULL}, giving a plot with authomatic range for functional data.
-#' 
+#' @param alpha1 First level of significance used to select and display
+#'   significant effects. Default is \code{alpha1 = 0.05}.
+#' @param alpha2 Second level of significance used to select and display
+#'   significant effects. Default is \code{alpha1 = 0.01}. \code{alpha1} and
+#'   \code{alpha2} are s.t. \code{alpha2 < alpha1}. Otherwise the two values are
+#'   switched.
+#' @param plot_adjpval A logical indicating wether the plots of adjusted
+#'   p-values have to be done. Default is \code{plot_adjpval = FALSE}.
+#' @param ylim Range of the \code{y} axis. Default is \code{NULL}, giving a plot
+#'   with authomatic range for functional data.
 #' @param col Colors for the plot of functional data. Default is \code{col = 1}.
+#' @param ylab Label of \code{y} axis of the plot of functional data. Default is
+#'   "\code{Functional Data}".
+#' @param main An overall title for the plots (it will be pasted to "Functional
+#'   Data and F-test" for the first plot and to factor names for the other
+#'   plots).
+#' @param lwd Line width for the plot of the adjusted p-value function. Default
+#'   is \code{lwd=1}.
+#' @param type line type for the plot of the adjusted p-value function. Default
+#'   is type='l'.
+#' @param ... Additional plotting arguments that can be used with function
+#'   \code{plot}, such as \code{\link{graphical parameters}} (see
+#'   \code{\link{par}}).
 #' 
-#' @param ylab Label of \code{y} axis of the plot of functional data. Default is "\code{Functional Data}".
+#' @return No value returned. The function produces a graphical output of the
+#'   IWT results:  the plot of the functional data and the one of the adjusted
+#'   p-values. The portions of the domain selected as significant by the test at
+#'   level \code{alpha1} and \code{alpha2} are highlighted in the plot of the
+#'   adjusted p-value function and in the one of functional data by gray areas
+#'   (light and dark gray, respectively). The first plot reports the gray areas
+#'   corresponding to a significant F-test on the whole model. The remaining
+#'   plots report the gray areas corresponding to significant F-tests on each
+#'   factor (with colors corresponding to the levels of the factor).
 #' 
-#' @param main An overall title for the plots (it will be pasted to "Functional Data and F-test" for the first plot and to factor names for the other plots).
+#' @seealso \code{\link{IWTimage}} for the plot of p-values heatmaps. See also
+#'   \code{\link{IWT1}}, \code{\link{IWT2}} to perform the ITP to test on the
+#'   mean of one population and test of differences between two populations. See
+#'   \code{\link{ITPaovbspline}} for functional ANOVA based on B-spline basis
+#'   representation
 #' 
-#' @param lwd Line width for the plot of the adjusted p-value function. Default is \code{lwd=1}.
-#' 
-#' @param type line type for the plot of the adjusted p-value function. Default is type='l'.
-#' 
-#' @param ... Additional plotting arguments that can be used with function \code{plot}, 
-#' such as \code{\link{graphical parameters}} (see \code{\link{par}}).
-#' 
-#' @return No value returned. 
-#' The function produces a graphical output of the IWT results:  the plot of the functional data and the one of the adjusted p-values. 
-#' The portions of the domain selected as significant by the test at level \code{alpha1} and \code{alpha2} are highlighted in the plot of the adjusted p-value function and in the one of functional data by gray areas (light and dark gray, respectively). 
-#' The first plot reports the gray areas corresponding to a significant F-test on the whole model. The remaining plots report the gray areas corresponding to significant F-tests on each factor (with colors corresponding to the levels of the factor).
-#' 
-#' @seealso \code{\link{IWTimage}} for the plot of p-values heatmaps. 
-#' See also \code{\link{IWT1}}, \code{\link{IWT2}} to perform the ITP to test on the mean of one population and test of differences between two populations. 
-#' See \code{\link{ITPaovbspline}} for functional ANOVA based on B-spline basis representation
-#' 
+#' @references
+#' Pini, A., & Vantini, S. (2017). Interval-wise testing for functional data.
+#' \emph{Journal of Nonparametric Statistics}, 29(2), 407-424.
+#'
+#' Pini, A., Vantini, S., Colosimo, B. M., & Grasso, M. (2018). Domain‐selective
+#' functional analysis of variance for supervised statistical profile monitoring
+#' of signal data. \emph{Journal of the Royal Statistical Society: Series C
+#' (Applied Statistics)} 67(1), 55-81.
+#'
+#' Abramowicz, K., Hager, C. K., Pini, A., Schelin, L., Sjostedt de Luna, S., &
+#' Vantini, S. (2018). Nonparametric inference for functional‐on‐scalar linear
+#' models applied to knee kinematic hop data after injury of the anterior
+#' cruciate ligament. \emph{Scandinavian Journal of Statistics} 45(4),
+#' 1036-1061.
+#'
+#' @export
 #' @examples 
-#' temperature <- rbind(NASAtemp$milan,NASAtemp$paris)
-#' groups <- c(rep(0,22),rep(1,22))
+#' temperature <- rbind(NASAtemp$milan, NASAtemp$paris)
+#' groups <- c(rep(0, 22), rep(1, 22))
 #' 
 #' # Performing the IWT
-#' IWT.result <- IWTaov(temperature ~ groups,B=1000)
+#' IWT.result <- IWTaov(temperature ~ groups, B = 10L)
 #' 
 #' # Summary of the IWT results
 #' summary(IWT.result)
@@ -55,26 +79,21 @@
 #' plot(IWT.result)
 #' 
 #' # All graphics on the same device
-#' graphics::layout(matrix(1:4,nrow=2,byrow=FALSE))
-#' plot(IWT.result,main='NASA data', plot_adjpval = TRUE,xlab='Day',xrange=c(1,365))
-#' 
-#' @references
-#' Pini, A., & Vantini, S. (2017). Interval-wise testing for functional data. \emph{Journal of Nonparametric Statistics}, 29(2), 407-424
-#'
-#' Pini, A., Vantini, S., Colosimo, B. M., & Grasso, M. (2018). Domain‐selective functional analysis of variance for supervised statistical profile monitoring of signal data. \emph{Journal of the Royal Statistical Society: Series C (Applied Statistics)} 67(1), 55-81.
-#'
-#' Abramowicz, K., Hager, C. K., Pini, A., Schelin, L., Sjostedt de Luna, S., & Vantini, S. (2018).
-#' Nonparametric inference for functional‐on‐scalar linear models applied to knee kinematic hop data after injury of the anterior cruciate ligament. \emph{Scandinavian Journal of Statistics} 45(4), 1036-1061.
-#'
-#' @export
-
+#' graphics::layout(matrix(1:4, nrow = 2, byrow = FALSE))
+#' plot(
+#'   IWT.result, 
+#'   main = 'NASA data', 
+#'   plot_adjpval = TRUE, 
+#'   xlab = 'Day', 
+#'   xrange = c(1, 365)
+#' )
 plot.IWTaov <- function(x, xrange = c(0,1), 
                         alpha1 = 0.05, alpha2 = 0.01, 
                         plot_adjpval = FALSE,
                         ylim = NULL, col = 1,
                         ylab = 'Functional Data', 
                         main = NULL, lwd = 0.5, type='l', ...) {
-  if (class(x) != "IWTaov") stop("x should be an object of the class IWTaov")
+  if (!inherits(x, "IWTaov")) stop("x should be an object of the class IWTaov")
   if (alpha1 < alpha2) {
     temp <- alpha1
     alpha1 <- alpha2

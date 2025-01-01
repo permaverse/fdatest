@@ -28,7 +28,8 @@ possibilities are available for \code{mu}:
 Defaults to \code{0}.
 }}
 
-\item{B}{The number of iterations of the MC algorithm to evaluate the p-values of the permutation tests. Defaults to \code{1000L}.}
+\item{B}{The number of iterations of the MC algorithm to evaluate the
+p-values of the permutation tests. Defaults to \code{1000L}.}
 
 \item{order}{Order of the B-spline basis expansion. Defaults to \code{2L}.}
 
@@ -49,7 +50,8 @@ should be used (see Pini and Vantini, 2017 for details). Defaults to
 \code{TRUE}.}
 }
 \value{
-An object of class \code{\link{IWT1}}, which is a list containing at least the following components:
+An object of class \code{\link{IWT1}}, which is a list containing at
+least the following components:
 \itemize{
 \item \code{test}: String vector indicating the type of test performed. In this case
 equal to \code{"1pop"}.
@@ -72,7 +74,7 @@ p-value function controls the interval-wise error rate.
 }
 \examples{
 # Performing the IWT for one population
-IWT.result <- IWT1(NASAtemp$paris, mu = 4)
+IWT.result <- IWT1(NASAtemp$paris, mu = 4, B = 10L)
 
 # Plotting the results of the IWT
 plot(IWT.result, xrange = c(0, 12), main = 'Paris temperatures')
@@ -82,16 +84,14 @@ IWTimage(IWT.result, abscissa_range = c(0, 12))
 
 # Selecting the significant components at 5\% level
 which(IWT.result$adjusted_pval < 0.05)
-
 }
 \references{
-\itemize{
-\item A. Pini and S. Vantini (2017). The Interval Testing Procedure: Inference
+A. Pini and S. Vantini (2017). The Interval Testing Procedure: Inference
 for Functional Data Controlling the Family Wise Error Rate on Intervals.
 \emph{Biometrics}, 73(3): 835–845.
-\item A. Pini and S. Vantini (2017). Interval-wise testing for functional data.
+
+A. Pini and S. Vantini (2017). Interval-wise testing for functional data.
 \emph{Journal of Nonparametric Statistics}, 29(2), 407-424.
-}
 }
 \seealso{
 See also \code{\link{plot.IWT1}} and \code{\link{IWTimage}} for

@@ -30,6 +30,7 @@ ITP2fourier(
 ITP2pafourier(
   data1,
   data2,
+  mu = 0,
   B = 1000,
   paired = FALSE,
   maxfrequency = floor(dim(data1)[2]/2)
@@ -39,11 +40,12 @@ IWT2(
   data1,
   data2,
   mu = 0,
-  B = 1000,
+  B = 1000L,
   dx = NULL,
   recycle = TRUE,
   paired = FALSE,
-  alternative = "two.sided"
+  alternative = "two.sided",
+  verbose = TRUE
 )
 }
 \arguments{
@@ -57,17 +59,19 @@ functional data set on a uniform grid, or an \code{\link[fda]{fd}} object.
 If pointwise evaluations are provided, it should be a matrix of dimensions
 \code{c(n2, J)}, with \code{J} evaluations on columns and \code{n2} units on rows.}
 
-\item{mu}{The center of symmetry under the null hypothesis. Three
+\item{mu}{Functional mean difference under the null hypothesis. Three
 possibilities are available for \code{mu}:
 \itemize{
 \item a constant (in this case, a constant function is used);
-\item a \code{J}-dimensional vector containing the evaluations on the same grid which
-\code{data} are evaluated;
-\item a \code{\link[fda]{fd}} object containing one function.
-Defaults to \code{0}.
-}}
+\item a \code{J}-dimensional vector containing the evaluations on the same grid
+which \code{data} are evaluated;
+\item a \code{fd} object from the package \code{fda} containing one function.
+}
 
-\item{B}{The number of iterations of the MC algorithm to evaluate the p-values of the permutation tests. Defaults to \code{1000L}.}
+Defaults to \code{mu = 0}.}
+
+\item{B}{The number of iterations of the MC algorithm to evaluate the
+p-values of the permutation tests. Defaults to \code{1000L}.}
 
 \item{paired}{Flag indicating whether a paired test has to be performed.
 Defaults to \code{FALSE}.}
@@ -92,6 +96,9 @@ should be used (see Pini and Vantini, 2017 for details). Defaults to
 
 \item{alternative}{A character string specifying the alternative hypothesis.
 Must be one of \code{"two.sided"} (default), \code{"greater"} or \code{"less"}.}
+
+\item{verbose}{Logical: if \code{FALSE}, reduces the amount of output.
+Default is \code{TRUE}.}
 }
 \value{
 An object of class \code{\link{IWT2}}, which is a list containing at
@@ -121,7 +128,7 @@ p-value function controls the interval-wise error rate.
 }
 \examples{
 # Performing the IWT for two populations
-IWT.result <- IWT2(NASAtemp$paris, NASAtemp$milan)
+IWT.result <- IWT2(NASAtemp$paris, NASAtemp$milan, B = 10L)
 
 # Plotting the results of the IWT
 plot(
@@ -135,18 +142,16 @@ IWTimage(IWT.result, abscissa_range = c(0, 12))
 
 # Selecting the significant components at 5\% level
 which(IWT.result$adjusted_pval < 0.05)
-
 }
 \references{
-\itemize{
-\item A. Pini and S. Vantini (2017). The Interval Testing Procedure: Inference
+A. Pini and S. Vantini (2017). The Interval Testing Procedure: Inference
 for Functional Data Controlling the Family Wise Error Rate on Intervals.
 \emph{Biometrics}, 73(3): 835–845.
-\item A. Pini and S. Vantini (2017). Interval-wise testing for functional data.
+
+A. Pini and S. Vantini (2017). Interval-wise testing for functional data.
 \emph{Journal of Nonparametric Statistics}, 29(2), 407-424.
 }
-}
 \seealso{
-See also \code{\link{plot.IWT2}} and \code{\link{IWTimage}} for
+See also \code{\link{plot.fdatest2}} and \code{\link{IWTimage}} for
 plotting the results.
 }
