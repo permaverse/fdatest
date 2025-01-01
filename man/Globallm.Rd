@@ -6,88 +6,125 @@
 \usage{
 Globallm(
   formula,
-  B = 1000,
-  method = "residuals",
+  B = 1000L,
   dx = NULL,
   recycle = TRUE,
+  method = "residuals",
   stat = "Integral"
 )
 }
 \arguments{
-\item{formula}{An object of class "\code{\link{formula}}" (or one that can be coerced to that class): a symbolic description of the model to be fitted. 
-Example: y ~ A + B
-           where: y is a matrix of dimension n * p containing the point-wise evaluations of the n functional data on p points
-           or an object of class \code{fd} (see \code{fda} package) containing the functional data set
-           A, B are n-dimensional vectors containing the values of two covariates.
-           Covariates may be either scalar or factors.}
+\item{formula}{An object of class "\code{\link{formula}}" (or one that can be
+coerced to that class): a symbolic description of the model to be fitted.
+Example: y ~ A + B where: y is a matrix of dimension n * p containing the
+point-wise evaluations of the n functional data on p points or an object of
+class \code{fd} (see \code{fda} package) containing the functional data set
+A, B are n-dimensional vectors containing the values of two covariates.
+Covariates may be either scalar or factors.}
 
-\item{B}{The number of iterations of the MC algorithm to evaluate the p-values of the permutation tests. The defualt is \code{B=1000}.}
+\item{B}{The number of iterations of the MC algorithm to evaluate the
+p-values of the permutation tests. Defaults to \code{1000L}.}
 
-\item{method}{Permutation method used to calculate the p-value of permutation tests. Choose "\code{residuals}" for the permutations of residuals under the reduced model, according to the Freedman and Lane scheme, and "\code{responses}" for the permutation of the responses, according to the Manly scheme.}
+\item{dx}{Used only if an \code{\link[fda]{fd}} object is provided. In this
+case, \code{dx} is the size of the discretization step of the gridused to
+evaluate functional data. If set to \code{NULL}, a grid of size \code{100L} is used.
+Defaults to \code{NULL}.}
 
-\item{dx}{step size for the point-wise evaluations of functional data. dx is only used ia an object of 
-class 'fd' is provided as response in the formula.}
+\item{recycle}{Flag used to decide whether the recycled version of the IWT
+should be used (see Pini and Vantini, 2017 for details). Defaults to
+\code{TRUE}.}
 
-\item{stat}{Type of test statistic used for the global test. Possible values are: \code{'Integral'} (default)
-for the integral over the domain of the F- and t-test statistics; \code{'Max'} for max over the domain of the F- and t-test statistics.}
+\item{method}{Permutation method used to calculate the p-value of permutation
+tests. Choose "\code{residuals}" for the permutations of residuals under
+the reduced model, according to the Freedman and Lane scheme, and
+"\code{responses}" for the permutation of the responses, according to the
+Manly scheme.}
+
+\item{stat}{Type of test statistic used for the global test. Possible values
+are: \code{'Integral'} (default) for the integral over the domain of the F-
+and t-test statistics; \code{'Max'} for max over the domain of the F- and
+t-test statistics.}
 }
 \value{
-\code{Globallm} returns an object of \code{\link{class}} "\code{IWTlm}". The function \code{summary} is used to obtain and print a summary of the results.
-This object is a list containing the following components:
-\item{call}{call of the function.}
-\item{design_matrix}{design matrix of the linear model.}
-\item{unadjusted_pval_F}{unadjusted p-value function of the F test.}
-\item{adjusted_pval_F}{adjusted p-value function of the F test.}
-\item{unadjusted_pval_part}{unadjusted p-value functions of the functional t-tests on each covariate, 
-                        separately (rows) on each domain point (columns).}
-\item{adjusted_pval_part}{adjusted p-values of the functional t-tests on each covariate (rows) on each domain point (columns).}
-\item{Global_pval_F}{Global p-value of the overall test F.}
-\item{Global_pval_part}{Global p-value of t-test involving each covariate separately.}
-\item{data.eval}{evaluation of functional data.}
-\item{coeff.regr.eval}{evaluation of the regression coefficients.}
-\item{fitted.eval}{evaluation of the fitted values.}
-\item{residuals.eval}{evaluation of the residuals.}
-\item{R2.eval}{evaluation of the functional R-suared.}
+An object of class \code{IWTlm}. The function \code{summary} is used to
+obtain and print a summary of the results. This object is a list containing
+the following components:
+\itemize{
+\item \code{call}: Call of the function.
+\item \code{design_matrix}: Design matrix of the linear model.
+\item \code{unadjusted_pval_F}: Unadjusted p-value function of the F test.
+\item \code{adjusted_pval_F}: Adjusted p-value function of the F test.
+\item \code{unadjusted_pval_part}: Unadjusted p-value functions of the functional
+t-tests on each covariate, separately (rows) on each domain point
+(columns).
+\item \code{adjusted_pval_part}: Adjusted p-values of the functional t-tests on each
+covariate (rows) on each domain point (columns).
+\item \code{Global_pval_F}: Global p-value of the overall test F.
+\item \code{Global_pval_part}: Global p-value of t-test involving each covariate
+separately.
+\item \code{data.eval}: Evaluation of functional data.
+\item \code{coeff.regr.eval}: Evaluation of the regression coefficients.
+\item \code{fitted.eval}: Evaluation of the fitted values.
+\item \code{residuals.eval}: Evaluation of the residuals.
+\item \code{R2.eval}: Evaluation of the functional R-suared.
+}
 }
 \description{
-The function is used to fit and test functional linear models. 
-It can be used to carry out regression, and analysis of variance. 
-It implements the global testing procedure for testing the significance of the effects of scalar 
+The function is used to fit and test functional linear models. It can be used
+to carry out regression, and analysis of variance. It implements the global
+testing procedure for testing the significance of the effects of scalar
 covariates on a functional population.
 }
 \examples{
 # Importing the NASA temperatures data set
 data(NASAtemp)
 # Defining the covariates
-temperature <- rbind(NASAtemp$milan,NASAtemp$paris)
-groups <- c(rep(0,22),rep(1,22))
+temperature <- rbind(NASAtemp$milan, NASAtemp$paris)
+groups <- c(rep(0, 22), rep(1, 22))
 
 # Performing the IWT
-Global.result <- Globallm(temperature ~ groups,B=1000)
+Global.result <- Globallm(temperature ~ groups, B = 1000)
 # Summary of the IWT results
 summary(Global.result)
 
 # Plot of the IWT results
 layout(1)
-plot(Global.result,main='NASA data', plot_adjpval = TRUE,xlab='Day',xrange=c(1,365))
+plot(
+  Global.result, 
+  main = 'NASA data', 
+  plot_adjpval = TRUE, 
+  xlab = 'Day', 
+  xrange = c(1, 365)
+)
 
 # All graphics on the same device
-layout(matrix(1:6,nrow=3,byrow=FALSE))
-plot(Global.result,main='NASA data', plot_adjpval = TRUE,xlab='Day',xrange=c(1,365))
-
-
+layout(matrix(1:6, nrow = 3, byrow = FALSE))
+plot(
+  Global.result, 
+  main = 'NASA data', 
+  plot_adjpval = TRUE, 
+  xlab = 'Day', 
+  xrange = c(1, 365)
+)
 }
 \references{
 Abramowicz, K., Pini, A., Schelin, L., Stamm, A., & Vantini, S. (2022).
-“Domain selection and familywise error rate for functional data: A unified framework. 
-\emph{Biometrics} 79(2), 1119-1132.
+“Domain selection and familywise error rate for functional data: A unified
+framework. \emph{Biometrics} 79(2), 1119-1132.
 
-D. Freedman and D. Lane (1983). A Nonstochastic Interpretation of Reported Significance Levels. \emph{Journal of Business & Economic Statistics} 1(4), 292-298.
+D. Freedman and D. Lane (1983). A Nonstochastic Interpretation of Reported
+Significance Levels. \emph{Journal of Business & Economic Statistics} 1(4),
+292-298.
 
-B. F. J. Manly (2006). Randomization, \emph{Bootstrap and Monte Carlo Methods in Biology}. Vol. 70. CRC Press.
+B. F. J. Manly (2006). Randomization, \emph{Bootstrap and Monte Carlo Methods
+in Biology}. Vol. 70. CRC Press.
 }
 \seealso{
-See \code{\link{summary.IWTlm}} for summaries and \code{\link{plot.IWTlm}} for plotting the results.
-See \code{\link{ITPlmbspline}} for a functional linear model test based on an a-priori selected B-spline basis expansion.
-See also \code{\link{IWTaov}} to fit and test a functional analysis of variance applying the IWT, and \code{\link{IWT1}}, \code{\link{IWT2}} for one-population and two-population tests.
+See \code{\link{summary.IWTlm}} for summaries and
+\code{\link{plot.IWTlm}} for plotting the results. See
+\code{\link{ITPlmbspline}} for a functional linear model test based on an
+a-priori selected B-spline basis expansion. See also \code{\link{IWTaov}}
+to fit and test a functional analysis of variance applying the IWT, and
+\code{\link{IWT1}}, \code{\link{IWT2}} for one-population and
+two-population tests.
 }

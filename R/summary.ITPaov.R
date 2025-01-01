@@ -1,9 +1,20 @@
+#' S3 specialization of the `summary()` function for ITPaov objects
+#' 
+#' This function is a specialization of the `summary()` function for objects of
+#' class `ITPaov`. It returns a list with the minimum p-values for the factors,
+#' the range of functional R-squared values, and the minimum p-value for the
+#' F-test.
+#'
+#' @param object An object of class `ITPaov`.
+#' @inheritParams base::summary
+#'
+#' @return A list with the minimum p-values for the factors, the range of
+#' functional R-squared values, and the minimum p-value for the F-test.
+#' 
 #' @export
-summary.ITPaov <-
-function(object, ...){
+summary.ITPaov <- function(object, ...) {
   printresult = vector('list')
   printresult$call = object$call
-  #class(printresult) <- "lm"
   printresult$factors = matrix(data=apply(object$adjusted.pval.factors,1,min),ncol=1)
   var.names = rownames(object$adjusted.pval.factors)
   rownames(printresult$factors) = var.names

@@ -3,11 +3,37 @@ Type: Package
 Title: Interval Wise Testing for Functional Data
 Version: 2.1.0
 Date: 2017-06-21
-Depends: fda
-Author: Alessia Pini, Simone Vantini
-Maintainer: Alessia Pini <alessia.pini@unicatt.it>
-Description: Implementation of local inferential procedures for functional data in different frameworks (i.e., one or two-population frameworks, functional linear models).    The current version of the package requires functional data evaluated on a uniform grid or fda objects, and provides the adjusted and unadjusted p-value functions based on nonparametric local tests. The package provides a plotting function creating a graphical output of the procedure: the p-value heat-map, the plot of the p-value functions, and the plot of the functional data.
-License: GPL-2
+Authors@R: c( 
+    person(given = "Alessia", 
+           family = "Pini", 
+           role = "aut", 
+           email = "alessia.pini@unicatt.it"), 
+    person(given = "Aymeric",
+           family = "Stamm",
+           role = c("ctb", "cre"), 
+           email = "aymeric.stamm@math.cnrs.fr",
+           comment = c(ORCID = "0000-0002-8725-3654")), 
+    person(given = "Simone", 
+           family = "Vantini", 
+           role = "aut", 
+           email = "simone.vantini@polimi.it"))
+Description: Implementation of local inferential procedures for 
+    functional data in different frameworks (i.e., one or 
+    two-population frameworks, functional linear models). The 
+    current version of the package requires functional data 
+    evaluated on a uniform grid or fda objects, and provides the 
+    adjusted and unadjusted p-value functions based on 
+    nonparametric local tests. The package provides a plotting 
+    function creating a graphical output of the procedure: the 
+    p-value heat-map, the plot of the p-value functions, and the 
+    plot of the functional data.
+License: GPL (>= 3)
 Encoding: UTF-8
 LazyData: true
-RoxygenNote: 7.3.1
+Imports: 
+    fda,
+    lifecycle
+RoxygenNote: 7.3.2
+Roxygen: list(markdown = TRUE)
+Depends: 
+    R (>= 3.5.0)

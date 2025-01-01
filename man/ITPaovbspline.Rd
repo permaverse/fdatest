@@ -7,7 +7,7 @@
 ITPaovbspline(
   formula,
   order = 2,
-  nknots = dim(model.response(model.frame(formula)))[2],
+  nknots = dim(stats::model.response(stats::model.frame(formula)))[2],
   B = 1000,
   method = "residuals"
 )
@@ -49,23 +49,21 @@ An object of class "\code{ITPaov}" is a list containing at least the following c
 The function implements the Interval Testing Procedure for testing for significant differences between several functional population evaluated on a uniform grid, in a functional analysis of variance setting. Data are represented by means of the B-spline basis and the significance of each basis coefficient is tested with an interval-wise control of the Family Wise Error Rate. The default parameters of the basis expansion lead to the piece-wise interpolating function.
 }
 \examples{
-# Importing the NASA temperatures data set
-data(NASAtemp)
 temperature <- rbind(NASAtemp$milan,NASAtemp$paris)
 groups <- c(rep(0,22),rep(1,22))
 
 # Performing the ITP
-ITP.result <- ITPaovbspline(temperature ~ groups,B=1000,nknots=20,order=3)
+ITP.result <- ITPaovbspline(temperature ~ groups,B=100,nknots=20,order=3)
 
 # Summary of the ITP results
 summary(ITP.result)
 
 # Plot of the ITP results
-layout(1)
+graphics::layout(1)
 plot(ITP.result)
 
 # All graphics on the same device
-layout(matrix(1:4,nrow=2,byrow=FALSE))
+graphics::layout(matrix(1:4,nrow=2,byrow=FALSE))
 plot(ITP.result,main='NASA data', plot.adjpval = TRUE,xlab='Day',xrange=c(1,365))
 
 }

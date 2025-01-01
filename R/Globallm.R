@@ -1,89 +1,108 @@
-#' @title Global testing procedure for testing functional-on-scalar linear models
+#' Global testing procedure for testing functional-on-scalar linear models
 #'
-#' @description The function is used to fit and test functional linear models. 
-#' It can be used to carry out regression, and analysis of variance. 
-#' It implements the global testing procedure for testing the significance of the effects of scalar 
-#' covariates on a functional population. 
+#' The function is used to fit and test functional linear models. It can be used
+#' to carry out regression, and analysis of variance. It implements the global
+#' testing procedure for testing the significance of the effects of scalar
+#' covariates on a functional population.
 #'
-#' @param formula An object of class "\code{\link{formula}}" (or one that can be coerced to that class): a symbolic description of the model to be fitted. 
-#' Example: y ~ A + B
-#'            where: y is a matrix of dimension n * p containing the point-wise evaluations of the n functional data on p points
-#'            or an object of class \code{fd} (see \code{fda} package) containing the functional data set
-#'            A, B are n-dimensional vectors containing the values of two covariates.
-#'            Covariates may be either scalar or factors.
+#' @param formula An object of class "\code{\link{formula}}" (or one that can be
+#'   coerced to that class): a symbolic description of the model to be fitted.
+#'   Example: y ~ A + B where: y is a matrix of dimension n * p containing the
+#'   point-wise evaluations of the n functional data on p points or an object of
+#'   class \code{fd} (see \code{fda} package) containing the functional data set
+#'   A, B are n-dimensional vectors containing the values of two covariates.
+#'   Covariates may be either scalar or factors.
+#' @inheritParams IWT1
+#' @param method Permutation method used to calculate the p-value of permutation
+#'   tests. Choose "\code{residuals}" for the permutations of residuals under
+#'   the reduced model, according to the Freedman and Lane scheme, and
+#'   "\code{responses}" for the permutation of the responses, according to the
+#'   Manly scheme. 
+#' @param stat Type of test statistic used for the global test. Possible values
+#'   are: \code{'Integral'} (default) for the integral over the domain of the F-
+#'   and t-test statistics; \code{'Max'} for max over the domain of the F- and
+#'   t-test statistics.
 #'
-#' @param B The number of iterations of the MC algorithm to evaluate the p-values of the permutation tests. The defualt is \code{B=1000}.
+#' @return An object of class `IWTlm`. The function \code{summary} is used to
+#'   obtain and print a summary of the results. This object is a list containing
+#'   the following components:
+#'   
+#'   - `call`: Call of the function.
+#'   - `design_matrix`: Design matrix of the linear model.
+#'   - `unadjusted_pval_F`: Unadjusted p-value function of the F test.
+#'   - `adjusted_pval_F`: Adjusted p-value function of the F test.
+#'   - `unadjusted_pval_part`: Unadjusted p-value functions of the functional
+#'   t-tests on each covariate, separately (rows) on each domain point
+#'   (columns).
+#'   - `adjusted_pval_part`: Adjusted p-values of the functional t-tests on each
+#'   covariate (rows) on each domain point (columns).
+#'   - `Global_pval_F`: Global p-value of the overall test F.
+#'   - `Global_pval_part`: Global p-value of t-test involving each covariate
+#'   separately.
+#'   - `data.eval`: Evaluation of functional data.
+#'   - `coeff.regr.eval`: Evaluation of the regression coefficients.
+#'   - `fitted.eval`: Evaluation of the fitted values.
+#'   - `residuals.eval`: Evaluation of the residuals.
+#'   - `R2.eval`: Evaluation of the functional R-suared.
 #'
-#' @param method Permutation method used to calculate the p-value of permutation tests. Choose "\code{residuals}" for the permutations of residuals under the reduced model, according to the Freedman and Lane scheme, and "\code{responses}" for the permutation of the responses, according to the Manly scheme.
+#' @seealso See \code{\link{summary.IWTlm}} for summaries and
+#'   \code{\link{plot.IWTlm}} for plotting the results. See
+#'   \code{\link{ITPlmbspline}} for a functional linear model test based on an
+#'   a-priori selected B-spline basis expansion. See also \code{\link{IWTaov}}
+#'   to fit and test a functional analysis of variance applying the IWT, and
+#'   \code{\link{IWT1}}, \code{\link{IWT2}} for one-population and
+#'   two-population tests.
 #'
-#' @param dx step size for the point-wise evaluations of functional data. dx is only used ia an object of 
-#' class 'fd' is provided as response in the formula.
-#' 
-#' @param stat Type of test statistic used for the global test. Possible values are: \code{'Integral'} (default)
-#' for the integral over the domain of the F- and t-test statistics; \code{'Max'} for max over the domain of the F- and t-test statistics. 
-
+#' @references
+#' Abramowicz, K., Pini, A., Schelin, L., Stamm, A., & Vantini, S. (2022).
+#' “Domain selection and familywise error rate for functional data: A unified
+#' framework. \emph{Biometrics} 79(2), 1119-1132.
 #'
-#' @return \code{Globallm} returns an object of \code{\link{class}} "\code{IWTlm}". The function \code{summary} is used to obtain and print a summary of the results.
-#' This object is a list containing the following components:
-#' \item{call}{call of the function.}
-#' \item{design_matrix}{design matrix of the linear model.}
-#' \item{unadjusted_pval_F}{unadjusted p-value function of the F test.}
-#' \item{adjusted_pval_F}{adjusted p-value function of the F test.}
-#' \item{unadjusted_pval_part}{unadjusted p-value functions of the functional t-tests on each covariate, 
-#'                         separately (rows) on each domain point (columns).}
-#' \item{adjusted_pval_part}{adjusted p-values of the functional t-tests on each covariate (rows) on each domain point (columns).}
-#' \item{Global_pval_F}{Global p-value of the overall test F.}
-#' \item{Global_pval_part}{Global p-value of t-test involving each covariate separately.}
-#' \item{data.eval}{evaluation of functional data.}
-#' \item{coeff.regr.eval}{evaluation of the regression coefficients.}
-#' \item{fitted.eval}{evaluation of the fitted values.}
-#' \item{residuals.eval}{evaluation of the residuals.}
-#' \item{R2.eval}{evaluation of the functional R-suared.}
+#' D. Freedman and D. Lane (1983). A Nonstochastic Interpretation of Reported
+#' Significance Levels. \emph{Journal of Business & Economic Statistics} 1(4),
+#' 292-298.
 #'
-#' @seealso See \code{\link{summary.IWTlm}} for summaries and \code{\link{plot.IWTlm}} for plotting the results.
-#' See \code{\link{ITPlmbspline}} for a functional linear model test based on an a-priori selected B-spline basis expansion.
-#' See also \code{\link{IWTaov}} to fit and test a functional analysis of variance applying the IWT, and \code{\link{IWT1}}, \code{\link{IWT2}} for one-population and two-population tests.
+#' B. F. J. Manly (2006). Randomization, \emph{Bootstrap and Monte Carlo Methods
+#' in Biology}. Vol. 70. CRC Press.
 #'
-#'
+#' @export
 #' @examples
 #' # Importing the NASA temperatures data set
 #' data(NASAtemp)
 #' # Defining the covariates
-#' temperature <- rbind(NASAtemp$milan,NASAtemp$paris)
-#' groups <- c(rep(0,22),rep(1,22))
+#' temperature <- rbind(NASAtemp$milan, NASAtemp$paris)
+#' groups <- c(rep(0, 22), rep(1, 22))
 #'
 #' # Performing the IWT
-#' Global.result <- Globallm(temperature ~ groups,B=1000)
+#' Global.result <- Globallm(temperature ~ groups, B = 1000)
 #' # Summary of the IWT results
 #' summary(Global.result)
 #'
 #' # Plot of the IWT results
 #' layout(1)
-#' plot(Global.result,main='NASA data', plot_adjpval = TRUE,xlab='Day',xrange=c(1,365))
+#' plot(
+#'   Global.result, 
+#'   main = 'NASA data', 
+#'   plot_adjpval = TRUE, 
+#'   xlab = 'Day', 
+#'   xrange = c(1, 365)
+#' )
 #'
 #' # All graphics on the same device
-#' layout(matrix(1:6,nrow=3,byrow=FALSE))
-#' plot(Global.result,main='NASA data', plot_adjpval = TRUE,xlab='Day',xrange=c(1,365))
-#'
-#'
-#' @references
-#' Abramowicz, K., Pini, A., Schelin, L., Stamm, A., & Vantini, S. (2022).
-#' “Domain selection and familywise error rate for functional data: A unified framework. 
-#' \emph{Biometrics} 79(2), 1119-1132.
-#'
-#' D. Freedman and D. Lane (1983). A Nonstochastic Interpretation of Reported Significance Levels. \emph{Journal of Business & Economic Statistics} 1(4), 292-298.
-#'
-#' B. F. J. Manly (2006). Randomization, \emph{Bootstrap and Monte Carlo Methods in Biology}. Vol. 70. CRC Press.
-#'
-#' @export
-
-
+#' layout(matrix(1:6, nrow = 3, byrow = FALSE))
+#' plot(
+#'   Global.result, 
+#'   main = 'NASA data', 
+#'   plot_adjpval = TRUE, 
+#'   xlab = 'Day', 
+#'   xrange = c(1, 365)
+#' )
 Globallm <- function(formula,
-                  B = 1000,
-                  method = 'residuals',
-                  dx=NULL,
-                  recycle=TRUE,
-                  stat='Integral'){
+                     B = 1000L,
+                     dx = NULL,
+                     recycle = TRUE,
+                     method = 'residuals',
+                     stat = 'Integral') {
   extract_residuals <- function(regr){
     return(regr$residuals)
   }
@@ -94,17 +113,16 @@ Globallm <- function(formula,
   env <- environment(formula)
   variables = all.vars(formula)
   y.name = variables[1]
-  covariates.names <- colnames(attr(terms(formula),"factors"))
-  #data.all = model.frame(formula)
+  covariates.names <- colnames(attr(stats::terms(formula),"factors"))
   cl <- match.call()
   data <- get(y.name,envir = env)
-  if(is.fd(data)){ # data is a functional data object
+  if(fda::is.fd(data)){ # data is a functional data object
     rangeval <- data$basis$rangeval
     if(is.null(dx)){
       dx <- (rangeval[2]-rangeval[1])*0.01
     }
     abscissa <- seq(rangeval[1],rangeval[2],by=dx)
-    coeff <- t(eval.fd(fdobj=data,evalarg=abscissa))
+    coeff <- t(fda::eval.fd(fdobj=data,evalarg=abscissa))
   }else if(is.matrix(data)){
     coeff <- data
   }else{
@@ -117,19 +135,19 @@ Globallm <- function(formula,
   }
   
   
-  dummynames.all <- colnames(attr(terms(formula),"factors"))
+  dummynames.all <- colnames(attr(stats::terms(formula),"factors"))
   formula.const <- deparse(formula[[3]],width.cutoff = 500L) #extracting the part after ~ on formula. this will not work if the formula is longer than 500 char
   
-  formula.discrete <- as.formula(paste('coeff ~',formula.const),env=environment())
-  design_matrix = model.matrix(formula.discrete)
-  mf = model.frame(formula.discrete)
+  formula.discrete <- stats::as.formula(paste('coeff ~',formula.const),env=environment())
+  design_matrix = stats::model.matrix(formula.discrete)
+  mf = stats::model.frame(formula.discrete)
   
   nvar <- dim(design_matrix)[2] - 1
   var_names <- colnames(design_matrix)
   p <- dim(coeff)[2]
   n <- dim(coeff)[1]
   # Univariate permutations
-  regr0 <- lm.fit(design_matrix, coeff)
+  regr0 <- stats::lm.fit(design_matrix, coeff)
   # Test statistics
   Sigma <- chol2inv(regr0$qr$qr)
   resvar <- colSums(regr0$residuals ^ 2) / regr0$df.residual
@@ -158,7 +176,7 @@ Globallm <- function(formula,
     var_names2 <- var_names
     coeffnames <- paste('coeff[,', as.character(1:p),']', sep = '')
     formula_temp <- coeff ~ design_matrix
-    mf_temp <- cbind(model.frame(formula_temp)[-((p + 1):(p + nvar + 1))], 
+    mf_temp <- cbind(stats::model.frame(formula_temp)[-((p + 1):(p + nvar + 1))], 
                      as.data.frame(design_matrix[, -1]))
     if (length(grep('factor', formula_const)) > 0) {
       index_factor <- grep('factor', var_names)
@@ -181,19 +199,19 @@ Globallm <- function(formula,
         formula_temp <- '1' 
       }
       formula_temp2 <- coeff ~ design_matrix_names2
-      mf_temp2 <- cbind(model.frame(formula_temp2)[-((p + 1):(p + nvar + 1))], 
+      mf_temp2 <- cbind(stats::model.frame(formula_temp2)[-((p + 1):(p + nvar + 1))], 
                         as.data.frame(design_matrix_names2[,-1]))
       formula_coeff_temp <- paste(coeffnames, '~', formula_temp) 
-      formula_coeff_part[[ii]] <- sapply(formula_coeff_temp, as.formula)
-      regr0_part[[ii]] <- lapply(formula_coeff_part[[ii]], lm, data = mf_temp2)
+      formula_coeff_part[[ii]] <- sapply(formula_coeff_temp, stats::as.formula)
+      regr0_part[[ii]] <- lapply(formula_coeff_part[[ii]], stats::lm, data = mf_temp2)
       residui[ii, , ] <- simplify2array(lapply(regr0_part[[ii]], extract_residuals))
       fitted_part[ii, , ] <- simplify2array(lapply(regr0_part[[ii]], extract_fitted))
     }
     ii <- 1 # intercept
     formula_temp <- paste(formula_const, ' -1', sep = '')
     formula_coeff_temp <- paste(coeffnames, '~', formula_temp)
-    formula_coeff_part[[ii]] <- sapply(formula_coeff_temp, as.formula)
-    regr0_part[[ii]] <- lapply(formula_coeff_part[[ii]], lm, data = mf_temp)
+    formula_coeff_part[[ii]] <- sapply(formula_coeff_temp, stats::as.formula)
+    regr0_part[[ii]] <- lapply(formula_coeff_part[[ii]], stats::lm, data = mf_temp)
     residui[ii, , ] <- simplify2array(lapply(regr0_part[[ii]], extract_residuals))
     fitted_part[ii, , ] <- simplify2array(lapply(regr0_part[[ii]], extract_fitted))
   }
@@ -208,10 +226,10 @@ Globallm <- function(formula,
       permutazioni <- sample(n)
       coeff_perm <- coeff[permutazioni, ]
     }else{ # Test on intercept permuting signs
-      signs <- rbinom(n, 1, 0.5) * 2 - 1
+      signs <- stats::rbinom(n, 1, 0.5) * 2 - 1
       coeff_perm <- coeff * signs
     }
-    regr_perm <- lm.fit(design_matrix, coeff_perm)
+    regr_perm <- stats::lm.fit(design_matrix, coeff_perm)
     Sigma <- chol2inv(regr_perm$qr$qr)
     resvar <- colSums(regr_perm$residuals ^ 2) / regr_perm$df.residual
     if (nvar > 0) {
@@ -229,7 +247,7 @@ Globallm <- function(formula,
       regr_perm_part <- vector('list', nvar + 1)
       for (ii in 1:(nvar + 1)) { 
         coeff_perm <- fitted_part[ii, , ] + residui_perm[ii, , ]  
-        regr_perm <- lm.fit(design_matrix, coeff_perm)
+        regr_perm <- stats::lm.fit(design_matrix, coeff_perm)
         Sigma <- chol2inv(regr_perm$qr$qr)
         resvar <- colSums(regr_perm$residuals ^ 2) / regr_perm$df.residual
         se <- sqrt(matrix(diag(Sigma), nrow = nvar + 1 , ncol = p, byrow = FALSE) 

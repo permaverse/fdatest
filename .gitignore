@@ -2,7 +2,6 @@
 .Rhistory
 .RData
 .Ruserdata
+inst/doc
 .DS_Store
-.Rbuildignore
-NAMESPACE_old
-fdatest.Rproj
+README.html

@@ -1,55 +1,88 @@
-#' @title Global testing procedure for testing functional analysis of variance
+#' Global testing procedure for testing functional analysis of variance
 #'
-#' @description The function implements the Global Testing procedure for testing mean differences between several
-#' functional populations in a one-way or multi-way functional analysis of variance framework.
-#' Functional data are tested globally and unadjusted and adjusted p-value
-#' functions are provided. The unadjusted p-value function controls the point-wise error rate.
-#' The adjusted p-value function controls the
-#' family-wise error rate weakly. Since this is a global test, the adjusted p-value function is constant.
+#' The function implements the Global Testing procedure for testing mean
+#' differences between several functional populations in a one-way or multi-way
+#' functional analysis of variance framework. Functional data are tested
+#' globally and unadjusted and adjusted p-value functions are provided. The
+#' unadjusted p-value function controls the point-wise error rate. The adjusted
+#' p-value function controls the family-wise error rate weakly. Since this is a
+#' global test, the adjusted p-value function is constant.
 #'
-#' @param formula An object of class "\code{\link{formula}}" (or one that can be coerced to that class): a symbolic description of the model to be fitted.
-#' The output variable of the formula can be either a matrix of dimension \code{c(n,J)} collecting the pointwise evaluations of \code{n} functional data on the same grid of \code{J} points, or a \code{fd} object from the package \code{fda}.
+#' @param formula An object of class "\code{\link{formula}}" (or one that can be
+#'   coerced to that class): a symbolic description of the model to be fitted.
+#'   The output variable of the formula can be either a matrix of dimension
+#'   \code{c(n,J)} collecting the pointwise evaluations of \code{n} functional
+#'   data on the same grid of \code{J} points, or a \code{fd} object from the
+#'   package \code{fda}.
+#' @inheritParams IWT1
+#' @param method Permutation method used to calculate the p-value of permutation
+#'   tests. Choose "\code{residuals}" for the permutations of residuals under
+#'   the reduced model, according to the Freedman and Lane scheme, and
+#'   "\code{responses}" for the permutation of the responses, according to the
+#'   Manly scheme.
+#' @param stat Type of test statistic used for the global test. Possible values
+#'   are: \code{'Integral'} (default) for the integral over the domain of the
+#'   F-test statistic; \code{'Max'} for max over the domain of the F-test
+#'   statistic.
 #'
-#' @param B The number of iterations of the MC algorithm to evaluate the p-values of the permutation tests. The defualt is \code{B=1000}.
+#' @return An object of class `IWTaov`. The function \code{summary} is used to
+#'   obtain and print a summary of the results. This object is a list containing
+#'   the following components:
+#'   
+#'   - `call`: The matched call.
+#'   - `design_matrix`: The design matrix of the functional-on-scalar linear
+#'   model.
+#'   - `unadjusted_pval_F`: Evaluation on a grid of the unadjusted p-value
+#'   function of the functional F-test.
+#'   - `adjusted_pval_F`: Evaluation on a grid of the adjusted p-value function
+#'   of the functional F-test.
+#'   - `unadjusted_pval_factors`: Evaluation on a grid of the unadjusted
+#'   p-value function of the functional F-tests on each factor of the analysis
+#'   of variance (rows).
+#'   - `adjusted.pval.factors`: Adjusted p-values of the functional F-tests on
+#'   each factor of the analysis of variance (rows) and each basis coefficient
+#'   (columns).
+#'   - `Global_pval_F`: Global p-value of the overall test F.
+#'   - `Global_pval_factors`: Global p-value of test F involving each factor
+#'   separately.
+#'   - `data.eval`: Evaluation on a fine uniform grid of the functional data
+#'   obtained through the basis expansion.
+#'   - `coeff.regr.eval`: Evaluation on a fine uniform grid of the functional
+#'   regression coefficients.
+#'   - `fitted.eval`: Evaluation on a fine uniform grid of the fitted values of
+#'   the functional regression.
+#'   - `residuals.eval`: Evaluation on a fine uniform grid of the residuals of
+#'   the functional regression.
+#'   - `R2.eval`: Evaluation on a fine uniform grid of the functional R-squared
+#'   of the regression.
 #'
-#' @param method Permutation method used to calculate the p-value of permutation tests. Choose "\code{residuals}" for the permutations of residuals under the reduced model, according to the Freedman and Lane scheme, and "\code{responses}" for the permutation of the responses, according to the Manly scheme.
+#' @seealso See \code{\link{summary.IWTaov}} for summaries and
+#'   \code{\link{plot.IWTaov}} for plotting the results. See
+#'   \code{\link{ITPaovbspline}} for a functional analysis of variance test
+#'   based on B-spline basis expansion. See also \code{\link{IWTlm}} to fit and
+#'   test a functional-on-scalar linear model applying the IWT, and
+#'   \code{\link{IWT1}}, \code{\link{IWT2}}  for one-population and
+#'   two-population tests.
 #'
-#' @param dx Used only if a \code{fd} object is provided. In this case, \code{dx} is the size of the discretization step of the grid  used to evaluate functional data.
-#' If set to \code{NULL}, a grid of size 100 is used. Default is \code{NULL}.
+#' @references
+#' - Abramowicz, K., Pini, A., Schelin, L., Stamm, A., & Vantini, S. (2022).
+#' “Domain selection and familywise error rate for functional data: A unified
+#' framework. \emph{Biometrics} 79(2), 1119-1132.
+#' - D. Freedman and D. Lane (1983). A Nonstochastic Interpretation of Reported
+#' Significance Levels. \emph{Journal of Business & Economic Statistics} 1.4,
+#' 292-298.
+#' - B. F. J. Manly (2006). Randomization, \emph{Bootstrap and Monte Carlo
+#' Methods in Biology}. Vol. 70. CRC Press.
 #'
-#' @param stat Type of test statistic used for the global test. Possible values are: \code{'Integral'} (default)
-#' for the integral over the domain of the F-test statistic; \code{'Max'} for max over the domain of the F-test statistic. 
-#'
-#'
-#' @return \code{Globalaov} returns an object of \code{\link{class}} "\code{IWTaov}". The function \code{summary} is used to obtain and print a summary of the results.
-#' This object is a list containing the following components:
-#' \item{call}{The matched call.}
-#' \item{design_matrix}{The design matrix of the functional-on-scalar linear model.}
-#' \item{unadjusted_pval_F}{Evaluation on a grid of the unadjusted p-value function of the functional F-test.}
-#' \item{adjusted_pval_F}{Evaluation on a grid of the adjusted p-value function of the functional F-test.}
-#' \item{unadjusted_pval_factors}{Evaluation on a grid of the unadjusted p-value function of the functional F-tests on each factor of the analysis of variance (rows).}
-#' \item{adjusted.pval.factors}{adjusted p-values of the functional F-tests on each factor of the analysis of variance (rows) and each basis coefficient (columns).}
-#' \item{Global_pval_F}{Global p-value of the overall test F.}
-#' \item{Global_pval_factors}{Global p-value of test F involving each factor separately.}
-#' \item{data.eval}{Evaluation on a fine uniform grid of the functional data obtained through the basis expansion.}
-#' \item{coeff.regr.eval}{Evaluation on a fine uniform grid of the functional regression coefficients.}
-#' \item{fitted.eval}{Evaluation on a fine uniform grid of the fitted values of the functional regression.}
-#' \item{residuals.eval}{Evaluation on a fine uniform grid of the residuals of the functional regression.}
-#' \item{R2.eval}{Evaluation on a fine uniform grid of the functional R-squared of the regression.}
-#'
-#' @seealso See \code{\link{summary.IWTaov}} for summaries and \code{\link{plot.IWTaov}} for plotting the results.
-#' See \code{\link{ITPaovbspline}} for a functional analysis of variance test based on B-spline basis expansion.
-#' See also \code{\link{IWTlm}} to fit and test a functional-on-scalar linear model applying the IWT, and \code{\link{IWT1}}, \code{\link{IWT2}}  for one-population and two-population tests.
-#'
-#'
+#' @export
 #' @examples
 #' # Importing the NASA temperatures data set
 #' data(NASAtemp)
-#' temperature <- rbind(NASAtemp$milan,NASAtemp$paris)
-#' groups <- c(rep(0,22),rep(1,22))
+#' temperature <- rbind(NASAtemp$milan, NASAtemp$paris)
+#' groups <- c(rep(0, 22), rep(1, 22))
 #'
 #' # Performing the test
-#' Global.result <- Globalaov(temperature ~ groups,B=1000)
+#' Global.result <- Globalaov(temperature ~ groups, B = 1000)
 #'
 #' # Summary of the test results
 #' summary(Global.result)
@@ -59,25 +92,22 @@
 #' plot(Global.result)
 #'
 #' # All graphics on the same device
-#' layout(matrix(1:4,nrow=2,byrow=FALSE))
-#' plot(Global.result,main='NASA data', plot.adjpval = TRUE,xlab='Day',xrange=c(1,365))
-#'
-#' @references
-#' Abramowicz, K., Pini, A., Schelin, L., Stamm, A., & Vantini, S. (2022).
-#' “Domain selection and familywise error rate for functional data: A unified framework. 
-#' \emph{Biometrics} 79(2), 1119-1132.
-#'
-#' D. Freedman and D. Lane (1983). A Nonstochastic Interpretation of Reported Significance Levels. \emph{Journal of Business & Economic Statistics} 1.4, 292-298.
-#'
-#' B. F. J. Manly (2006). Randomization, \emph{Bootstrap and Monte Carlo Methods in Biology}. Vol. 70. CRC Press.
-#'
-#' @export
-
-
-Globalaov <- function(formula,B=1000,method='residuals',dx=NULL,recycle=TRUE,stat='Integral'){
-  
+#' layout(matrix(1:4, nrow = 2, byrow = FALSE))
+#' plot(
+#'   Global.result, 
+#'   main = 'NASA data', 
+#'   plot.adjpval = TRUE, 
+#'   xlab = 'Day', 
+#'   xrange = c(1, 365)
+#' )
+Globalaov <- function(formula, 
+                      B = 1000, 
+                      dx = NULL, 
+                      recycle = TRUE, 
+                      method = 'residuals', 
+                      stat = 'Integral') {
   stat_lm_glob <- function(anova){
-    result <- summary.lm(anova)$f[1]
+    result <- stats::summary.lm(anova)$f[1]
     return(result)
   }
   stat_aov_part <- function(anova){
@@ -91,26 +121,20 @@ Globalaov <- function(formula,B=1000,method='residuals',dx=NULL,recycle=TRUE,sta
   extract.fitted = function(anova){
     return(anova$fitted)
   }
-  #extract.pval <- function(anova){
-  #  result <- summary(anova)[[1]][,5]
-  #  result <- result[-length(result)]
-  #  return(result)
-  #}
   
   env <- environment(formula)
   variables = all.vars(formula)
   y.name = variables[1]
-  covariates.names <- colnames(attr(terms(formula),"factors"))
-  #data.all = model.frame(formula)
+  covariates.names <- colnames(attr(stats::terms(formula),"factors"))
   cl <- match.call()
   data <- get(y.name,envir = env)
-  if(is.fd(data)){ # data is a functional data object
+  if(fda::is.fd(data)){ # data is a functional data object
     rangeval <- data$basis$rangeval
     if(is.null(dx)){
       dx <- (rangeval[2]-rangeval[1])*0.01
     }
     abscissa <- seq(rangeval[1],rangeval[2],by=dx)
-    coeff <- t(eval.fd(fdobj=data,evalarg=abscissa))
+    coeff <- t(fda::eval.fd(fdobj=data,evalarg=abscissa))
   }else if(is.matrix(data)){
     coeff <- data
   }else{
@@ -122,16 +146,12 @@ Globalaov <- function(formula,B=1000,method='residuals',dx=NULL,recycle=TRUE,sta
     stop(paste0('Possible statistics are ',paste0(possible_statistics,collapse=', ')))
   }
   
-  #design.matrix = model.matrix(formula)
-  #mf = model.frame(formula)
-  #data = model.response(mf)
-  
-  dummynames.all <- colnames(attr(terms(formula),"factors"))
+  dummynames.all <- colnames(attr(stats::terms(formula),"factors"))
   formula.const <- deparse(formula[[3]],width.cutoff = 500L) #extracting the part after ~ on formula. this will not work if the formula is longer than 500 char
   
-  formula.discrete <- as.formula(paste('coeff ~',formula.const),env=environment())
-  design.matrix = model.matrix(formula.discrete)
-  mf = model.frame(formula.discrete)
+  formula.discrete <- stats::as.formula(paste('coeff ~',formula.const),env=environment())
+  design.matrix = stats::model.matrix(formula.discrete)
+  mf = stats::model.frame(formula.discrete)
   
   #var.names = variables[-1]
   #nvar = length(var.names)
@@ -146,9 +166,9 @@ Globalaov <- function(formula,B=1000,method='residuals',dx=NULL,recycle=TRUE,sta
   #univariate permutations
   coeffnames <- paste('coeff[,',as.character(1:p),']',sep='')
   formula.coeff <- paste(coeffnames,'~',formula.const)
-  formula.coeff <- sapply(formula.coeff,as.formula,env=environment())
+  formula.coeff <- sapply(formula.coeff,stats::as.formula,env=environment())
   
-  aovcoeff1 <- aov(formula.coeff[[1]],data=mf)
+  aovcoeff1 <- stats::aov(formula.coeff[[1]],data=mf)
   var.names <- rownames(summary(aovcoeff1)[[1]])
   df.vars <- summary(aovcoeff1)[[1]][,1]
   df.residuals <- df.vars[length(df.vars)]
@@ -159,7 +179,7 @@ Globalaov <- function(formula,B=1000,method='residuals',dx=NULL,recycle=TRUE,sta
   }
   
   index.vars <- cbind(c(2,(cumsum(df.vars)+2)[-length(df.vars)]),cumsum(df.vars)+1)
-  regr0 = lm.fit(design.matrix,coeff)
+  regr0 = stats::lm.fit(design.matrix,coeff)
   #pval_parametric <- sapply(aov0,extract.pval)
   MS0 <- matrix(nrow=nvar+1,ncol=p)
   for(var in 1:(nvar+1)){
@@ -229,8 +249,8 @@ Globalaov <- function(formula,B=1000,method='residuals',dx=NULL,recycle=TRUE,sta
       }
       
       formula.coeff.temp <- paste(coeffnames,'~',formula.temp)
-      formula.coeff_part[[ii]] <- sapply(formula.coeff.temp,as.formula,env=environment())
-      regr0_part[[ii]] = lapply(formula.coeff_part[[ii]],lm)
+      formula.coeff_part[[ii]] <- sapply(formula.coeff.temp,stats::as.formula,env=environment())
+      regr0_part[[ii]] = lapply(formula.coeff_part[[ii]],stats::lm)
       
       residui[ii,,] = simplify2array(lapply(regr0_part[[ii]],extract.residuals))
       fitted_part[ii,,] = simplify2array(lapply(regr0_part[[ii]],extract.fitted))
@@ -248,11 +268,11 @@ Globalaov <- function(formula,B=1000,method='residuals',dx=NULL,recycle=TRUE,sta
       permutazioni <- sample(n)
       coeff_perm <- coeff[permutazioni,]
     }else{ # testing intercept -> permute signs
-      signs <- rbinom(n,1,0.5)*2 - 1
+      signs <- stats::rbinom(n,1,0.5)*2 - 1
       coeff_perm <- coeff*signs
     }
     
-    regr_perm = lm.fit(design.matrix,coeff_perm)
+    regr_perm = stats::lm.fit(design.matrix,coeff_perm)
     Sigma <- chol2inv(regr_perm$qr$qr)
     resvar <- colSums(regr_perm$residuals^2)/regr0$df.residual
     
@@ -273,7 +293,7 @@ Globalaov <- function(formula,B=1000,method='residuals',dx=NULL,recycle=TRUE,sta
       aov_perm_part = vector('list',nvar)
       for(ii in 1:(nvar)){
         coeff_perm = fitted_part[ii,,] + residui_perm[ii,,]
-        regr_perm = lm.fit(design.matrix,coeff_perm)
+        regr_perm = stats::lm.fit(design.matrix,coeff_perm)
         MSperm <- matrix(nrow=nvar+1,ncol=p)
         for(var in 1:(nvar+1)){
           MSperm[var,] <- colSums(rbind(regr_perm$effects[index.vars[var,1]:index.vars[var,2],]^2))/df.vars[var]

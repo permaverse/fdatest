@@ -19,68 +19,86 @@
 )
 }
 \arguments{
-\item{x}{The object to be plotted. An object of class "\code{IWT1}", usually, a result of a call 
-to \code{\link{IWT1}}.}
+\item{x}{The object to be plotted. An object of class "\code{IWT1}",
+usually, a result of a call to \code{\link{IWT1}}.}
 
 \item{xrange}{Range of the \code{x} axis.}
 
-\item{alpha1}{First level of significance used to select and display significant effects. Default is \code{alpha1 = 0.05}.}
+\item{alpha1}{First level of significance used to select and display
+significant effects. Default is \code{alpha1 = 0.05}.}
 
-\item{alpha2}{Second level of significance used to select and display significant effects. Default is \code{alpha1 = 0.01}. 
-\code{alpha1} and \code{alpha2} are s.t. \code{alpha2 < alpha1}. Otherwise the two values are switched.}
+\item{alpha2}{Second level of significance used to select and display
+significant effects. Default is \code{alpha1 = 0.01}. \code{alpha1} and
+\code{alpha2} are s.t. \code{alpha2 < alpha1}. Otherwise the two values are
+switched.}
 
-\item{ylab}{Label of \code{y} axis of the plot of functional data. Default is "\code{Functional Data}".}
+\item{ylab}{Label of \code{y} axis of the plot of functional data. Default is
+"\code{Functional Data}".}
 
 \item{main}{Plot title.}
 
-\item{lwd}{Line width for the plot of the adjusted p-value function. Default is \code{lwd=1}.}
+\item{lwd}{Line width for the plot of the adjusted p-value function. Default
+is \code{lwd=1}.}
 
 \item{col}{Colors for the plot of functional data. Default is \code{col = 1}.}
 
-\item{ylim}{Range of the \code{y} axis. Default is \code{NULL}, giving a plot with automatic range for functional data.}
+\item{ylim}{Range of the \code{y} axis. Default is \code{NULL}, giving a plot
+with automatic range for functional data.}
 
-\item{type}{line type for the plot of the adjusted p-value function. Default is type='l'.}
+\item{type}{line type for the plot of the adjusted p-value function. Default
+is type='l'.}
 
-\item{...}{Additional plotting arguments that can be used with function \code{plot}, 
-such as \code{\link{graphical parameters}} (see \code{\link{par}}).}
+\item{...}{Additional plotting arguments that can be used with function
+\code{plot}, such as \code{\link{graphical parameters}} (see
+\code{\link{par}}).}
 }
 \value{
-No value returned. 
-The function produces a graphical output of the IWT results:  the plot of the functional data and the one of the adjusted p-values. 
-The portions of the domain selected as significant by the test at level \code{alpha1} and \code{alpha2} are highlighted in the plot of the adjusted p-value function and in the one of functional data by gray areas (light and dark gray, respectively).
+No value returned. The function produces a graphical output of the
+IWT results:  the plot of the functional data and the one of the adjusted
+p-values. The portions of the domain selected as significant by the test at
+level \code{alpha1} and \code{alpha2} are highlighted in the plot of the
+adjusted p-value function and in the one of functional data by gray areas
+(light and dark gray, respectively).
 }
 \description{
-\code{plot} method for class "\code{IWT1}".
-Plotting function creating a graphical output of the IWT
-for the test of the mean of one population: functional data and IWT-adjusted p-values are plotted.
+\code{plot} method for class "\code{IWT1}". Plotting function creating a
+graphical output of the IWT for the test of the mean of one population:
+functional data and IWT-adjusted p-values are plotted.
 }
 \examples{
 # Importing the NASA temperatures data set
 data(NASAtemp)
 
 # Performing the IWT for one population
-IWT.result <- IWT1(NASAtemp$paris,mu=4)
+IWT.result <- IWT1(NASAtemp$paris, mu = 4, B = 10L)
 
 # Plotting the results of the IWT
-plot(IWT.result,xrange=c(0,12),main='Paris temperatures')
+plot(IWT.result, xrange = c(0, 12), main = 'Paris temperatures')
 
 # Plotting the p-value heatmap
 IWTimage(IWT.result,abscissa_range=c(0,12))
 
 # Selecting the significant components at 5\% level
 which(IWT.result$adjusted_pval < 0.05)
-
 }
 \references{
-Pini, A., & Vantini, S. (2017). Interval-wise testing for functional data. \emph{Journal of Nonparametric Statistics}, 29(2), 407-424
+Pini, A., & Vantini, S. (2017). Interval-wise testing for functional data.
+\emph{Journal of Nonparametric Statistics}, 29(2), 407-424
 
-Pini, A., Vantini, S., Colosimo, B. M., & Grasso, M. (2018). Domain‐selective functional analysis of variance for supervised statistical profile monitoring of signal data. \emph{Journal of the Royal Statistical Society: Series C (Applied Statistics)} 67(1), 55-81.
+Pini, A., Vantini, S., Colosimo, B. M., & Grasso, M. (2018). Domain‐selective
+functional analysis of variance for supervised statistical profile monitoring
+of signal data. \emph{Journal of the Royal Statistical Society: Series C
+(Applied Statistics)} 67(1), 55-81.
 
-Abramowicz, K., Hager, C. K., Pini, A., Schelin, L., Sjostedt de Luna, S., & Vantini, S. (2018).
-Nonparametric inference for functional‐on‐scalar linear models applied to knee kinematic hop data after injury of the anterior cruciate ligament. \emph{Scandinavian Journal of Statistics} 45(4), 1036-1061.
+Abramowicz, K., Hager, C. K., Pini, A., Schelin, L., Sjostedt de Luna, S., &
+Vantini, S. (2018). Nonparametric inference for functional‐on‐scalar linear
+models applied to knee kinematic hop data after injury of the anterior
+cruciate ligament. \emph{Scandinavian Journal of Statistics} 45(4),
+1036-1061.
 }
 \seealso{
-\code{\link{IWTimage}} for the plot of p-values heatmaps. 
-See also  \code{\link{IWT2}} to perform the ITP to test differences between two populations. 
-See \code{\link{ITP1bspline}} for one-population test based on B-spline basis representation.
+\code{\link{IWTimage}} for the plot of p-values heatmaps. See also
+\code{\link{IWT2}} to perform the ITP to test differences between two
+populations. See \code{\link{ITP1bspline}} for one-population test based on
+B-spline basis representation.
 }

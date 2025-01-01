@@ -47,7 +47,7 @@ temperature <- rbind(NASAtemp$milan,NASAtemp$paris)
 groups <- c(rep(0,22),rep(1,22))
 
 # Performing the TWT
-TWT.result <- TWTaov(temperature ~ groups,B=1000)
+TWT.result <- TWTaov(temperature ~ groups,B=100)
 
 # Summary of the ITP results
 summary(TWT.result)
@@ -63,7 +63,7 @@ plot(TWT.result,main='NASA data', plot_adjpval = TRUE,xlab='Day',xrange=c(1,365)
 }
 \references{
 Abramowicz, K., Pini, A., Schelin, L., Stamm, A., & Vantini, S. (2022).
-“Domain selection and familywise error rate for functional data: A unified framework. 
+“Domain selection and familywise error rate for functional data: A unified framework.
 \emph{Biometrics} 79(2), 1119-1132.
 
 D. Freedman and D. Lane (1983). A Nonstochastic Interpretation of Reported Significance Levels. \emph{Journal of Business & Economic Statistics} 1.4, 292-298.

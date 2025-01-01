@@ -47,7 +47,7 @@
 #' groups <- c(rep(0,22),rep(1,22))
 #'
 #' # Performing the TWT
-#' TWT.result <- TWTlm(temperature ~ groups,B=1000)
+#' TWT.result <- TWTlm(temperature ~ groups,B=100)
 #' # Summary of the TWT results
 #' summary(TWT.result)
 #'
@@ -86,36 +86,35 @@ TWTlm <- function(formula,
   env <- environment(formula)
   variables = all.vars(formula)
   y.name = variables[1]
-  covariates.names <- colnames(attr(terms(formula),"factors"))
-  #data.all = model.frame(formula)
+  covariates.names <- colnames(attr(stats::terms(formula),"factors"))
   cl <- match.call()
   data <- get(y.name,envir = env)
-  if(is.fd(data)){ # data is a functional data object
+  if(fda::is.fd(data)){ # data is a functional data object
     rangeval <- data$basis$rangeval
     if(is.null(dx)){
       dx <- (rangeval[2]-rangeval[1])*0.01
     }
     abscissa <- seq(rangeval[1],rangeval[2],by=dx)
-    coeff <- t(eval.fd(fdobj=data,evalarg=abscissa))
+    coeff <- t(fda::eval.fd(fdobj=data,evalarg=abscissa))
   }else if(is.matrix(data)){
     coeff <- data
   }else{
     stop("First argument of the formula must be either a functional data object or a matrix.")
   }
   
-  dummynames.all <- colnames(attr(terms(formula),"factors"))
+  dummynames.all <- colnames(attr(stats::terms(formula),"factors"))
   formula.const <- deparse(formula[[3]],width.cutoff = 500L) #extracting the part after ~ on formula. this will not work if the formula is longer than 500 char
   
-  formula.discrete <- as.formula(paste('coeff ~',formula.const),env=environment())
-  design_matrix = model.matrix(formula.discrete)
-  mf = model.frame(formula.discrete)
+  formula.discrete <- stats::as.formula(paste('coeff ~',formula.const),env=environment())
+  design_matrix = stats::model.matrix(formula.discrete)
+  mf = stats::model.frame(formula.discrete)
   
   nvar <- dim(design_matrix)[2] - 1
   var_names <- colnames(design_matrix)
   p <- dim(coeff)[2]
   n <- dim(coeff)[1]
   # Univariate permutations
-  regr0 <- lm.fit(design_matrix, coeff)
+  regr0 <- stats::lm.fit(design_matrix, coeff)
   # Test statistics
   Sigma <- chol2inv(regr0$qr$qr)
   resvar <- colSums(regr0$residuals ^ 2) / regr0$df.residual
@@ -144,7 +143,7 @@ TWTlm <- function(formula,
     var_names2 <- var_names
     coeffnames <- paste('coeff[,', as.character(1:p),']', sep = '')
     formula_temp <- coeff ~ design_matrix
-    mf_temp <- cbind(model.frame(formula_temp)[-((p + 1):(p + nvar + 1))], 
+    mf_temp <- cbind(stats::model.frame(formula_temp)[-((p + 1):(p + nvar + 1))], 
                      as.data.frame(design_matrix[, -1]))
     if (length(grep('factor', formula_const)) > 0) {
       index_factor <- grep('factor', var_names)
@@ -167,19 +166,19 @@ TWTlm <- function(formula,
         formula_temp <- '1' 
       }
       formula_temp2 <- coeff ~ design_matrix_names2
-      mf_temp2 <- cbind(model.frame(formula_temp2)[-((p + 1):(p + nvar + 1))], 
+      mf_temp2 <- cbind(stats::model.frame(formula_temp2)[-((p + 1):(p + nvar + 1))], 
                         as.data.frame(design_matrix_names2[,-1]))
       formula_coeff_temp <- paste(coeffnames, '~', formula_temp) 
-      formula_coeff_part[[ii]] <- sapply(formula_coeff_temp, as.formula)
-      regr0_part[[ii]] <- lapply(formula_coeff_part[[ii]], lm, data = mf_temp2)
+      formula_coeff_part[[ii]] <- sapply(formula_coeff_temp, stats::as.formula)
+      regr0_part[[ii]] <- lapply(formula_coeff_part[[ii]], stats::lm, data = mf_temp2)
       residui[ii, , ] <- simplify2array(lapply(regr0_part[[ii]], extract_residuals))
       fitted_part[ii, , ] <- simplify2array(lapply(regr0_part[[ii]], extract_fitted))
     }
     ii <- 1 # intercept
     formula_temp <- paste(formula_const, ' -1', sep = '')
     formula_coeff_temp <- paste(coeffnames, '~', formula_temp)
-    formula_coeff_part[[ii]] <- sapply(formula_coeff_temp, as.formula)
-    regr0_part[[ii]] <- lapply(formula_coeff_part[[ii]], lm, data = mf_temp)
+    formula_coeff_part[[ii]] <- sapply(formula_coeff_temp, stats::as.formula)
+    regr0_part[[ii]] <- lapply(formula_coeff_part[[ii]], stats::lm, data = mf_temp)
     residui[ii, , ] <- simplify2array(lapply(regr0_part[[ii]], extract_residuals))
     fitted_part[ii, , ] <- simplify2array(lapply(regr0_part[[ii]], extract_fitted))
   }
@@ -194,10 +193,10 @@ TWTlm <- function(formula,
       permutazioni <- sample(n)
       coeff_perm <- coeff[permutazioni, ]
     }else{ # Test on intercept permuting signs
-      signs <- rbinom(n, 1, 0.5) * 2 - 1
+      signs <- stats::rbinom(n, 1, 0.5) * 2 - 1
       coeff_perm <- coeff * signs
     }
-    regr_perm <- lm.fit(design_matrix, coeff_perm)
+    regr_perm <- stats::lm.fit(design_matrix, coeff_perm)
     Sigma <- chol2inv(regr_perm$qr$qr)
     resvar <- colSums(regr_perm$residuals ^ 2) / regr_perm$df.residual
     if (nvar > 0) {
@@ -215,7 +214,7 @@ TWTlm <- function(formula,
       regr_perm_part <- vector('list', nvar + 1)
       for (ii in 1:(nvar + 1)) { 
         coeff_perm <- fitted_part[ii, , ] + residui_perm[ii, , ]  
-        regr_perm <- lm.fit(design_matrix, coeff_perm)
+        regr_perm <- stats::lm.fit(design_matrix, coeff_perm)
         Sigma <- chol2inv(regr_perm$qr$qr)
         resvar <- colSums(regr_perm$residuals ^ 2) / regr_perm$df.residual
         se <- sqrt(matrix(diag(Sigma), nrow = nvar + 1 , ncol = p, byrow = FALSE) 

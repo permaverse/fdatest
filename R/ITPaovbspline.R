@@ -39,23 +39,21 @@
 #'
 #'
 #' @examples
-#' # Importing the NASA temperatures data set
-#' data(NASAtemp)
 #' temperature <- rbind(NASAtemp$milan,NASAtemp$paris)
 #' groups <- c(rep(0,22),rep(1,22))
 #'
 #' # Performing the ITP
-#' ITP.result <- ITPaovbspline(temperature ~ groups,B=1000,nknots=20,order=3)
+#' ITP.result <- ITPaovbspline(temperature ~ groups,B=100,nknots=20,order=3)
 #'
 #' # Summary of the ITP results
 #' summary(ITP.result)
 #'
 #' # Plot of the ITP results
-#' layout(1)
+#' graphics::layout(1)
 #' plot(ITP.result)
 #'
 #' # All graphics on the same device
-#' layout(matrix(1:4,nrow=2,byrow=FALSE))
+#' graphics::layout(matrix(1:4,nrow=2,byrow=FALSE))
 #' plot(ITP.result,main='NASA data', plot.adjpval = TRUE,xlab='Day',xrange=c(1,365))
 #'
 #' @references
@@ -78,7 +76,7 @@
 
 
 ITPaovbspline <-
-function(formula,order=2,nknots=dim(model.response(model.frame(formula)))[2],B=1000,method='residuals'){
+function(formula,order=2,nknots=dim(stats::model.response(stats::model.frame(formula)))[2],B=1000,method='residuals'){
   fisher_cf_L <- function(L){ #fisher on rows of the matrix L
     return(-2*rowSums(log(L)))
   }
@@ -105,7 +103,7 @@ function(formula,order=2,nknots=dim(model.response(model.frame(formula)))[2],B=1
     return(adjusted.pval)
   }
   stat_lm_glob <- function(anova){
-    result <- summary.lm(anova)$f[1]
+    result <- stats::summary.lm(anova)$f[1]
     return(result)
   }
   stat_aov_part <- function(anova){
@@ -128,11 +126,11 @@ function(formula,order=2,nknots=dim(model.response(model.frame(formula)))[2],B=1
 
   variables = all.vars(formula)
   y.name = variables[1]
-  #data.all = model.frame(formula)
+  #data.all = stats::model.frame(formula)
   cl <- match.call()
-  design.matrix = model.matrix(formula)
-  mf = model.frame(formula)
-  data = model.response(mf)
+  design.matrix = stats::model.matrix(formula)
+  mf = stats::model.frame(formula)
+  data = stats::model.response(mf)
 
   dummynames.all <- colnames(design.matrix)[-1]
 
@@ -146,17 +144,17 @@ function(formula,order=2,nknots=dim(model.response(model.frame(formula)))[2],B=1
   print('First step: basis expansion')
   #splines coefficients:
   eval <- data
-  bspl.basis <- create.bspline.basis(c(1,J),norder=order,breaks=seq(1,J,length.out=nknots))
+  bspl.basis <- fda::create.bspline.basis(c(1,J),norder=order,breaks=seq(1,J,length.out=nknots))
   ascissa <- seq(1,J,1)
 
-  data.fd <- Data2fd(t(data),ascissa,bspl.basis)
+  data.fd <- fda::Data2fd(t(data),ascissa,bspl.basis)
   coeff <- t(data.fd$coef)
   p <- dim(coeff)[2]
 
   #functional data
   npt <- 1000
   ascissa.2 <- seq(1,J,length.out=npt)
-  bspl.eval.smooth <- eval.basis(ascissa.2,bspl.basis)
+  bspl.eval.smooth <- fda::eval.basis(ascissa.2,bspl.basis)
   data.eval <- t(bspl.eval.smooth %*% t(coeff))
 
   print('Second step: joint univariate tests')
@@ -164,11 +162,11 @@ function(formula,order=2,nknots=dim(model.response(model.frame(formula)))[2],B=1
   formula.const <- deparse(formula[[3]],width.cutoff = 500L) #extracting the part after ~ on formula. this will not work if the formula is longer than 500 char
   coeffnames <- paste('coeff[,',as.character(1:p),']',sep='')
   formula.coeff <- paste(coeffnames,'~',formula.const)
-  formula.coeff <- sapply(formula.coeff,as.formula)
+  formula.coeff <- sapply(formula.coeff,stats::as.formula)
 
   formula.temp = coeff ~ design.matrix
-  mf.temp = cbind(model.frame(formula.temp),as.data.frame(design.matrix[,-1]))
-  aovcoeff1 <- aov(formula.coeff[[1]],data=mf.temp)
+  mf.temp = cbind(stats::model.frame(formula.temp),as.data.frame(design.matrix[,-1]))
+  aovcoeff1 <- stats::aov(formula.coeff[[1]],data=mf.temp)
   var.names <- rownames(summary(aovcoeff1)[[1]])
   df.vars <- summary(aovcoeff1)[[1]][,1]
   df.residuals <- df.vars[length(df.vars)]
@@ -179,7 +177,7 @@ function(formula,order=2,nknots=dim(model.response(model.frame(formula)))[2],B=1
   }
 
   index.vars <- cbind(c(2,(cumsum(df.vars)+2)[-length(df.vars)]),cumsum(df.vars)+1)
-  regr0 = lm.fit(design.matrix,coeff)
+  regr0 = stats::lm.fit(design.matrix,coeff)
   #pval_parametric <- sapply(aov0,extract.pval)
   MS0 <- matrix(nrow=nvar+1,ncol=p)
   for(var in 1:(nvar+1)){
@@ -249,11 +247,11 @@ function(formula,order=2,nknots=dim(model.response(model.frame(formula)))[2],B=1
       }
 
       formula.temp2 = coeff ~ design.matrix.names2
-      mf.temp2 = cbind(model.frame(formula.temp2)[-((p+1):(p+nvar+1))],as.data.frame(design.matrix.names2[,-1]))
+      mf.temp2 = cbind(stats::model.frame(formula.temp2)[-((p+1):(p+nvar+1))],as.data.frame(design.matrix.names2[,-1]))
 
       formula.coeff.temp <- paste(coeffnames,'~',formula.temp)
-      formula.coeff_part[[ii]] <- sapply(formula.coeff.temp,as.formula)
-      regr0_part[[ii]] = lapply(formula.coeff_part[[ii]],lm,data=mf.temp2)
+      formula.coeff_part[[ii]] <- sapply(formula.coeff.temp,stats::as.formula)
+      regr0_part[[ii]] = lapply(formula.coeff_part[[ii]],stats::lm,data=mf.temp2)
 
       residui[ii,,] = simplify2array(lapply(regr0_part[[ii]],extract.residuals))
       fitted_part[ii,,] = simplify2array(lapply(regr0_part[[ii]],extract.fitted))
@@ -271,11 +269,11 @@ function(formula,order=2,nknots=dim(model.response(model.frame(formula)))[2],B=1
       permutazioni <- sample(n)
       coeff_perm <- coeff[permutazioni,]
     }else{ # testing intercept -> permute signs
-      signs <- rbinom(n,1,0.5)*2 - 1
+      signs <- stats::rbinom(n,1,0.5)*2 - 1
       coeff_perm <- coeff*signs
     }
 
-    regr_perm = lm.fit(design.matrix,coeff_perm)
+    regr_perm = stats::lm.fit(design.matrix,coeff_perm)
     Sigma <- chol2inv(regr_perm$qr$qr)
     resvar <- colSums(regr_perm$residuals^2)/regr0$df.residual
 
@@ -296,7 +294,7 @@ function(formula,order=2,nknots=dim(model.response(model.frame(formula)))[2],B=1
       aov_perm_part = vector('list',nvar)
       for(ii in 1:(nvar)){
         coeff_perm = fitted_part[ii,,] + residui_perm[ii,,]
-        regr_perm = lm.fit(design.matrix,coeff_perm)
+        regr_perm = stats::lm.fit(design.matrix,coeff_perm)
         MSperm <- matrix(nrow=nvar+1,ncol=p)
         for(var in 1:(nvar+1)){
           MSperm[var,] <- colSums(rbind(regr_perm$effects[index.vars[var,1]:index.vars[var,2],]^2))/df.vars[var]

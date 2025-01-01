@@ -65,7 +65,7 @@ TWT2 <- function(data1,data2,mu=0,B=1000,paired=FALSE,dx=NULL,alternative="two.s
     stop(paste0('Possible alternatives are ',paste0(possible_alternatives,collapse=', ')))
   }
   
-  if(is.fd(data1)){ # data1 is a functional data object
+  if(fda::is.fd(data1)){ # data1 is a functional data object
     rangeval1 <- data1$basis$rangeval
     rangeval2 <- data2$basis$rangeval
     if(is.null(dx)){
@@ -75,8 +75,8 @@ TWT2 <- function(data1,data2,mu=0,B=1000,paired=FALSE,dx=NULL,alternative="two.s
       stop("rangeval of data1 and data2 must coincide.")
     }
     abscissa <- seq(rangeval1[1],rangeval1[2],by=dx)
-    coeff1 <- t(eval.fd(fdobj=data1,evalarg=abscissa))
-    coeff2 <- t(eval.fd(fdobj=data2,evalarg=abscissa))
+    coeff1 <- t(fda::eval.fd(fdobj=data1,evalarg=abscissa))
+    coeff2 <- t(fda::eval.fd(fdobj=data2,evalarg=abscissa))
     
   }else if(is.matrix(data1)){
     coeff1 <- data1
@@ -85,7 +85,7 @@ TWT2 <- function(data1,data2,mu=0,B=1000,paired=FALSE,dx=NULL,alternative="two.s
     stop("First argument must be either a functional data object or a matrix.")
   }
   
-  if (is.fd(mu)){ # mu is a functional data
+  if (fda::is.fd(mu)){ # mu is a functional data
     rangeval.mu <- mu$basis$rangeval
     if(sum(rangeval.mu == rangeval1)!=2){
       stop("rangeval of mu must be the same as rangeval of data.")
@@ -94,7 +94,7 @@ TWT2 <- function(data1,data2,mu=0,B=1000,paired=FALSE,dx=NULL,alternative="two.s
       dx <- (rangeval.mu[2]-rangeval.mu[1])*0.01
     }
     abscissa <- seq(rangeval.mu[1],rangeval.mu[2],by=dx)
-    mu.eval <- t(eval.fd(fdobj=mu,evalarg=abscissa))
+    mu.eval <- t(fda::eval.fd(fdobj=mu,evalarg=abscissa))
   }else if(is.vector(mu)){
     mu.eval <- mu
   }else{
@@ -106,10 +106,10 @@ TWT2 <- function(data1,data2,mu=0,B=1000,paired=FALSE,dx=NULL,alternative="two.s
   n2 <- dim(coeff2)[1]
   n <- n1+n2
   data.eval <- rbind(coeff1,coeff2)
+  p <- dim(data.eval)[2]
   coeff1 <- coeff1 - matrix(data=mu.eval,nrow=n1,ncol=p)
   
   coeff <- rbind(coeff1,coeff2)
-  p <- dim(coeff)[2]
   etichetta_ord <- c(rep(1,n1),rep(2,n2))
   #print('Point-wise tests')
   # First part:
@@ -126,7 +126,7 @@ TWT2 <- function(data1,data2,mu=0,B=1000,paired=FALSE,dx=NULL,alternative="two.s
   T_coeff <- matrix(ncol=p,nrow=B)
   for (perm in 1:B){ # loop on random permutations
     if(paired==TRUE){ # paired test (for brain data we will not need it)
-      if.perm <- rbinom(n1,1,0.5) 
+      if.perm <- stats::rbinom(n1,1,0.5) 
       coeff_perm <- coeff
       for(couple in 1:n1){
         if(if.perm[couple]==1){
@@ -188,7 +188,7 @@ TWT2 <- function(data1,data2,mu=0,B=1000,paired=FALSE,dx=NULL,alternative="two.s
     mu = mu.eval,
     adjusted_pval = adjusted.pval,
     unadjusted_pval = pval,
-    data.eval=data.eval,
+    data.eval = coeff,
     ord_labels = etichetta_ord
   )
   class(result) = 'fdatest2'

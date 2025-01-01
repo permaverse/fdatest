@@ -29,7 +29,7 @@ The default is \code{mu=0}.}
 
 \item{B}{The number of iterations of the MC algorithm to evaluate the p-values of the permutation tests. The defualt is \code{B=1000}.}
 
-\item{paired}{Flag indicating whether a paired test has to be performed. Default is \code{FALSE}.}
+\item{paired}{A logical indicating whether a paired test has to be performed. Default is \code{FALSE}.}
 
 \item{dx}{Used only if a \code{fd} object is provided. In this case, \code{dx} is the size of the discretization step of the grid  used to evaluate functional data.
 If set to \code{NULL}, a grid of size 100 is used. Default is \code{NULL}.}
@@ -69,7 +69,7 @@ which(FDR.result$adjusted_pval < 0.05)
 }
 \references{
 Lundtorp Olsen, N., Pini, A., & Vantini, S. (2021).
-False discovery rate for functional data 
+False discovery rate for functional data
 \emph{TEST} 30, 784–809.
 }
 \seealso{

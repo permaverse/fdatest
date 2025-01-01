@@ -7,35 +7,40 @@
 \method{summary}{IWTaov}(object, ...)
 }
 \arguments{
-\item{object}{An object of class "\code{IWTaov}", usually, a result of a call 
-to \code{\link{IWTaov}}.}
+\item{object}{An object of class "\code{IWTaov}", usually, a result of a
+call to \code{\link{IWTaov}}.}
 
 \item{...}{Further arguments passed to or from other methods..}
 }
 \value{
-No value returned. 
-The function \code{summary.IWTaov} computes and returns a list of 
-summary statistics of the fitted functional analysis of variance 
-given in \code{object}, using the component "\code{call}" from its 
+No value returned. The function \code{summary.IWTaov} computes and
+returns a list of summary statistics of the fitted functional analysis of
+variance given in \code{object}, using the component "\code{call}" from its
 arguments, plus:
-\item{factors}{A \code{L x 1} matrix with columns for the factors of ANOVA, and corresponding (two-sided) IWT-adjusted minimum p-values of the corresponding tests of significance (i.e., the minimum p-value over all \code{p} basis components used to describe functional data). }
-\item{R2}{Range of the functional R-squared.}
-\item{ftest}{IWT-adjusted minimum p-value of functional F-test.}
+\itemize{
+\item \code{factors}: A \code{L x 1} matrix with columns for the factors of ANOVA,
+and corresponding (two-sided) IWT-adjusted minimum p-values of the
+corresponding tests of significance (i.e., the minimum p-value over all
+\code{p} basis components used to describe functional data).
+\item \code{R2}: Range of the functional R-squared.
+\item \code{ftest}: IWT-adjusted minimum p-value of functional F-test.
+}
 }
 \description{
-\code{summary} method for class "\code{IWTaov}".
-Function returning a summary of the results of IWT for the test on a functional analysis of variance: 
-minimum IWT-adjusted p-values of the F-tests on the whole model and on each factor are reported.
+\code{summary} method for class "\code{IWTaov}". Function returning a summary
+of the results of IWT for the test on a functional analysis of variance:
+minimum IWT-adjusted p-values of the F-tests on the whole model and on each
+factor are reported.
 }
 \examples{
 # Importing the NASA temperatures data set
 data(NASAtemp)
 
-temperature <- rbind(NASAtemp$milan,NASAtemp$paris)
-groups <- c(rep(0,22),rep(1,22))
+temperature <- rbind(NASAtemp$milan, NASAtemp$paris)
+groups <- c(rep(0, 22), rep(1, 22))
 
 # Performing the IWT
-IWT.result <- IWTaov(temperature ~ groups,B=1000)
+IWT.result <- IWTaov(temperature ~ groups, B = 10L)
 
 # Summary of the IWT results
 summary(IWT.result)
@@ -45,21 +50,35 @@ layout(1)
 plot(IWT.result)
 
 # All graphics on the same device
-layout(matrix(1:4,nrow=2,byrow=FALSE))
-plot(IWT.result,main='NASA data', plot_adjpval = TRUE,xlab='Day',xrange=c(1,365))
-
+layout(matrix(1:4, nrow = 2, byrow = FALSE))
+plot(
+  IWT.result, 
+  main = 'NASA data', 
+  plot_adjpval = TRUE, 
+  xlab = 'Day', 
+  xrange = c(1, 365)
+)
 }
 \references{
-Pini, A., & Vantini, S. (2017). Interval-wise testing for functional data. \emph{Journal of Nonparametric Statistics}, 29(2), 407-424
+Pini, A., & Vantini, S. (2017). Interval-wise testing for functional data.
+\emph{Journal of Nonparametric Statistics}, 29(2), 407-424.
 
-Pini, A., Vantini, S., Colosimo, B. M., & Grasso, M. (2018). Domain‐selective functional analysis of variance for supervised statistical profile monitoring of signal data. \emph{Journal of the Royal Statistical Society: Series C (Applied Statistics)} 67(1), 55-81.
+Pini, A., Vantini, S., Colosimo, B. M., & Grasso, M. (2018). Domain‐selective
+functional analysis of variance for supervised statistical profile monitoring
+of signal data. \emph{Journal of the Royal Statistical Society: Series C
+(Applied Statistics)} 67(1), 55-81.
 
-Abramowicz, K., Hager, C. K., Pini, A., Schelin, L., Sjostedt de Luna, S., & Vantini, S. (2018).
-Nonparametric inference for functional‐on‐scalar linear models applied to knee kinematic hop data after injury of the anterior cruciate ligament. \emph{Scandinavian Journal of Statistics} 45(4), 1036-1061.
+Abramowicz, K., Hager, C. K., Pini, A., Schelin, L., Sjostedt de Luna, S., &
+Vantini, S. (2018). Nonparametric inference for functional‐on‐scalar linear
+models applied to knee kinematic hop data after injury of the anterior
+cruciate ligament. \emph{Scandinavian Journal of Statistics} 45(4),
+1036-1061.
 }
 \seealso{
-\code{\link{IWTimage}} for the plot of p-values heatmaps. 
-\code{\link{plot.IWTaov}} for the plot of analysis of variance results. 
-See also \code{\link{IWT1}}, \code{\link{IWT2}} to perform the ITP to test on the mean of one population and test of differences between two populations. 
-See \code{\link{ITPaovbspline}} for functional ANOVA based on B-spline basis representation
+\code{\link{IWTimage}} for the plot of p-values heatmaps.
+\code{\link{plot.IWTaov}} for the plot of analysis of variance results. See
+also \code{\link{IWT1}}, \code{\link{IWT2}} to perform the ITP to test on
+the mean of one population and test of differences between two populations.
+See \code{\link{ITPaovbspline}} for functional ANOVA based on B-spline
+basis representation
 }

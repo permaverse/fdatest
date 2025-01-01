@@ -60,9 +60,13 @@
 #' Pini, A., & Vantini, S. (2017). Interval-wise testing for functional data. \emph{Journal of Nonparametric Statistics}, 29(2), 407-424
 #'
 #' @export
-
-Global2 <- function(data1,data2,mu=0,B=1000,paired=FALSE,dx=NULL,stat='Integral'){
-  if(is.fd(data1)){ # data1 is a functional data object
+Global2 <- function(data1, data2, 
+                    mu = 0, 
+                    B = 1000L, 
+                    paired = FALSE, 
+                    dx = NULL, 
+                    stat = 'Integral') {
+  if (fda::is.fd(data1)) { # data1 is a functional data object
     rangeval1 <- data1$basis$rangeval
     rangeval2 <- data2$basis$rangeval
     if(is.null(dx)){
@@ -72,8 +76,8 @@ Global2 <- function(data1,data2,mu=0,B=1000,paired=FALSE,dx=NULL,stat='Integral'
       stop("rangeval of data1 and data2 must coincide.")
     }
     abscissa <- seq(rangeval1[1],rangeval1[2],by=dx)
-    coeff1 <- t(eval.fd(fdobj=data1,evalarg=abscissa))
-    coeff2 <- t(eval.fd(fdobj=data2,evalarg=abscissa))
+    coeff1 <- t(fda::eval.fd(fdobj=data1,evalarg=abscissa))
+    coeff2 <- t(fda::eval.fd(fdobj=data2,evalarg=abscissa))
     
   }else if(is.matrix(data1)){
     coeff1 <- data1
@@ -82,7 +86,7 @@ Global2 <- function(data1,data2,mu=0,B=1000,paired=FALSE,dx=NULL,stat='Integral'
     stop("First argument must be either a functional data object or a matrix.")
   }
   
-  if (is.fd(mu)){ # mu is a functional data
+  if (fda::is.fd(mu)){ # mu is a functional data
     rangeval.mu <- mu$basis$rangeval
     if(sum(rangeval.mu == rangeval1)!=2){
       stop("rangeval of mu must be the same as rangeval of data.")
@@ -91,7 +95,7 @@ Global2 <- function(data1,data2,mu=0,B=1000,paired=FALSE,dx=NULL,stat='Integral'
       dx <- (rangeval.mu[2]-rangeval.mu[1])*0.01
     }
     abscissa <- seq(rangeval.mu[1],rangeval.mu[2],by=dx)
-    mu.eval <- t(eval.fd(fdobj=mu,evalarg=abscissa))
+    mu.eval <- t(fda::eval.fd(fdobj=mu,evalarg=abscissa))
   }else if(is.vector(mu)){
     mu.eval <- mu
   }else{
@@ -121,8 +125,8 @@ Global2 <- function(data1,data2,mu=0,B=1000,paired=FALSE,dx=NULL,stat='Integral'
   #print('Point-wise tests')
   #univariate permutations
   meandiff2 = (colMeans(coeff[1:n1,]) - colMeans(coeff[(n1+1):n,]))^2
-  S1 = cov(coeff[1:n1,])
-  S2 = cov(coeff[(n1+1):n,])
+  S1 = stats::cov(coeff[1:n1,])
+  S2 = stats::cov(coeff[(n1+1):n,])
   Sp = ((n1-1)*S1 + (n2-1)*S2) / (n1+n2-2)
   T0 <- switch(stat,
                Integral=meandiff2,
@@ -133,7 +137,7 @@ Global2 <- function(data1,data2,mu=0,B=1000,paired=FALSE,dx=NULL,stat='Integral'
   T_coeff <- matrix(ncol=p,nrow=B)
   for (perm in 1:B){
     if(paired==TRUE){
-      if.perm <- rbinom(n1,1,0.5) 
+      if.perm <- stats::rbinom(n1,1,0.5) 
       coeff_perm <- coeff
       for(couple in 1:n1){
         if(if.perm[couple]==1){
@@ -146,8 +150,8 @@ Global2 <- function(data1,data2,mu=0,B=1000,paired=FALSE,dx=NULL,stat='Integral'
     }
     
     meandiff2_perm <- (colMeans(coeff_perm[1:n1,]) - colMeans(coeff_perm[(n1+1):n,]))^2
-    S1_perm = cov(coeff_perm[1:n1,])
-    S2_perm = cov(coeff_perm[(n1+1):n,])
+    S1_perm = stats::cov(coeff_perm[1:n1,])
+    S2_perm = stats::cov(coeff_perm[(n1+1):n,])
     Sp_perm = ((n1-1)*S1_perm + (n2-1)*S2_perm) / (n1+n2-2)
     T_coeff[perm,] <- switch(stat,
                              Integral=meandiff2_perm,
