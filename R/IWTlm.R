@@ -142,12 +142,6 @@ IWTlm <- function(formula,
     corrected.pval.matrix <- corrected.pval.matrix[,p:1]
     return(corrected.pval.matrix)
   }
-  extract_residuals <- function(regr){
-    return(regr$residuals)
-  }
-  extract_fitted <- function(regr){
-    return(regr$fitted)
-  }
   
   env <- environment(formula)
   variables = all.vars(formula)

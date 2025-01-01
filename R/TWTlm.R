@@ -76,13 +76,6 @@ TWTlm <- function(formula,
                   B = 1000,
                   method = 'residuals',
                   dx=NULL){
-  extract_residuals <- function(regr){
-    return(regr$residuals)
-  }
-  extract_fitted <- function(regr){
-    return(regr$fitted)
-  }
-  
   env <- environment(formula)
   variables = all.vars(formula)
   y.name = variables[1]

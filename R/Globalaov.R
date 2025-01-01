@@ -106,55 +106,42 @@ Globalaov <- function(formula,
                       recycle = TRUE, 
                       method = 'residuals', 
                       stat = 'Integral') {
-  stat_lm_glob <- function(anova){
-    result <- stats::summary.lm(anova)$f[1]
-    return(result)
-  }
-  stat_aov_part <- function(anova){
-    result <- summary(anova)[[1]][,4]
-    result <- result[-length(result)]
-    return(result)
-  }
-  extract.residuals = function(anova){
-    return(anova$residuals)
-  }
-  extract.fitted = function(anova){
-    return(anova$fitted)
-  }
-  
   env <- environment(formula)
-  variables = all.vars(formula)
-  y.name = variables[1]
-  covariates.names <- colnames(attr(stats::terms(formula),"factors"))
+  variables <- all.vars(formula)
+  y.name <- variables[1]
+  covariates.names <- colnames(attr(stats::terms(formula), "factors"))
   cl <- match.call()
-  data <- get(y.name,envir = env)
-  if(fda::is.fd(data)){ # data is a functional data object
+  data <- get(y.name, envir = env)
+  if (fda::is.fd(data)) { # data is a functional data object
     rangeval <- data$basis$rangeval
-    if(is.null(dx)){
-      dx <- (rangeval[2]-rangeval[1])*0.01
+    if (is.null(dx)) {
+      dx <- (rangeval[2] - rangeval[1]) * 0.01
     }
-    abscissa <- seq(rangeval[1],rangeval[2],by=dx)
-    coeff <- t(fda::eval.fd(fdobj=data,evalarg=abscissa))
-  }else if(is.matrix(data)){
+    abscissa <- seq(rangeval[1], rangeval[2], by = dx)
+    coeff <- t(fda::eval.fd(fdobj = data, evalarg = abscissa))
+  } else if (is.matrix(data)) {
     coeff <- data
-  }else{
+  } else {
     stop("First argument of the formula must be either a functional data object or a matrix.")
   }
   
-  possible_statistics <- c("Integral",  "Max")
-  if(!(stat %in% possible_statistics)){
-    stop(paste0('Possible statistics are ',paste0(possible_statistics,collapse=', ')))
+  possible_statistics <- c("Integral", "Max")
+  if (!(stat %in% possible_statistics)) {
+    stop(paste0(
+      'Possible statistics are ',
+      paste0(possible_statistics, collapse = ', ')
+    ))
   }
   
-  dummynames.all <- colnames(attr(stats::terms(formula),"factors"))
-  formula.const <- deparse(formula[[3]],width.cutoff = 500L) #extracting the part after ~ on formula. this will not work if the formula is longer than 500 char
+  dummynames.all <- colnames(attr(stats::terms(formula), "factors"))
+  formula.const <- deparse(formula[[3]], width.cutoff = 500L) #extracting the part after ~ on formula. this will not work if the formula is longer than 500 char
   
-  formula.discrete <- stats::as.formula(paste('coeff ~',formula.const),env=environment())
-  design.matrix = stats::model.matrix(formula.discrete)
-  mf = stats::model.frame(formula.discrete)
-  
-  #var.names = variables[-1]
-  #nvar = length(var.names)
+  formula.discrete <- stats::as.formula(
+    paste('coeff ~', formula.const), 
+    env = environment()
+  )
+  design.matrix <- stats::model.matrix(formula.discrete)
+  mf <- stats::model.frame(formula.discrete)
   
   n <- dim(coeff)[1]
   J <- dim(coeff)[2]
@@ -164,227 +151,276 @@ Globalaov <- function(formula,
   
   print('Point-wise tests')
   #univariate permutations
-  coeffnames <- paste('coeff[,',as.character(1:p),']',sep='')
-  formula.coeff <- paste(coeffnames,'~',formula.const)
-  formula.coeff <- sapply(formula.coeff,stats::as.formula,env=environment())
+  coeffnames <- paste('coeff[,', as.character(1:p), ']', sep = '')
+  formula.coeff <- paste(coeffnames, '~', formula.const)
+  formula.coeff <- sapply(formula.coeff, stats::as.formula, env = environment())
   
-  aovcoeff1 <- stats::aov(formula.coeff[[1]],data=mf)
+  aovcoeff1 <- stats::aov(formula.coeff[[1]], data = mf)
   var.names <- rownames(summary(aovcoeff1)[[1]])
-  df.vars <- summary(aovcoeff1)[[1]][,1]
+  df.vars <- summary(aovcoeff1)[[1]][, 1]
   df.residuals <- df.vars[length(df.vars)]
   var.names <- var.names[-length(var.names)]
-  nvar = length(var.names)
-  for(ii in 1:nvar){
-    var.names[ii] <- gsub(' ' , '',var.names[ii])
+  nvar <- length(var.names)
+  for (ii in 1:nvar) {
+    var.names[ii] <- gsub(' ' , '', var.names[ii])
   }
   
-  index.vars <- cbind(c(2,(cumsum(df.vars)+2)[-length(df.vars)]),cumsum(df.vars)+1)
-  regr0 = stats::lm.fit(design.matrix,coeff)
-  #pval_parametric <- sapply(aov0,extract.pval)
-  MS0 <- matrix(nrow=nvar+1,ncol=p)
-  for(var in 1:(nvar+1)){
-    MS0[var,] <- colSums(rbind(regr0$effects[index.vars[var,1]:index.vars[var,2],]^2))/df.vars[var]
+  index.vars <- cbind(
+    c(2, (cumsum(df.vars) + 2)[-length(df.vars)]), 
+    cumsum(df.vars) + 1
+  )
+  regr0 <- stats::lm.fit(design.matrix, coeff)
+  MS0 <- matrix(nrow = nvar + 1, ncol = p)
+  for (var in 1:(nvar + 1)) {
+    MS0[var, ] <- colSums(rbind(
+      regr0$effects[index.vars[var, 1]:index.vars[var, 2], ]^2
+    )) / df.vars[var]
   }
   # test statistic:
-  T0_part <- MS0[1:nvar,] / matrix(MS0[nvar+1,],nrow=nvar,ncol=p,byrow=TRUE)
+  T0_part <- MS0[1:nvar, ] / matrix(
+    MS0[nvar + 1, ], 
+    nrow = nvar, 
+    ncol = p, 
+    byrow = TRUE
+  )
   Sigma <- chol2inv(regr0$qr$qr)
-  resvar <- colSums(regr0$residuals^2)/regr0$df.residual
+  resvar <- colSums(regr0$residuals^2) / regr0$df.residual
   
-  
-  if(nvar >1){
-    T0_glob <- colSums((regr0$fitted - matrix(colMeans(regr0$fitted),nrow=n,ncol=p,byrow=TRUE))^2)/ ((nvar)*resvar)
-  }else if(nvar==1){ #only one factor -> the permutation of the residuals is equivalent to the one of responses
+  if (nvar > 1) {
+    T0_glob <- colSums((regr0$fitted - matrix(
+      colMeans(regr0$fitted),
+      nrow = n,
+      ncol = p,
+      byrow = TRUE
+    ))^2) / ((nvar) * resvar)
+  } else if (nvar == 1) { #only one factor -> the permutation of the residuals is equivalent to the one of responses
     method <- 'responses'
-    T0_glob <- colSums((regr0$fitted - matrix(colMeans(regr0$fitted),nrow=n,ncol=p,byrow=TRUE))^2)/ ((nvar)*resvar)
-  }else if(nvar==0){
-    method = 'responses' # model with only intercept -> the permutation of the residuals is equivalent to the one of responses
-    T0_glob = numeric(p)
+    T0_glob <- colSums((regr0$fitted - matrix(
+      colMeans(regr0$fitted),
+      nrow = n,
+      ncol = p,
+      byrow = TRUE
+    ))^2) / ((nvar) * resvar)
+  } else if (nvar == 0) {
+    method <- 'responses' # model with only intercept -> the permutation of the residuals is equivalent to the one of responses
+    T0_glob <- numeric(p)
   }
   
   #calculate residuals
-  if(method=='residuals'){
+  if (method == 'residuals') {
     #n residuals for each coefficient of basis expansion (1:p)
     #and for each partial test + global test (nvar+1)
     #saved in array of dim (nvar+1,n,p)
-    design.matrix.names2 = design.matrix
-    var.names2 = var.names
-    if(length(grep('factor',formula.const))>0){
-      index.factor = grep('factor',var.names)
-      replace.names = paste('group',(1:length(index.factor)),sep='')
-      var.names2[index.factor] = replace.names
-      colnames(design.matrix.names2) = var.names2
+    design.matrix.names2 <- design.matrix
+    var.names2 <- var.names
+    if (length(grep('factor', formula.const)) > 0) {
+      index.factor <- grep('factor', var.names)
+      replace.names <- paste('group', (1:length(index.factor)), sep = '')
+      var.names2[index.factor] <- replace.names
+      colnames(design.matrix.names2) <- var.names2
     }
     
-    residui = array(dim=c(nvar,n,p))
-    fitted_part = array(dim=c(nvar,n,p)) # fitted values of the reduced model (different for each test)
-    formula.coeff_part = vector('list',nvar)
-    regr0_part = vector('list',nvar)
-    dummy.interaz <- grep(':',dummynames.all)
-    #coeff.perm_part = array(dim=c(nvar+1,n,p))
-    for(ii in 1:(nvar)){ #no test on intercept
-      var.ii = var.names2[ii]
-      variables.reduced = var.names2[-which(var.names2==var.ii)] #removing the current variable to test
+    residui <- array(dim = c(nvar, n, p))
+    fitted_part <- array(dim = c(nvar, n, p)) # fitted values of the reduced model (different for each test)
+    formula.coeff_part <- vector('list', nvar)
+    regr0_part <- vector('list', nvar)
+    dummy.interaz <- grep(':', dummynames.all)
+    for (ii in 1:(nvar)) { #no test on intercept
+      var.ii <- var.names2[ii]
+      variables.reduced <- var.names2[-which(var.names2 == var.ii)] #removing the current variable to test
       
-      if(length(grep(':',var.ii))>0){ # testing interaction
-        #print('interaz')
-        var12 <- strsplit(var.ii,':')
+      if (length(grep(':',var.ii)) > 0) { # testing interaction
+        var12 <- strsplit(var.ii, ':')
         var1 <- var12[[1]][1]
         var2 <- var12[[1]][2]
-        dummy.test1 <- grep(var1,dummynames.all)
-        dummy.test2 <- grep(var2,dummynames.all)
-        dummy.test <- intersect(dummy.test1,dummy.test2)
+        dummy.test1 <- grep(var1, dummynames.all)
+        dummy.test2 <- grep(var2, dummynames.all)
+        dummy.test <- intersect(dummy.test1, dummy.test2)
         dummynames.reduced <- dummynames.all[-dummy.test]
-      }else{
-        #print('nointeraz')
-        dummy.test <- grep(var.ii,dummynames.all)
-        dummy.test <- setdiff(dummy.test,dummy.interaz)
+      } else {
+        dummy.test <- grep(var.ii, dummynames.all)
+        dummy.test <- setdiff(dummy.test, dummy.interaz)
         dummynames.reduced <- dummynames.all[-dummy.test]
       }
       
-      
-      if(nvar>1){
-        formula.temp = paste(dummynames.reduced,collapse=' + ')
-      }else{
-        formula.temp = '1' #removing the only variable -> reduced model only has intercept term
+      if (nvar > 1) {
+        formula.temp <- paste(dummynames.reduced, collapse = ' + ')
+      } else {
+        formula.temp <- '1' #removing the only variable -> reduced model only has intercept term
       }
       
-      formula.coeff.temp <- paste(coeffnames,'~',formula.temp)
-      formula.coeff_part[[ii]] <- sapply(formula.coeff.temp,stats::as.formula,env=environment())
-      regr0_part[[ii]] = lapply(formula.coeff_part[[ii]],stats::lm)
+      formula.coeff.temp <- paste(coeffnames, '~', formula.temp)
+      formula.coeff_part[[ii]] <- sapply(
+        formula.coeff.temp, 
+        FUN = stats::as.formula, 
+        env = environment()
+      )
+      regr0_part[[ii]] <- lapply(formula.coeff_part[[ii]], stats::lm)
       
-      residui[ii,,] = simplify2array(lapply(regr0_part[[ii]],extract.residuals))
-      fitted_part[ii,,] = simplify2array(lapply(regr0_part[[ii]],extract.fitted))
+      residui[ii, , ] <- simplify2array(lapply(regr0_part[[ii]], extract_residuals))
+      fitted_part[ii, , ] <- simplify2array(lapply(regr0_part[[ii]], extract_fitted))
     }
-    
   }
   
+  T_glob <- matrix(ncol = p, nrow = B)
+  T_part <- array(dim = c(B, nvar, p))
   
-  T_glob <- matrix(ncol=p,nrow=B)
-  T_part = array(dim=c(B,nvar,p))
-  
-  for (perm in 1:B){
+  for (perm in 1:B) {
     # the F test is the same for both methods
-    if(nvar >0){
+    if (nvar >0) {
       permutazioni <- sample(n)
-      coeff_perm <- coeff[permutazioni,]
-    }else{ # testing intercept -> permute signs
-      signs <- stats::rbinom(n,1,0.5)*2 - 1
-      coeff_perm <- coeff*signs
+      coeff_perm <- coeff[permutazioni, ]
+    } else { # testing intercept -> permute signs
+      signs <- stats::rbinom(n, 1, 0.5) * 2 - 1
+      coeff_perm <- coeff * signs
     }
     
-    regr_perm = stats::lm.fit(design.matrix,coeff_perm)
+    regr_perm <- stats::lm.fit(design.matrix, coeff_perm)
     Sigma <- chol2inv(regr_perm$qr$qr)
-    resvar <- colSums(regr_perm$residuals^2)/regr0$df.residual
+    resvar <- colSums(regr_perm$residuals^2) / regr0$df.residual
     
-    if(nvar > 0)
-      T_glob[perm,] <- colSums((regr_perm$fitted - matrix(colMeans(regr_perm$fitted),nrow=n,ncol=p,byrow=TRUE))^2)/ ((nvar)*resvar)
+    if (nvar > 0)
+      T_glob[perm, ] <- colSums((
+        regr_perm$fitted - matrix(
+          colMeans(regr_perm$fitted),
+          nrow = n,
+          ncol = p,
+          byrow = TRUE
+        )
+      )^2) / ((nvar) * resvar)
     
     # partial tests: differ depending on the method
-    if(method=='responses'){
-      MSperm <- matrix(nrow=nvar+1,ncol=p)
-      for(var in 1:(nvar+1)){
-        MSperm[var,] <- colSums(rbind(regr_perm$effects[index.vars[var,1]:index.vars[var,2],]^2))/df.vars[var]
+    if (method == 'responses') {
+      MSperm <- matrix(nrow = nvar + 1, ncol = p)
+      for (var in 1:(nvar+1)) {
+        MSperm[var, ] <- colSums(rbind(
+          regr_perm$effects[index.vars[var, 1]:index.vars[var, 2], ]^2
+        )) / df.vars[var]
       }
       # test statistic:
-      T_part[perm,,] <- MSperm[1:nvar,] / matrix(MSperm[nvar+1,],nrow=nvar,ncol=p,byrow=TRUE)
-      
-    }else if(method=='residuals'){
-      residui_perm = residui[,permutazioni,]
-      aov_perm_part = vector('list',nvar)
-      for(ii in 1:(nvar)){
-        coeff_perm = fitted_part[ii,,] + residui_perm[ii,,]
-        regr_perm = stats::lm.fit(design.matrix,coeff_perm)
-        MSperm <- matrix(nrow=nvar+1,ncol=p)
-        for(var in 1:(nvar+1)){
-          MSperm[var,] <- colSums(rbind(regr_perm$effects[index.vars[var,1]:index.vars[var,2],]^2))/df.vars[var]
+      T_part[perm, , ] <- MSperm[1:nvar, ] / matrix(
+        MSperm[nvar + 1, ],
+        nrow = nvar,
+        ncol = p,
+        byrow = TRUE
+      )
+    } else if (method == 'residuals') {
+      residui_perm <- residui[, permutazioni, ]
+      aov_perm_part <- vector('list', nvar)
+      for (ii in 1:nvar) {
+        coeff_perm <- fitted_part[ii, , ] + residui_perm[ii, , ]
+        regr_perm <- stats::lm.fit(design.matrix, coeff_perm)
+        MSperm <- matrix(nrow = nvar + 1, ncol = p)
+        for (var in 1:(nvar+1)) {
+          MSperm[var, ] <- colSums(rbind(
+            regr_perm$effects[index.vars[var, 1]:index.vars[var, 2], ]^2
+          )) / df.vars[var]
         }
         # test statistic:
-        T_part[perm,ii,] <- (MSperm[1:nvar,] / matrix(MSperm[nvar+1,],nrow=nvar,ncol=p,byrow=TRUE))[ii,]
+        T_part[perm, ii, ] <- (MSperm[1:nvar, ] / matrix(
+          MSperm[nvar + 1, ],
+          nrow = nvar,
+          ncol = p,
+          byrow = TRUE
+        ))[ii, ]
       }
     }
   }
   
   pval_glob <- numeric(p)
-  pval_part = matrix(nrow=nvar,ncol=p)
-  for(i in 1:p){
-    pval_glob[i] <- sum(T_glob[,i]>=T0_glob[i])/B
-    pval_part[,i] = colSums(T_part[,,i]>=matrix(T0_part[,i],nrow=B,ncol=nvar,byrow=TRUE))/B
+  pval_part <- matrix(nrow = nvar, ncol = p)
+  for (i in 1:p) {
+    pval_glob[i] <- sum(T_glob[, i] >= T0_glob[i]) / B
+    pval_part[, i] <- colSums(T_part[, , i] >= matrix(
+      T0_part[, i],
+      nrow = B,
+      ncol = nvar,
+      byrow = TRUE
+    )) / B
   }
   
   #combination
   print('Global test')
-  if(stat=='Integral'){
+  if (stat == 'Integral') {
     T0_temp <- sum(T0_glob[1:p])
-    T_temp <- rowSums(T_glob[,1:p])
-    Global_pval_F <- sum(T_temp>=T0_temp)/B
+    T_temp <- rowSums(T_glob[, 1:p])
+    Global_pval_F <- sum(T_temp >= T0_temp) / B
     
-    Global_pval_factors = numeric(nvar)
-    for(ii in 1:(nvar)){
-      T0_temp <- sum(T0_part[ii,1:p])
-      T_temp <- rowSums(T_part[,ii,1:p])
-      Global_pval_factors[ii] <- sum(T_temp>=T0_temp)/B
+    Global_pval_factors <- numeric(nvar)
+    for (ii in 1:nvar) {
+      T0_temp <- sum(T0_part[ii, 1:p])
+      T_temp <- rowSums(T_part[, ii, 1:p])
+      Global_pval_factors[ii] <- sum(T_temp >= T0_temp) / B
     }
     
-    corrected.pval_glob = rep(Global_pval_F,p)
+    corrected.pval_glob <- rep(Global_pval_F, p)
     
-    corrected.pval_part = matrix(nrow=nvar,ncol=p)
-    for(ii in 1:(nvar)){
-      corrected.pval_part[ii,] = rep(Global_pval_factors[ii],p)
+    corrected.pval_part <- matrix(nrow = nvar, ncol = p)
+    for (ii in 1:nvar) {
+      corrected.pval_part[ii, ] <- rep(Global_pval_factors[ii], p)
     }
-  }else if(stat=='Max'){
+  } else if (stat=='Max') {
     T0_temp <- max(T0_glob)
-    T_temp <- apply(T_glob,1,max)
-    Global_pval_F <- sum(T_temp>=T0_temp)/B
+    T_temp <- apply(T_glob, 1, max)
+    Global_pval_F <- sum(T_temp >= T0_temp) / B
     
-    Global_pval_factors = numeric(nvar)
-    for(ii in 1:(nvar)){
-      T0_temp <- max(T0_part[ii,])
-      T_temp <- apply(T_part[,ii,],1,max)
-      Global_pval_factors[ii] <- sum(T_temp>=T0_temp)/B
+    Global_pval_factors <- numeric(nvar)
+    for (ii in 1:nvar) {
+      T0_temp <- max(T0_part[ii, ])
+      T_temp <- apply(T_part[, ii, ], 1, max)
+      Global_pval_factors[ii] <- sum(T_temp >= T0_temp) / B
     }
     
-    corrected.pval_glob = rep(Global_pval_F,p)
+    corrected.pval_glob <- rep(Global_pval_F, p)
     
-    corrected.pval_part = matrix(nrow=nvar,ncol=p)
-    for(ii in 1:(nvar)){
-      corrected.pval_part[ii,] = rep(Global_pval_factors[ii],p)
+    corrected.pval_part <- matrix(nrow = nvar, ncol = p)
+    for (ii in 1:nvar) {
+      corrected.pval_part[ii, ] <- rep(Global_pval_factors[ii], p)
     }
-    
   }
   
-  coeff.regr = regr0$coeff
+  coeff.regr <- regr0$coeff
   coeff.t <- coeff.regr
   
-  fitted.regr = regr0$fitted.values
+  fitted.regr <- regr0$fitted.values
   fitted.t <- fitted.regr
   
-  rownames(corrected.pval_part) = var.names
-  rownames(coeff.t) = colnames(design.matrix)
-  rownames(coeff.regr) = colnames(design.matrix)
-  rownames(pval_part) = var.names
+  rownames(corrected.pval_part) <- var.names
+  rownames(coeff.t) <- colnames(design.matrix)
+  rownames(coeff.regr) <- colnames(design.matrix)
+  rownames(pval_part) <- var.names
   
-  residuals.t = coeff - fitted.t
-  ybar.t = colMeans(coeff)
-  R2.t = colSums((fitted.t - matrix(data=ybar.t,nrow=n,ncol=npt,byrow=TRUE))^2)/colSums((coeff - matrix(data=ybar.t,nrow=n,ncol=npt,byrow=TRUE))^2)
+  residuals.t <- coeff - fitted.t
+  ybar.t <- colMeans(coeff)
+  R2.t <- colSums((fitted.t - matrix(
+    data = ybar.t,
+    nrow = n,
+    ncol = npt,
+    byrow = TRUE
+  ))^2) / colSums((coeff - matrix(
+    data = ybar.t,
+    nrow = n,
+    ncol = npt,
+    byrow = TRUE
+  ))^2)
   
   print('Interval-Wise Testing completed')
   
-  IWTresult <- list(call=cl,
-                    design_matrix=design.matrix,
-                    unadjusted_pval_F=pval_glob,
-                    adjusted_pval_F=corrected.pval_glob,
-                    unadjusted_pval_factors=pval_part,
-                    adjusted_pval_factors=corrected.pval_part,
-                    Global_pval_F = Global_pval_F,
-                    Global_pval_factors = Global_pval_factors,
-                    data.eval=coeff,
-                    coeff.regr.eval=coeff.t,
-                    fitted.eval=fitted.t,
-                    residuals.eval=residuals.t,
-                    R2.eval=R2.t
+  out <- list(
+    call = cl,
+    design_matrix = design.matrix,
+    unadjusted_pval_F = pval_glob,
+    adjusted_pval_F = corrected.pval_glob,
+    unadjusted_pval_factors = pval_part,
+    adjusted_pval_factors = corrected.pval_part,
+    Global_pval_F = Global_pval_F,
+    Global_pval_factors = Global_pval_factors,
+    data.eval = coeff,
+    coeff.regr.eval = coeff.t,
+    fitted.eval = fitted.t,
+    residuals.eval = residuals.t,
+    R2.eval = R2.t
   )
-  class(IWTresult) = 'IWTaov'
-  return(IWTresult)
+  class(out) <- 'IWTaov'
+  out
 }
-
-

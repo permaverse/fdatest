@@ -72,28 +72,6 @@
 
 
 TWTaov <- function(formula,B=1000,method='residuals',dx=NULL){
- 
-  stat_lm_glob <- function(anova){
-    result <- stats::summary.lm(anova)$f[1]
-    return(result)
-  }
-  stat_aov_part <- function(anova){
-    result <- summary(anova)[[1]][,4]
-    result <- result[-length(result)]
-    return(result)
-  }
-  extract.residuals = function(anova){
-    return(anova$residuals)
-  }
-  extract.fitted = function(anova){
-    return(anova$fitted)
-  }
-  #extract.pval <- function(anova){
-  #  result <- summary(anova)[[1]][,5]
-  #  result <- result[-length(result)]
-  #  return(result)
-  #}
-  
   env <- environment(formula)
   variables = all.vars(formula)
   y.name = variables[1]
@@ -219,8 +197,8 @@ TWTaov <- function(formula,B=1000,method='residuals',dx=NULL){
       formula.coeff_part[[ii]] <- sapply(formula.coeff.temp,stats::as.formula,env=environment())
       regr0_part[[ii]] = lapply(formula.coeff_part[[ii]],stats::lm)
       
-      residui[ii,,] = simplify2array(lapply(regr0_part[[ii]],extract.residuals))
-      fitted_part[ii,,] = simplify2array(lapply(regr0_part[[ii]],extract.fitted))
+      residui[ii,,] = simplify2array(lapply(regr0_part[[ii]],extract_residuals))
+      fitted_part[ii,,] = simplify2array(lapply(regr0_part[[ii]],extract_fitted))
     }
     
   }

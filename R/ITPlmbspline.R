@@ -100,14 +100,7 @@ function(formula,order=2,nknots=dim(stats::model.response(stats::model.frame(for
     adjusted.pval <- adjusted.pval[p:1]
     return(adjusted.pval)
   }
-
-  extract.residuals = function(regr){
-    return(regr$residuals)
-  }
-  extract.fitted = function(regr){
-    return(regr$fitted)
-  }
-
+  
   variables = all.vars(formula)
   y.name = variables[1]
   cl <- match.call()
@@ -195,8 +188,8 @@ function(formula,order=2,nknots=dim(stats::model.response(stats::model.frame(for
       formula.coeff_part[[ii]] <- sapply(formula.coeff.temp,stats::as.formula)
       regr0_part[[ii]] = lapply(formula.coeff_part[[ii]],stats::lm,data=mf.temp2)
 
-      residui[ii,,] = simplify2array(lapply(regr0_part[[ii]],extract.residuals))
-      fitted_part[ii,,] = simplify2array(lapply(regr0_part[[ii]],extract.fitted))
+      residui[ii,,] = simplify2array(lapply(regr0_part[[ii]],extract_residuals))
+      fitted_part[ii,,] = simplify2array(lapply(regr0_part[[ii]],extract_fitted))
 
 
     }
@@ -206,8 +199,8 @@ function(formula,order=2,nknots=dim(stats::model.response(stats::model.frame(for
     formula.coeff_part[[ii]] <- sapply(formula.coeff.temp,stats::as.formula)
     regr0_part[[ii]] = lapply(formula.coeff_part[[ii]],stats::lm,data=mf.temp)
 
-    residui[ii,,] = simplify2array(lapply(regr0_part[[ii]],extract.residuals))
-    fitted_part[ii,,] = simplify2array(lapply(regr0_part[[ii]],extract.fitted))
+    residui[ii,,] = simplify2array(lapply(regr0_part[[ii]],extract_residuals))
+    fitted_part[ii,,] = simplify2array(lapply(regr0_part[[ii]],extract_fitted))
 
   }
 
