@@ -155,10 +155,12 @@ See also <code><a href="ITPlmbspline.html">ITPlmbspline</a></code> to fit and te
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Performing the ITP</span></span></span>
 <span class="r-in"><span><span class="va">ITP.result</span> <span class="op">&lt;-</span> <span class="fu">ITPaovbspline</span><span class="op">(</span><span class="va">temperature</span> <span class="op">~</span> <span class="va">groups</span>,B<span class="op">=</span><span class="fl">100</span>,nknots<span class="op">=</span><span class="fl">20</span>,order<span class="op">=</span><span class="fl">3</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "First step: basis expansion"</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">First step: basis expansion</span> <span style="color: #00BBBB;">─────────────────────────────────────────────────</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Swapping 'y' and 'argvals', because 'y' is  simpler,</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   and 'argvals' should be;  now  dim(argvals) =  365 ;  dim(y) =  365 x 44 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Second step: joint univariate tests"</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">Second step: joint univariate tests</span> <span style="color: #00BBBB;">─────────────────────────────────────────</span></span>
 <span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in eval(predvars, data, env):</span> object 'groups' not found</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Summary of the ITP results</span></span></span>
