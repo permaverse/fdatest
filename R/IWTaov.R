@@ -146,8 +146,9 @@ IWTaov <- function(formula,
 
   p <- dim(coeff)[2]
   npt <- J
-
-  print('Point-wise tests')
+  
+  cli::cli_h1("Point-wise tests")
+  
   #univariate permutations
   coeffnames <- paste('coeff[,', as.character(1:p), ']', sep = '')
   formula.coeff <- paste(coeffnames, '~', formula.const)
@@ -332,7 +333,7 @@ IWTaov <- function(formula,
   }
 
   #combination
-  print('Interval-wise tests')
+  cli::cli_h1("Interval-wise tests")
 
   #asymmetric combination matrix:
   matrice_pval_asymm_glob <- matrix(nrow = p, ncol = p)
@@ -365,15 +366,7 @@ IWTaov <- function(formula,
           matrice_pval_asymm_part[ii, i, j] <- pval_temp
         }
       }
-      print(
-        paste(
-          'creating the p-value matrix: end of row ',
-          as.character(p - i + 1),
-          ' out of ',
-          as.character(p),
-          sep = ''
-        )
-      )
+      cli::cli_h1("Creating the p-value matrix: end of row {p - i + 1} out of {p}")
     }
   } else {
     for (i in (p - 1):maxrow) { # rows
@@ -391,15 +384,7 @@ IWTaov <- function(formula,
           matrice_pval_asymm_part[ii, i, j] <- pval_temp
         }
       }
-      print(
-        paste(
-          'creating the p-value matrix: end of row ',
-          as.character(p - i + 1),
-          ' out of ',
-          as.character(p),
-          sep = ''
-        )
-      )
+      cli::cli_h1("Creating the p-value matrix: end of row {p - i + 1} out of {p}")
     }
   }
 
@@ -438,7 +423,7 @@ IWTaov <- function(formula,
     byrow = TRUE
   ))^2)
 
-  print('Interval-Wise Testing completed')
+  cli::cli_h1("Interval-Wise Testing completed")
 
   out <- list(
     call = cl,

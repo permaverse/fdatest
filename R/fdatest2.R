@@ -107,8 +107,11 @@ fdatest2 <- function(data1, data2, method,
   alternative <- rlang::arg_match(alternative, values = AVAILABLE_ALTERNATIVES())
   method <- rlang::arg_match(method, values = AVAILABLE_METHODS())
   
-  if (method =="PCT" && is.null(partition)) {
-    stop('PCT method requires to specify a partition of the domain')
+  if (method == "PCT" && is.null(partition)) {
+    cli::cli_abort(
+      'When the {.arg method} argument is set to {.code "PCT"}, the {.arg
+      partition} argument should be explicitly provided.'
+    )
   }
   
   out <- switch(

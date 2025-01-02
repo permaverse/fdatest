@@ -91,7 +91,7 @@
 #' groups <- c(rep(0, 22), rep(1, 22))
 #'
 #' # Performing the IWT
-#' IWT.result <- IWTlm(temperature ~ groups, B = 3L)
+#' IWT.result <- IWTlm(temperature ~ groups, B = 2L)
 #' # Summary of the IWT results
 #' summary(IWT.result)
 #'
@@ -214,7 +214,8 @@ IWTlm <- function(formula,
     residui[ii, , ] <- simplify2array(lapply(regr0_part[[ii]], extract_residuals))
     fitted_part[ii, , ] <- simplify2array(lapply(regr0_part[[ii]], extract_fitted))
   }
-  print('Point-wise tests')
+  
+  cli::cli_h1("Point-wise tests")
   
   # CMC algorithm
   T_glob <- matrix(ncol = p, nrow = B)
@@ -294,7 +295,7 @@ IWTlm <- function(formula,
     )) / B
   }
   
-  print('Interval-wise tests')
+  cli::cli_h1("Interval-wise tests")
   
   matrice_pval_asymm_glob <- matrix(nrow = p, ncol = p)
   matrice_pval_asymm_glob[p, ] <- pval_glob[1:p]
@@ -327,15 +328,8 @@ IWTlm <- function(formula,
           matrice_pval_asymm_part[ii, i, j] <- pval_temp
         }
       }
-      print(
-        paste(
-          'creating the p-value matrix: end of row ',
-          as.character(p - i + 1),
-          ' out of ',
-          as.character(p),
-          sep = ''
-        )
-      )
+      
+      cli::cli_h1("Creating the p-value matrix: end of row {p - i + 1} out of {p}")
     }
   } else {
     for (i in (p - 1):1) {
@@ -353,15 +347,8 @@ IWTlm <- function(formula,
           matrice_pval_asymm_part[ii, i, j] <- pval_temp
         }
       }
-      print(
-        paste(
-          'creating the p-value matrix: end of row ',
-          as.character(p - i + 1),
-          ' out of ',
-          as.character(p),
-          sep = ''
-        )
-      )
+      
+      cli::cli_h1("Creating the p-value matrix: end of row {p - i + 1} out of {p}")
     }
   }
   
@@ -402,7 +389,7 @@ IWTlm <- function(formula,
     byrow = TRUE
   ))^2)
   
-  print('Interval-Wise Testing completed')
+  cli::cli_h1("Interval-Wise Testing completed")
   
   out <- list(
     call = cl,

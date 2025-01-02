@@ -106,8 +106,9 @@ IWT2 <- function(data1, data2,
     data = mu.eval, nrow = n1, ncol = p
   )
 
-  if(verbose)
-    print('Point-wise tests')
+  if (verbose)
+    cli::cli_h1("Point-wise tests")
+  
   #univariate permutations
   meandiff <- colMeans(coeff[1:n1, , drop = FALSE], na.rm = TRUE) - 
     colMeans(coeff[(n1 + 1):n, , drop = FALSE], na.rm = TRUE)
@@ -152,8 +153,8 @@ IWT2 <- function(data1, data2,
   }
 
   #combination
-  if(verbose)
-    print('Interval-wise tests')
+  if (verbose)
+    cli::cli_h1("Interval-wise tests")
 
   #asymmetric combination matrix:
   matrice_pval_asymm <- matrix(nrow = p, ncol = p)
@@ -173,16 +174,9 @@ IWT2 <- function(data1, data2,
         pval_temp <- sum(T_temp >= T0_temp) / B
         matrice_pval_asymm[i, j] <- pval_temp
       }
-      if(verbose)
-        print(
-          paste(
-            'creating the p-value matrix: end of row ',
-            as.character(p - i + 1),
-            ' out of ',
-            as.character(p),
-            sep = ''
-          )
-        )
+      
+      if (verbose)
+        cli::cli_h1("Creating the p-value matrix: end of row {p - i + 1} out of {p}")
     }
   } else { # without recycling
     for (i in (p - 1):maxrow) { # rows
@@ -194,24 +188,18 @@ IWT2 <- function(data1, data2,
         pval_temp <- sum(T_temp >= T0_temp) / B
         matrice_pval_asymm[i, j] <- pval_temp
       }
-      if(verbose)
-        print(
-          paste(
-            'creating the p-value matrix: end of row ',
-            as.character(p - i + 1),
-            ' out of ',
-            as.character(p),
-            sep = ''
-          )
-        )
+      
+      if (verbose)
+        cli::cli_h1("Creating the p-value matrix: end of row {p - i + 1} out of {p}")
     }
   }
 
   corrected.pval.matrix <- pval_correct(matrice_pval_asymm)
   corrected.pval <- corrected.pval.matrix[1, ]
 
-  if(verbose)
-    print('Interval-Wise Testing completed')
+  if (verbose)
+    cli::cli_h1("Interval-Wise Testing completed")
+  
   out <- list(
     test = '2pop',
     mu = mu.eval,

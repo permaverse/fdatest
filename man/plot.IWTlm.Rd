@@ -99,7 +99,7 @@ temperature <- rbind(NASAtemp$milan, NASAtemp$paris)
 groups <- c(rep(0, 22), rep(1, 22))
 
 # Performing the IWT
-IWT.result <- IWTlm(temperature ~ groups, B = 3L)
+IWT.result <- IWTlm(temperature ~ groups, B = 2L)
 
 # Summary of the IWT results
 summary(IWT.result)

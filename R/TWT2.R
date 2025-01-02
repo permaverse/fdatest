@@ -146,7 +146,7 @@ TWT2 <- function(data1, data2,
   
   # Second part:
   # combination into subsets
-  print('Threshold-wise tests')
+  cli::cli_h1("Threshold-wise tests")
   
   thresholds <- c(0, sort(unique(pval)), 1)
   adjusted.pval <- pval # we initialize the adjusted p-value as unadjusted one

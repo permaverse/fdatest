@@ -90,13 +90,8 @@ Global2 <- function(data1, data2,
   coeff2 <- inputs$coeff2
   mu.eval <- inputs$mu
   
-  possible_statistics <- c("Integral", "Integral_std", "Max", "Max_std")
-  if (!(stat %in% possible_statistics)) {
-    stop(paste0(
-      'Possible statistics are ',
-      paste0(possible_statistics, collapse = ', ')
-    ))
-  }
+  # Check the statistic
+  stat <- rlang::arg_match(stat, values = AVAILABLE_STATISTICS())
   
   n1 <- dim(coeff1)[1]
   n2 <- dim(coeff2)[1]

@@ -107,13 +107,7 @@ Globallm <- function(formula,
   coeff <- formula2coeff(formula, dx = dx)
   design_matrix <- formula2design_matrix(formula, coeff)
   
-  possible_statistics <- c("Integral", "Max")
-  if (!(stat %in% possible_statistics)) {
-    stop(paste0(
-      'Possible statistics are ',
-      paste0(possible_statistics, collapse = ', ')
-    ))
-  }
+  stat <- rlang::arg_match(stat, values = AVAILABLE_STATISTICS()[1:2])
   
   nvar <- dim(design_matrix)[2] - 1
   var_names <- colnames(design_matrix)
@@ -206,7 +200,8 @@ Globallm <- function(formula,
     residui[ii, , ] <- simplify2array(lapply(regr0_part[[ii]], extract_residuals))
     fitted_part[ii, , ] <- simplify2array(lapply(regr0_part[[ii]], extract_fitted))
   }
-  print('Point-wise tests')
+  
+  cli::cli_h1("Point-wise tests")
   
   # CMC algorithm
   T_glob <- matrix(ncol = p, nrow = B)
@@ -286,9 +281,9 @@ Globallm <- function(formula,
     )) / B
   }
   
-  print('Global test')
+  cli::cli_h1("Global test")
   
-  if (stat=='Integral') {
+  if (stat == "Integral") {
     T0_temp <- sum(T0_glob[1:p])
     T_temp <- rowSums(T_glob[, 1:p])
     Global_pval_F <- sum(T_temp >= T0_temp) / B
@@ -352,7 +347,7 @@ Globallm <- function(formula,
     byrow = TRUE
   ))^2)
   
-  print('Global Testing completed')
+  cli::cli_h1("Global Testing completed")
   
   out <- list(
     call = cl,

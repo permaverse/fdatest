@@ -109,13 +109,7 @@ Globalaov <- function(formula,
   cl <- match.call()
   coeff <- formula2coeff(formula, dx = dx)
   
-  possible_statistics <- c("Integral", "Max")
-  if (!(stat %in% possible_statistics)) {
-    stop(paste0(
-      'Possible statistics are ',
-      paste0(possible_statistics, collapse = ', ')
-    ))
-  }
+  stat <- rlang::arg_match(stat, values = AVAILABLE_STATISTICS()[1:2])
   
   dummynames.all <- colnames(attr(stats::terms(formula), "factors"))
   formula.const <- deparse(formula[[3]], width.cutoff = 500L) #extracting the part after ~ on formula. this will not work if the formula is longer than 500 char
@@ -133,7 +127,7 @@ Globalaov <- function(formula,
   p <- dim(coeff)[2]
   npt <- J
   
-  print('Point-wise tests')
+  cli::cli_h1("Point-wise tests")
   #univariate permutations
   coeffnames <- paste('coeff[,', as.character(1:p), ']', sep = '')
   formula.coeff <- paste(coeffnames, '~', formula.const)
@@ -324,7 +318,7 @@ Globalaov <- function(formula,
   }
   
   #combination
-  print('Global test')
+  cli::cli_h1("Global test")
   if (stat == 'Integral') {
     T0_temp <- sum(T0_glob[1:p])
     T_temp <- rowSums(T_glob[, 1:p])
@@ -388,7 +382,7 @@ Globalaov <- function(formula,
     byrow = TRUE
   ))^2)
   
-  print('Interval-Wise Testing completed')
+  cli::cli_h1("Interval-Wise Testing completed")
   
   out <- list(
     call = cl,

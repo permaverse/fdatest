@@ -122,7 +122,8 @@ TWTaov <- function(formula,
   p <- dim(coeff)[2]
   npt <- J
   
-  print('Point-wise tests')
+  cli::cli_h1("Point-wise tests")
+  
   #univariate permutations
   coeffnames <- paste('coeff[,', as.character(1:p), ']', sep = '')
   formula.coeff <- paste(coeffnames, '~', formula.const)
@@ -315,7 +316,7 @@ TWTaov <- function(formula,
   }
   
   #combination
-  print('Threshold-wise tests')
+  cli::cli_h1("Threshold-wise tests")
   
   # F-test
   thresholds <- c(0, sort(unique(pval_glob)), 1)
@@ -393,7 +394,7 @@ TWTaov <- function(formula,
     byrow = TRUE
   ))^2)
   
-  print('Threshold-Wise Testing completed')
+  cli::cli_h1("Threshold-Wise Testing completed")
   
   out <- list(
     call = cl,

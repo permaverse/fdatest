@@ -124,9 +124,9 @@ function(formula,order=2,nknots=dim(stats::model.response(stats::model.frame(for
 
   n <- dim(data)[1]
   J <- dim(data)[2]
-
-
-  print('First step: basis expansion')
+  
+  cli::cli_h1("First step: basis expansion")
+  
   #splines coefficients:
   eval <- data
   bspl.basis <- fda::create.bspline.basis(c(1,J),norder=order,breaks=seq(1,J,length.out=nknots))
@@ -141,8 +141,9 @@ function(formula,order=2,nknots=dim(stats::model.response(stats::model.frame(for
   ascissa.2 <- seq(1,J,length.out=npt)
   bspl.eval.smooth <- fda::eval.basis(ascissa.2,bspl.basis)
   data.eval <- t(bspl.eval.smooth %*% t(coeff))
-
-  print('Second step: joint univariate tests')
+  
+  cli::cli_h1("Second step: joint univariate tests")
+  
   #univariate permutations
   formula.const <- deparse(formula[[3]],width.cutoff = 500L) #extracting the part after ~ on formula. this will not work if the formula is longer than 500 char
   coeffnames <- paste('coeff[,',as.character(1:p),']',sep='')
@@ -209,8 +210,7 @@ function(formula,order=2,nknots=dim(stats::model.response(stats::model.frame(for
       variables.reduced = var.names2[-which(var.names2==var.ii)] #removing the current variable to test
 
       if(length(grep(':',var.ii))>0){ # testing interaction
-        #print('interaz')
-        var12 <- strsplit(var.ii,':')
+        var12 <- strsplit(var.ii, ':')
         var1 <- var12[[1]][1]
         var2 <- var12[[1]][2]
         dummy.test1 <- grep(var1,dummynames.all)
@@ -218,7 +218,6 @@ function(formula,order=2,nknots=dim(stats::model.response(stats::model.frame(for
         dummy.test <- intersect(dummy.test1,dummy.test2)
         dummynames.reduced <- dummynames.all[-dummy.test]
       }else{
-        #print('nointeraz')
         dummy.test <- grep(var.ii,dummynames.all)
         dummy.test <- setdiff(dummy.test,dummy.interaz)
         dummynames.reduced <- dummynames.all[-dummy.test]
@@ -298,7 +297,8 @@ function(formula,order=2,nknots=dim(stats::model.response(stats::model.frame(for
   }
 
   #combination
-  print('Third step: interval-wise combination and correction')
+  cli::cli_h1('Third step: interval-wise combination and correction')
+  
   q <- numeric(B)
   L_glob <- matrix(nrow=B,ncol=p)
   for(j in 1:p){
