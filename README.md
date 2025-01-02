@@ -6,6 +6,8 @@
 <!-- badges: start -->
 
 [![R-CMD-check](https://github.com/permaverse/fdatest/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/permaverse/fdatest/actions/workflows/R-CMD-check.yaml)
+[![Codecov test
+coverage](https://codecov.io/gh/permaverse/fdatest/graph/badge.svg)](https://app.codecov.io/gh/permaverse/fdatest)
 <!-- badges: end -->
 
 The goal of fdatest is to implement various statistical methods for
