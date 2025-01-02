@@ -91,22 +91,23 @@
 #'   xrange = c(1, 365)
 #' )
 plot.IWTlm <- function(x, 
-                       xrange = c(0,1), 
+                       xrange = c(0, 1), 
                        alpha1 = 0.05, 
                        alpha2 = 0.01, 
                        plot_adjpval = FALSE,
-                       col = c(1,grDevices::rainbow(dim(x$adjusted_pval_part)[1])), 
+                       col = c(1, grDevices::rainbow(dim(x$adjusted_pval_part)[1])), 
                        ylim = NULL,
-                       ylab='Functional Data', 
-                       main=NULL, 
+                       ylab = "Functional Data", 
+                       main = NULL, 
                        lwd = 1, 
-                       type='l',
+                       type = "l", 
                        ...) {
   if (alpha1 < alpha2) {
     temp <- alpha1
     alpha1 <- alpha2
     alpha2 <- temp
   }
+  
   object <- x
   p <- length(object$unadjusted_pval_F)
   J <- p
@@ -115,134 +116,315 @@ plot.IWTlm <- function(x,
   xmax <- xrange[2]
   abscissa_pval <- seq(xmin, xmax, len = p)
   abscissa_smooth <- seq(xmin, xmax, len = J)
+  
   grDevices::devAskNewPage(ask = TRUE)  
-  main_F <- paste(main,': Functional Data and F-test')
+  main_F <- paste(main, ': Functional Data and F-test')
   main_F <- sub("^ : +", "", main_F)
-  fda::matplot(abscissa_smooth, t(object$data.eval), type = 'l',col = NA, main = main_F,
-          ylab = ylab, ylim = ylim, lwd = lwd, ...)
+  
+  fda::matplot(
+    abscissa_smooth,
+    t(object$data.eval),
+    type = 'l',
+    col = NA,
+    main = main_F,
+    ylab = ylab,
+    ylim = ylim,
+    lwd = lwd,
+    ...
+  )
+  
   difference1 <- which(object$adjusted_pval_F < alpha1)
   if (length(difference1) > 0) {
     for (j in 1:length(difference1)) {
-      min_rect <- abscissa_pval[difference1[j]] - (abscissa_pval[2] - abscissa_pval[1]) / 2
+      min_rect <- abscissa_pval[difference1[j]] - 
+        (abscissa_pval[2] - abscissa_pval[1]) / 2
       max_rect <- min_rect + (abscissa_pval[2] - abscissa_pval[1])
-      graphics::rect(min_rect, graphics::par("usr")[3], max_rect, graphics::par("usr")[4], col = "gray90", 
-           density = -2, border = NA)
+      graphics::rect(
+        min_rect,
+        graphics::par("usr")[3],
+        max_rect,
+        graphics::par("usr")[4],
+        col = "gray90",
+        density = -2,
+        border = NA
+      )
     }
-    graphics::rect(graphics::par("usr")[1], graphics::par("usr")[3], graphics::par("usr")[2],graphics::par("usr")[4], 
-         col = NULL, border = "black")
+    graphics::rect(
+      graphics::par("usr")[1],
+      graphics::par("usr")[3],
+      graphics::par("usr")[2],
+      graphics::par("usr")[4],
+      col = NULL,
+      border = "black"
+    )
   }
+  
   difference2 <- which(object$adjusted_pval_F < alpha2)
   if (length(difference2) > 0) {
     for (j in 1:length(difference2)) {
-      min_rect <- abscissa_pval[difference2[j]] - (abscissa_pval[2] - abscissa_pval[1])/2
+      min_rect <- abscissa_pval[difference2[j]] - 
+        (abscissa_pval[2] - abscissa_pval[1]) / 2
       max_rect <- min_rect + (abscissa_pval[2] - abscissa_pval[1])
-      graphics::rect(min_rect, graphics::par("usr")[3], max_rect, graphics::par("usr")[4], col = "gray80", 
-           density = -2, border = NA)
+      graphics::rect(
+        min_rect,
+        graphics::par("usr")[3],
+        max_rect,
+        graphics::par("usr")[4],
+        col = "gray80",
+        density = -2,
+        border = NA
+      )
     }
-    graphics::rect(graphics::par("usr")[1], graphics::par("usr")[3], graphics::par("usr")[2],graphics::par("usr")[4], 
-         col = NULL, border = "black")
+    graphics::rect(
+      graphics::par("usr")[1],
+      graphics::par("usr")[3],
+      graphics::par("usr")[2],
+      graphics::par("usr")[4],
+      col = NULL,
+      border = "black"
+    )
   }
-  fda::matplot(abscissa_smooth, t(object$data.eval), type='l', col = col[1],
-          add = TRUE, lwd = lwd,...)
   
-  for(var in 1:(dim(object$adjusted_pval_part)[1])){
+  fda::matplot(
+    abscissa_smooth,
+    t(object$data.eval),
+    type = 'l',
+    col = col[1],
+    add = TRUE,
+    lwd = lwd,
+    ...
+  )
+  
+  for (var in 1:dim(object$adjusted_pval_part)[1]) {
     var_name <- rownames(object$adjusted_pval_part)[var]
     main_t <- paste(main, ': t-test -', var_name, sep = ' ')
     main_t <- sub("^ : +", "", main_t)
-    plot(abscissa_smooth, object$coeff.regr.eval[var,], type = 'l', 
-         col = 0, ylim = range(c(0, object$coeff.regr.eval[var,])),
-         lwd = 2, main = main_t, ylab = 'Regression Coefficient', ...)
+    plot(
+      abscissa_smooth,
+      object$coeff.regr.eval[var, ],
+      type = 'l',
+      col = 0,
+      ylim = range(c(0, object$coeff.regr.eval[var, ])),
+      lwd = 2,
+      main = main_t,
+      ylab = 'Regression Coefficient',
+      ...
+    )
+    
     difference1 <- which(object$adjusted_pval_part[var, ] < alpha1)
     if (length(difference1) > 0) {
       for (j in 1:length(difference1)) {
-        min_rect <- abscissa_pval[difference1[j]] - (abscissa_pval[2] - abscissa_pval[1]) / 2
+        min_rect <- abscissa_pval[difference1[j]] - 
+          (abscissa_pval[2] - abscissa_pval[1]) / 2
         max_rect <- min_rect + (abscissa_pval[2] - abscissa_pval[1])
-        graphics::rect(min_rect, graphics::par("usr")[3], max_rect, graphics::par("usr")[4], col = "gray90", 
-             density = -2, border = NA)
+        graphics::rect(
+          min_rect,
+          graphics::par("usr")[3],
+          max_rect,
+          graphics::par("usr")[4],
+          col = "gray90",
+          density = -2,
+          border = NA
+        )
       }
-      graphics::rect(graphics::par("usr")[1], graphics::par("usr")[3], graphics::par("usr")[2],graphics::par("usr")[4], 
-           col = NULL, border = "black")
+      graphics::rect(
+        graphics::par("usr")[1],
+        graphics::par("usr")[3],
+        graphics::par("usr")[2],
+        graphics::par("usr")[4],
+        col = NULL,
+        border = "black"
+      )
     }
-    difference2 <- which(object$adjusted_pval_part[var,] < alpha2)
+    
+    difference2 <- which(object$adjusted_pval_part[var, ] < alpha2)
     if (length(difference2) > 0) {
       for (j in 1:length(difference2)) {
-        min_rect <- abscissa_pval[difference2[j]] - (abscissa_pval[2] - abscissa_pval[1])/2
+        min_rect <- abscissa_pval[difference2[j]] - 
+          (abscissa_pval[2] - abscissa_pval[1]) / 2
         max_rect <- min_rect + (abscissa_pval[2] - abscissa_pval[1])
-        graphics::rect(min_rect, graphics::par("usr")[3], max_rect, graphics::par("usr")[4], col = "gray80", 
-             density = -2, border = NA)
+        graphics::rect(
+          min_rect,
+          graphics::par("usr")[3],
+          max_rect,
+          graphics::par("usr")[4],
+          col = "gray80",
+          density = -2,
+          border = NA
+        )
       }
-      graphics::rect(graphics::par("usr")[1], graphics::par("usr")[3], graphics::par("usr")[2],graphics::par("usr")[4], 
-           col = NULL, border = "black")
+      graphics::rect(
+        graphics::par("usr")[1],
+        graphics::par("usr")[3],
+        graphics::par("usr")[2],
+        graphics::par("usr")[4],
+        col = NULL,
+        border = "black"
+      )
     }
-    graphics::lines(abscissa_smooth, object$coeff.regr.eval[var,], type = 'l', 
-          col = col[var + 1], lwd = 2, ...)
+    graphics::lines(
+      abscissa_smooth,
+      object$coeff.regr.eval[var, ],
+      col = col[var + 1],
+      lwd = 2,
+      ...
+    )
     graphics::abline(h = 0, lty = 2, col = 1)
   }
+  
   # Plot adjusted p-values
-  if (plot_adjpval == TRUE) {
+  if (plot_adjpval) {
     main_p <- paste(main, ': Adjusted p-values - F-test')
     main_p <- sub("^ : +", "", main_p)
-    plot(abscissa_pval, object$adjusted_pval_F, type=type,lwd=2, ylim = c(0,1), 
-         main = main_p, ylab = 'p-value', col=0,...)
+    plot(
+      abscissa_pval,
+      object$adjusted_pval_F,
+      type = type,
+      lwd = 2,
+      ylim = c(0, 1),
+      main = main_p,
+      ylab = 'p-value',
+      col = 0,
+      ...
+    )
+    
     difference1 <- which(object$adjusted_pval_F < alpha1)
     if (length(difference1) > 0) {
       for (j in 1:length(difference1)) {
-        min_rect <- abscissa_pval[difference1[j]] - (abscissa_pval[2] - abscissa_pval[1])/2
+        min_rect <- abscissa_pval[difference1[j]] - 
+          (abscissa_pval[2] - abscissa_pval[1]) / 2
         max_rect <- min_rect + (abscissa_pval[2] - abscissa_pval[1])
-        graphics::rect(min_rect, graphics::par("usr")[3], max_rect, graphics::par("usr")[4], col = "gray90", 
-             density = -2, border = NA)
+        graphics::rect(
+          min_rect,
+          graphics::par("usr")[3],
+          max_rect,
+          graphics::par("usr")[4],
+          col = "gray90",
+          density = -2,
+          border = NA
+        )
       }
-      graphics::rect(graphics::par("usr")[1], graphics::par("usr")[3], graphics::par("usr")[2],graphics::par("usr")[4], 
-           col = NULL, border = "black")
+      graphics::rect(
+        graphics::par("usr")[1],
+        graphics::par("usr")[3],
+        graphics::par("usr")[2],
+        graphics::par("usr")[4],
+        col = NULL,
+        border = "black"
+      )
     }
+    
     difference2 <- which(object$adjusted_pval_F < alpha2)
     if (length(difference2) > 0) {
       for (j in 1:length(difference2)) {
-        min_rect <- abscissa_pval[difference2[j]] - (abscissa_pval[2] - abscissa_pval[1])/2
+        min_rect <- abscissa_pval[difference2[j]] - 
+          (abscissa_pval[2] - abscissa_pval[1]) / 2
         max_rect <- min_rect + (abscissa_pval[2] - abscissa_pval[1])
-        graphics::rect(min_rect, graphics::par("usr")[3], max_rect, graphics::par("usr")[4], col = "gray80", 
-             density = -2, border = NA)
+        graphics::rect(
+          min_rect,
+          graphics::par("usr")[3],
+          max_rect,
+          graphics::par("usr")[4],
+          col = "gray80",
+          density = -2,
+          border = NA
+        )
       }
-      graphics::rect(graphics::par("usr")[1], graphics::par("usr")[3], graphics::par("usr")[2],graphics::par("usr")[4], 
-           col = NULL, border = "black")
+      graphics::rect(
+        graphics::par("usr")[1],
+        graphics::par("usr")[3],
+        graphics::par("usr")[2],
+        graphics::par("usr")[4],
+        col = NULL,
+        border = "black"
+      )
     }
+    
     for (j in 0:10) {
       graphics::abline(h = j / 10, col = 'lightgray', lty = "dotted")
     }
-    graphics::lines(abscissa_pval, object$adjusted_pval_F,lwd=2, ...)
-    for(var in 1:(dim(object$adjusted_pval_part)[1])){
-      var_name = rownames(object$adjusted_pval_part)[var]
+    
+    graphics::lines(abscissa_pval, object$adjusted_pval_F, lwd = 2, ...)
+    
+    for (var in 1:dim(object$adjusted_pval_part)[1]) {
+      var_name <- rownames(object$adjusted_pval_part)[var]
       main_p <- paste(main, ': Adjusted p-values - t-test -', var_name)
       main_p <- sub("^ : +", "", main_p)
-      plot(abscissa_pval, object$adjusted_pval_part[var,], ylim = c(0, 1),
-           main = main_p, ylab = 'p-value',col=NA, ...)
-      difference1 <- which(object$adjusted_pval_part[var,] < alpha1)
+      plot(
+        abscissa_pval,
+        object$adjusted_pval_part[var, ],
+        ylim = c(0, 1),
+        main = main_p,
+        ylab = 'p-value',
+        col = NA,
+        ...
+      )
+      
+      difference1 <- which(object$adjusted_pval_part[var, ] < alpha1)
       if (length(difference1) > 0) {
         for (j in 1:length(difference1)) {
-          min_rect <- abscissa_pval[difference1[j]] - (abscissa_pval[2] - abscissa_pval[1]) / 2
+          min_rect <- abscissa_pval[difference1[j]] - 
+            (abscissa_pval[2] - abscissa_pval[1]) / 2
           max_rect <- min_rect + (abscissa_pval[2] - abscissa_pval[1])
-          graphics::rect(min_rect, graphics::par("usr")[3], max_rect, graphics::par("usr")[4], col = "gray90", 
-               density = -2, border = NA)
+          graphics::rect(
+            min_rect,
+            graphics::par("usr")[3],
+            max_rect,
+            graphics::par("usr")[4],
+            col = "gray90",
+            density = -2,
+            border = NA
+          )
         }
-        graphics::rect(graphics::par("usr")[1], graphics::par("usr")[3], graphics::par("usr")[2],graphics::par("usr")[4], 
-             col = NULL, border = "black")
+        graphics::rect(
+          graphics::par("usr")[1],
+          graphics::par("usr")[3],
+          graphics::par("usr")[2],
+          graphics::par("usr")[4],
+          col = NULL,
+          border = "black"
+        )
       }
-      difference2 <- which(object$adjusted_pval_part[var,] < alpha2)
+      
+      difference2 <- which(object$adjusted_pval_part[var, ] < alpha2)
       if (length(difference2) > 0) {
         for (j in 1:length(difference2)) {
-          min_rect <- abscissa_pval[difference2[j]] - (abscissa_pval[2] - abscissa_pval[1]) / 2
+          min_rect <- abscissa_pval[difference2[j]] - 
+            (abscissa_pval[2] - abscissa_pval[1]) / 2
           max_rect <- min_rect + (abscissa_pval[2] - abscissa_pval[1])
-          graphics::rect(min_rect, graphics::par("usr")[3], max_rect, graphics::par("usr")[4], col = "gray80", density = -2, border = NA)
+          graphics::rect(
+            min_rect,
+            graphics::par("usr")[3],
+            max_rect,
+            graphics::par("usr")[4],
+            col = "gray80",
+            density = -2,
+            border = NA
+          )
         }
-        graphics::rect(graphics::par("usr")[1], graphics::par("usr")[3], graphics::par("usr")[2],graphics::par("usr")[4], 
-             col = NULL, border = "black")
+        graphics::rect(
+          graphics::par("usr")[1],
+          graphics::par("usr")[3],
+          graphics::par("usr")[2],
+          graphics::par("usr")[4],
+          col = NULL,
+          border = "black"
+        )
       }
+      
       for (j in 0:10) {
         graphics::abline(h = j / 10, col = 'lightgray', lty = "dotted")
       }
-      graphics::lines(abscissa_pval, object$adjusted_pval_part[var,], lwd=2, ...)
+      
+      graphics::lines(
+        abscissa_pval, 
+        object$adjusted_pval_part[var, ], 
+        lwd = 2, 
+        ...
+      )
     }
   }
+  
   grDevices::devAskNewPage(ask = FALSE)   
 }
 
