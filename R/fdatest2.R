@@ -29,7 +29,8 @@
 #' @param partition Used only if \code{method}="\code{PCT}". The partition to be
 #'   used for PCT procedure. Default is \code{NULL}.
 #'
-#' @return An object of class `fdatest2` containing at least the following components:
+#' @return An object of class `fdatest2` containing at least the following
+#'   components:
 #' 
 #' - `test`: a string vector indicating the type of test performed. In this case
 #'  equal to `"2pop"`.
@@ -103,21 +104,14 @@ fdatest2 <- function(data1, data2, method,
                      recycle = TRUE, 
                      partition = NULL, 
                      verbose = TRUE) {
-  possible_alternatives <- c("two.sided", "less", "greater")
-  if(!(alternative %in% possible_alternatives)){
-    stop(paste0('Possible alternatives are ',paste0(possible_alternatives,collapse=', ')))
-  }
+  alternative <- rlang::arg_match(alternative, values = AVAILABLE_ALTERNATIVES())
+  method <- rlang::arg_match(method, values = AVAILABLE_METHODS())
   
-  possible_methods <- c("IWT", "TWT", "PCT", "Global","FDR")
-  if(!(method %in% possible_methods)){
-    stop(paste0('Available methods are ',paste0(possible_methods,collapse=', ')))
-  }
-  
-  if(method=="PCT" & is.null(partition)){
+  if (method =="PCT" && is.null(partition)) {
     stop('PCT method requires to specify a partition of the domain')
   }
   
-  result = switch(
+  out <- switch(
     method,
     IWT = IWT2(
       data1 = data1,
@@ -167,7 +161,7 @@ fdatest2 <- function(data1, data2, method,
       alternative = alternative
     )
   )
-  result$method = method
-  return(result)
+  out$method <- method
+  out
 }
 

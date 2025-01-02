@@ -5,7 +5,7 @@
 \title{Interval-wise testing procedure for testing functional-on-scalar linear
 models}
 \usage{
-IWTlm(formula, B = 1000, method = "residuals", dx = NULL, recycle = TRUE)
+IWTlm(formula, B = 1000L, method = "residuals", dx = NULL, recycle = TRUE)
 }
 \arguments{
 \item{formula}{An object of class "\code{\link{formula}}" (or one that can be

@@ -15,66 +15,92 @@ Global2(
 )
 }
 \arguments{
-\item{data1}{First population's data. Either pointwise evaluations of the functional data set on a uniform grid, or a \code{fd} object from the package \code{fda}.
-If pointwise evaluations are provided, \code{data2} is a matrix of dimensions \code{c(n1,J)}, with \code{J} evaluations on columns and \code{n1} units on rows.}
+\item{data1}{First population's data. Either pointwise evaluations of the
+functional data set on a uniform grid, or a \code{fd} object from the
+package \code{fda}. If pointwise evaluations are provided, \code{data2} is
+a matrix of dimensions \code{c(n1,J)}, with \code{J} evaluations on columns
+and \code{n1} units on rows.}
 
-\item{data2}{Second population's data. Either pointwise evaluations of the functional data set on a uniform grid, or a \code{fd} object from the package \code{fda}.
-If pointwise evaluations are provided, \code{data2} is a matrix of dimensions \code{c(n1,J)}, with \code{J} evaluations on columns and \code{n2} units on rows.}
+\item{data2}{Second population's data. Either pointwise evaluations of the
+functional data set on a uniform grid, or a \code{fd} object from the
+package \code{fda}. If pointwise evaluations are provided, \code{data2} is
+a matrix of dimensions \code{c(n1,J)}, with \code{J} evaluations on columns
+and \code{n2} units on rows.}
 
-\item{mu}{Functional mean difference under the null hypothesis. Three possibilities are available for \code{mu}:
-a constant (in this case, a constant function is used);
-a \code{J}-dimensional vector containing the evaluations on the same grid which \code{data} are evaluated;
-a \code{fd} object from the package \code{fda} containing one function.
-The default is \code{mu=0}.}
+\item{mu}{Functional mean difference under the null hypothesis. Three
+possibilities are available for \code{mu}: a constant (in this case, a
+constant function is used); a \code{J}-dimensional vector containing the
+evaluations on the same grid which \code{data} are evaluated; a \code{fd}
+object from the package \code{fda} containing one function. The default is
+\code{mu=0}.}
 
-\item{B}{The number of iterations of the MC algorithm to evaluate the p-values of the permutation tests. The defualt is \code{B=1000}.}
+\item{B}{The number of iterations of the MC algorithm to evaluate the
+p-values of the permutation tests. The defualt is \code{B=1000}.}
 
-\item{paired}{A logical indicating whether a paired test has to be performed. Default is \code{FALSE}.}
+\item{paired}{A logical indicating whether a paired test has to be performed.
+Default is \code{FALSE}.}
 
-\item{dx}{Used only if a \code{fd} object is provided. In this case, \code{dx} is the size of the discretization step of the grid  used to evaluate functional data.
-If set to \code{NULL}, a grid of size 100 is used. Default is \code{NULL}.}
+\item{dx}{Used only if a \code{fd} object is provided. In this case,
+\code{dx} is the size of the discretization step of the grid  used to
+evaluate functional data. If set to \code{NULL}, a grid of size 100 is
+used. Default is \code{NULL}.}
 
-\item{stat}{Test statistic used for the global test.
-Possible values are: \code{"Integral"}: integral of the squared sample mean difference; \code{"Max"}: maximum of the squared sample mean difference;
-\code{"Integral_std"}: integral of the squared t-test statistic; \code{"Max_std"}: maximum of the squared t-test statistic.
-Default is \code{"Integral"}.}
+\item{stat}{Test statistic used for the global test. Possible values are:
+\code{"Integral"}: integral of the squared sample mean difference;
+\code{"Max"}: maximum of the squared sample mean difference;
+\code{"Integral_std"}: integral of the squared t-test statistic;
+\code{"Max_std"}: maximum of the squared t-test statistic. Default is
+\code{"Integral"}.}
 }
 \value{
-\code{Global2} returns an object of \code{\link{class}} "\code{fdatest2}", containing the following components:
-\item{test}{String vector indicating the type of test performed. In this case equal to \code{"2pop"}.}
-\item{mu}{Evaluation on a grid of the functional mean difference under the null hypothesis (as entered by the user).}
-\item{unadjusted_pval}{Evaluation on a grid of the unadjusted p-value function (it is a constant function according to the global testing procedure).}
-\item{adjusted_pval}{Evaluation on a grid of the adjusted p-value function.}
-\item{data.eval}{Evaluation on a grid of the functional data.}
-\item{ord_labels}{Vector of labels indicating the group membership of data.eval}
+An object of class \code{fdatest2}, containing the following components:
+\itemize{
+\item \code{test}: String vector indicating the type of test performed. In this case
+equal to \code{"2pop"}.
+\item \code{mu}: Evaluation on a grid of the functional mean difference under the
+null hypothesis (as entered by the user).
+\item \code{unadjusted_pval}: Evaluation on a grid of the unadjusted p-value
+function (it is a constant function according to the global testing
+procedure).
+\item \code{adjusted_pval}: Evaluation on a grid of the adjusted p-value function.
+\item \code{data.eval}: Evaluation on a grid of the functional data.
+\item \code{ord_labels}: Vector of labels indicating the group membership of
+\code{data.eval}.
+}
 }
 \description{
-The function implements the Global Testing procedure for testing mean differences between two
-functional populations. Functional data are tested locally and unadjusted and adjusted p-value
-functions are provided. The unadjusted p-value function controls the point-wise error rate. The adjusted p-value function controls the
-interval-wise error rate.
+The function implements the Global Testing procedure for testing mean
+differences between two functional populations. Functional data are tested
+locally and unadjusted and adjusted p-value functions are provided. The
+unadjusted p-value function controls the point-wise error rate. The adjusted
+p-value function controls the interval-wise error rate.
 }
 \examples{
 # Importing the NASA temperatures data set
 data(NASAtemp)
 
 # Performing the Global for two populations
-Global.result <- Global2(NASAtemp$paris,NASAtemp$milan)
+Global.result <- Global2(NASAtemp$paris, NASAtemp$milan)
 
 # Plotting the results of the Global
-plot(Global.result,xrange=c(0,12),main='Global results for testing mean differences')
-
+plot(
+  Global.result, 
+  xrange = c(0, 12), 
+  main = 'Global results for testing mean differences'
+)
 
 # Selecting the significant components at 5\% level
 which(Global.result$adjusted_pval < 0.05)
-
 }
 \references{
-A. Pini and S. Vantini (2017).
-The Interval Testing Procedure: Inference for Functional Data Controlling the Family Wise Error Rate on Intervals. Biometrics 73(3): 835–845.
+A. Pini and S. Vantini (2017). The Interval Testing Procedure: Inference for
+Functional Data Controlling the Family Wise Error Rate on Intervals.
+Biometrics 73(3): 835–845.
 
-Pini, A., & Vantini, S. (2017). Interval-wise testing for functional data. \emph{Journal of Nonparametric Statistics}, 29(2), 407-424
+Pini, A., & Vantini, S. (2017). Interval-wise testing for functional data.
+\emph{Journal of Nonparametric Statistics}, 29(2), 407-424
 }
 \seealso{
-See also \code{\link{IWT2}} for local inference. See \code{\link{plot.fdatest2}} for plotting the results.
+See also \code{\link{IWT2}} for local inference. See
+\code{\link{plot.fdatest2}} for plotting the results.
 }

@@ -71,7 +71,8 @@ used for PCT procedure. Default is \code{NULL}.}
 Default is \code{TRUE}.}
 }
 \value{
-An object of class \code{fdatest2} containing at least the following components:
+An object of class \code{fdatest2} containing at least the following
+components:
 \itemize{
 \item \code{test}: a string vector indicating the type of test performed. In this case
 equal to \code{"2pop"}.

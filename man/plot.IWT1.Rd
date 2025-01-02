@@ -76,7 +76,7 @@ IWT.result <- IWT1(NASAtemp$paris, mu = 4, B = 10L)
 plot(IWT.result, xrange = c(0, 12), main = 'Paris temperatures')
 
 # Plotting the p-value heatmap
-IWTimage(IWT.result,abscissa_range=c(0,12))
+IWTimage(IWT.result, abscissa_range = c(0, 12))
 
 # Selecting the significant components at 5\% level
 which(IWT.result$adjusted_pval < 0.05)

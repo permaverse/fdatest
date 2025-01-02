@@ -32,7 +32,8 @@ Encoding: UTF-8
 LazyData: true
 Imports: 
     fda,
-    lifecycle
+    lifecycle,
+    rlang
 RoxygenNote: 7.3.2
 Roxygen: list(markdown = TRUE)
 Depends: 

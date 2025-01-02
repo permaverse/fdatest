@@ -4,7 +4,7 @@
 \alias{IWTaov}
 \title{Interval Wise Testing procedure for testing functional analysis of variance}
 \usage{
-IWTaov(formula, B = 1000, method = "residuals", dx = NULL, recycle = TRUE)
+IWTaov(formula, B = 1000L, method = "residuals", dx = NULL, recycle = TRUE)
 }
 \arguments{
 \item{formula}{An object of class "\code{\link{formula}}" (or one that can be

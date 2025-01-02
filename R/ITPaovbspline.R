@@ -102,21 +102,6 @@ function(formula,order=2,nknots=dim(stats::model.response(stats::model.frame(for
     adjusted.pval <- adjusted.pval[p:1]
     return(adjusted.pval)
   }
-  stat_lm_glob <- function(anova){
-    result <- stats::summary.lm(anova)$f[1]
-    return(result)
-  }
-  stat_aov_part <- function(anova){
-    result <- summary(anova)[[1]][,4]
-    result <- result[-length(result)]
-    return(result)
-  }
-  extract.residuals = function(anova){
-    return(anova$residuals)
-  }
-  extract.fitted = function(anova){
-    return(anova$fitted)
-  }
   extract.pval <- function(anova){
     result <- summary(anova)[[1]][,5]
     result <- result[-length(result)]
@@ -253,8 +238,8 @@ function(formula,order=2,nknots=dim(stats::model.response(stats::model.frame(for
       formula.coeff_part[[ii]] <- sapply(formula.coeff.temp,stats::as.formula)
       regr0_part[[ii]] = lapply(formula.coeff_part[[ii]],stats::lm,data=mf.temp2)
 
-      residui[ii,,] = simplify2array(lapply(regr0_part[[ii]],extract.residuals))
-      fitted_part[ii,,] = simplify2array(lapply(regr0_part[[ii]],extract.fitted))
+      residui[ii,,] = simplify2array(lapply(regr0_part[[ii]],extract_residuals))
+      fitted_part[ii,,] = simplify2array(lapply(regr0_part[[ii]],extract_fitted))
     }
 
   }
