@@ -104,21 +104,8 @@ fdatest2 <- function(data1, data2, method,
                      recycle = TRUE, 
                      partition = NULL, 
                      verbose = TRUE) {
-  possible_alternatives <- c("two.sided", "less", "greater")
-  if (!(alternative %in% possible_alternatives)) {
-    stop(paste0(
-      'Possible alternatives are ',
-      paste0(possible_alternatives, collapse = ', ')
-    ))
-  }
-  
-  possible_methods <- c("IWT", "TWT", "PCT", "Global","FDR")
-  if (!(method %in% possible_methods)) {
-    stop(paste0(
-      'Available methods are ',
-      paste0(possible_methods, collapse = ', ')
-    ))
-  }
+  alternative <- rlang::arg_match(alternative, values = AVAILABLE_ALTERNATIVES())
+  method <- rlang::arg_match(method, values = AVAILABLE_METHODS())
   
   if (method =="PCT" && is.null(partition)) {
     stop('PCT method requires to specify a partition of the domain')

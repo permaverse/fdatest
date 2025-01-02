@@ -68,34 +68,9 @@
 #' which(IWT.result$adjusted_pval < 0.05)
 IWT1 <- function(data, mu = 0, B = 1000, dx = NULL, recycle = TRUE) {
   # data preprocessing
-  if (fda::is.fd(data)) { # data is a functional data object
-    rangeval <- data$basis$rangeval
-    if (is.null(dx)) {
-      dx <- (rangeval[2] - rangeval[1]) * 0.01
-    }
-    abscissa <- seq(rangeval[1], rangeval[2], by = dx)
-    coeff <- t(fda::eval.fd(fdobj = data, evalarg = abscissa))
-  } else if (is.matrix(data)) {
-    coeff <- data
-  } else {
-    stop("First argument must be either a functional data object or a matrix.")
-  }
-
-  if (fda::is.fd(mu)) { # mu is a functional data
-    rangeval.mu <- mu$basis$rangeval
-    if (sum(rangeval.mu == rangeval) != 2) {
-      stop("rangeval of mu must be the same as rangeval of data.")
-    }
-    if (is.null(dx)) {
-      dx <- (rangeval.mu[2] - rangeval.mu[1]) * 0.01
-    }
-    abscissa <- seq(rangeval.mu[1], rangeval.mu[2], by = dx)
-    mu.eval <- t(fda::eval.fd(fdobj = mu, evalarg = abscissa))
-  } else if (is.vector(mu)) {
-    mu.eval <- mu
-  } else {
-    stop("Second argument must be either a functional data object or a numeric vector.")
-  }
+  inputs <- onesample2coeffs(data, mu, dx = dx)
+  coeff <- inputs$coeff
+  mu.eval <- inputs$mu
 
   n <- dim(coeff)[1]
   p <- dim(coeff)[2]

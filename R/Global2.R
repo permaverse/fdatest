@@ -85,40 +85,10 @@ Global2 <- function(data1, data2,
                     paired = FALSE, 
                     dx = NULL, 
                     stat = 'Integral') {
-  if (fda::is.fd(data1)) { # data1 is a functional data object
-    rangeval1 <- data1$basis$rangeval
-    rangeval2 <- data2$basis$rangeval
-    if (is.null(dx)) {
-      dx <- (rangeval1[2] - rangeval1[1]) * 0.01
-    }
-    if (sum(rangeval1 == rangeval2) != 2) {
-      stop("rangeval of data1 and data2 must coincide.")
-    }
-    abscissa <- seq(rangeval1[1], rangeval1[2], by = dx)
-    coeff1 <- t(fda::eval.fd(fdobj = data1, evalarg = abscissa))
-    coeff2 <- t(fda::eval.fd(fdobj = data2, evalarg = abscissa))
-  } else if (is.matrix(data1)) {
-    coeff1 <- data1
-    coeff2 <- data2
-  } else {
-    stop("First argument must be either a functional data object or a matrix.")
-  }
-  
-  if (fda::is.fd(mu)) { # mu is a functional data
-    rangeval.mu <- mu$basis$rangeval
-    if (sum(rangeval.mu == rangeval1) != 2){
-      stop("rangeval of mu must be the same as rangeval of data.")
-    }
-    if (is.null(dx)) {
-      dx <- (rangeval.mu[2] - rangeval.mu[1]) * 0.01
-    }
-    abscissa <- seq(rangeval.mu[1], rangeval.mu[2], by = dx)
-    mu.eval <- t(fda::eval.fd(fdobj = mu, evalarg = abscissa))
-  } else if (is.vector(mu)) {
-    mu.eval <- mu
-  } else {
-    stop("Second argument must be either a functional data object or a numeric vector.")
-  }
+  inputs <- twosamples2coeffs(data1, data2, mu, dx = dx)
+  coeff1 <- inputs$coeff1
+  coeff2 <- inputs$coeff2
+  mu.eval <- inputs$mu
   
   possible_statistics <- c("Integral", "Integral_std", "Max", "Max_std")
   if (!(stat %in% possible_statistics)) {
@@ -217,4 +187,3 @@ Global2 <- function(data1, data2,
   class(out) <- 'fdatest2'
   out
 }
-

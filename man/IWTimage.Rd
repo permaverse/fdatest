@@ -8,7 +8,7 @@ IWTimage(
   IWT_result,
   alpha = 0.05,
   abscissa_range = c(0, 1),
-  nlevel = 20,
+  nlevel = 20L,
   plot_unadjusted = FALSE
 )
 }
