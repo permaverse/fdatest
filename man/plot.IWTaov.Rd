@@ -80,7 +80,7 @@ temperature <- rbind(NASAtemp$milan, NASAtemp$paris)
 groups <- c(rep(0, 22), rep(1, 22))
 
 # Performing the IWT
-IWT.result <- IWTaov(temperature ~ groups, B = 10L)
+IWT.result <- IWTaov(temperature ~ groups, B = 5L)
 
 # Summary of the IWT results
 summary(IWT.result)

@@ -82,7 +82,8 @@ IWT1 <- function(data, mu = 0, B = 1000, dx = NULL, recycle = TRUE) {
   )
 
   #univariate permutations
-  print('Point-wise tests')
+  cli::cli_h1("Point-wise tests")
+  
   T0 <- abs(colMeans(coeff))^2  #sample mean
   T_coeff <- matrix(ncol = p, nrow = B)
   for (perm in 1:B) {
@@ -96,7 +97,7 @@ IWT1 <- function(data, mu = 0, B = 1000, dx = NULL, recycle = TRUE) {
   }
 
   #combination
-  print('Interval-wise tests')
+  cli::cli_h1("Interval-wise tests")
 
   #asymmetric combination matrix:
   matrice_pval_asymm <- matrix(nrow = p, ncol = p)
@@ -116,15 +117,7 @@ IWT1 <- function(data, mu = 0, B = 1000, dx = NULL, recycle = TRUE) {
         pval_temp <- sum(T_temp >= T0_temp) / B
         matrice_pval_asymm[i, j] <- pval_temp
       }
-      print(
-        paste(
-          'creating the p-value matrix: end of row ',
-          as.character(p - i + 1),
-          ' out of ',
-          as.character(p),
-          sep = ''
-        )
-      )
+      cli::cli_h1("creating the p-value matrix: end of row {p - i + 1} out of {p}")
     }
   } else { # without recycling
     for (i in (p - 1):maxrow) { # rows
@@ -136,22 +129,15 @@ IWT1 <- function(data, mu = 0, B = 1000, dx = NULL, recycle = TRUE) {
         pval_temp <- sum(T_temp >= T0_temp) / B
         matrice_pval_asymm[i, j] <- pval_temp
       }
-      print(
-        paste(
-          'creating the p-value matrix: end of row ',
-          as.character(p - i + 1),
-          ' out of ',
-          as.character(p),
-          sep = ''
-        )
-      )
+      cli::cli_h1("Creating the p-value matrix: end of row {p - i + 1} out of {p}")
     }
   }
 
   corrected.pval.matrix <- pval_correct(matrice_pval_asymm)
   corrected.pval <- corrected.pval.matrix[1, ]
-
-  print('Interval-Wise Testing completed')
+  
+  cli::cli_h1("Interval-Wise Testing completed")
+  
   out <- list(
     test = '1pop',
     mu = mu.eval,

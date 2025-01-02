@@ -81,9 +81,6 @@ plot.IWT1 <- function(x,
                       ylim = NULL, 
                       type = "l", 
                       ...) {
-  if (!inherits(x, "IWT1")) 
-    stop("First argument is not a IWT1 object.")
-  
   if (alpha1 < alpha2) {
     temp <- alpha1
     alpha1 <- alpha2

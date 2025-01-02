@@ -69,7 +69,7 @@
 #' groups <- c(rep(0, 22), rep(1, 22))
 #' 
 #' # Performing the IWT
-#' IWT.result <- IWTaov(temperature ~ groups, B = 10L)
+#' IWT.result <- IWTaov(temperature ~ groups, B = 5L)
 #' 
 #' # Summary of the IWT results
 #' summary(IWT.result)
@@ -99,9 +99,6 @@ plot.IWTaov <- function(x,
                         lwd = 0.5, 
                         type = "l", 
                         ...) {
-  if (!inherits(x, "IWTaov"))
-    stop("x should be an object of the class IWTaov")
-  
   if (alpha1 < alpha2) {
     temp <- alpha1
     alpha1 <- alpha2
