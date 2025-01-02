@@ -8,6 +8,13 @@
 \description{
 Implementation of local inferential procedures for functional data in different frameworks (i.e., one or two-population frameworks, functional linear models). The current version of the package requires functional data evaluated on a uniform grid or fda objects, and provides the adjusted and unadjusted p-value functions based on nonparametric local tests. The package provides a plotting function creating a graphical output of the procedure: the p-value heat-map, the plot of the p-value functions, and the plot of the functional data.
 }
+\seealso{
+Useful links:
+\itemize{
+  \item \url{https://permaverse.github.io/fdatest/}
+}
+
+}
 \author{
 \strong{Maintainer}: Aymeric Stamm \email{aymeric.stamm@math.cnrs.fr} (\href{https://orcid.org/0000-0002-8725-3654}{ORCID}) [contributor]
 
