@@ -7,22 +7,7 @@
 #' The adjusted p-value function controls the family-wise error rate
 #' asymptotically.
 #'
-#' @inheritParams TWT2
-#'
-#' @return An object of class `fdatest2` containing the following components:
-#'   
-#'   - `test`: String vector indicating the type of test performed. In this case
-#'   equal to \code{"2pop"}.
-#'   - `mu`: Evaluation on a grid of the functional mean difference under the
-#'   null hypothesis (as entered by the user).
-#'   - `unadjusted_pval`: Evaluation on a grid of the unadjusted p-value
-#'   function.
-#'   - `adjusted_pval`: Evaluation on a grid of the adjusted p-value function.
-#'   - `data.eval`: Evaluation on a grid of the functional data.
-#'   - `ord_labels`: Vector of labels indicating the group membership of
-#'   `data.eval`.
-#'
-#' @seealso See also \code{\link{plot.fdatest2}} for plotting the results.
+#' @inherit functional_two_sample_test params return seealso
 #'
 #' @references
 #' Lundtorp Olsen, N., Pini, A., & Vantini, S. (2021). False discovery rate for
@@ -42,7 +27,7 @@
 #' )
 #'
 #' # Selecting the significant components at 5% level
-#' which(FDR.result$adjusted_pval < 0.05)
+#' which(FDR.result$adjusted_pvalues < 0.05)
 FDR2 <- function(data1, data2, 
                  mu = 0, 
                  dx = NULL, 
@@ -101,9 +86,9 @@ FDR2 <- function(data1, data2,
     sign.diff[which(sign.diff == -1)] <- 0
     T_coeff[perm, ] <- switch(
       alternative,
-      two.sided =  (meandiff)^2, 
-      greater   =  (meandiff * sign.diff)^2, 
-      less      =  (meandiff * (sign.diff - 1))^2
+      two.sided = (meandiff)^2, 
+      greater   = (meandiff * sign.diff)^2, 
+      less      = (meandiff * (sign.diff - 1))^2
     )
   }
   
@@ -116,14 +101,12 @@ FDR2 <- function(data1, data2,
   adjusted.pval <- stats::p.adjust(pval, method = 'BH')
   
   out <- list(
-    test = '2pop',
+    data = data.eval,
+    group_labels = etichetta_ord,
     mu = mu.eval,
-    adjusted_pval = adjusted.pval,
-    unadjusted_pval = pval,
-    data.eval = data.eval,
-    ord_labels = etichetta_ord
+    unadjusted_pvalues = pval,
+    adjusted_pvalues = adjusted.pval
   )
-  class(out) <- 'fdatest2'
+  class(out) <- 'ftwosample'
   out
 }
-

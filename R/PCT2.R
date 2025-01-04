@@ -6,24 +6,7 @@
 #' The unadjusted p-value function controls the point-wise error rate. The
 #' adjusted p-value function controls the family-wise error rate asymptotically.
 #'
-#' @inheritParams TWT2
-#' @param partition An integer vector of length \eqn{J} specifying the
-#'   membership of each point of the domain to an element of the partition.
-#'
-#' @returns An object of class `fdatest2` containing the following components:
-#' 
-#'   - `test`: String vector indicating the type of test performed. In this case
-#'   equal to \code{"2pop"}.
-#'   - `mu`: Evaluation on a grid of the functional mean difference under the
-#'   null hypothesis (as entered by the user).
-#'   - `unadjusted_pval`: Evaluation on a grid of the unadjusted p-value
-#'   function.
-#'   - `adjusted_pval`: Evaluation on a grid of the adjusted p-value function.
-#'   - `data.eval`: Evaluation on a grid of the functional data.
-#'   - `ord_labels`: Vector of labels indicating the group membership of
-#'   `data.eval`.
-#'
-#' @seealso See also \code{\link{plot.fdatest2}} for plotting the results.
+#' @inherit functional_two_sample_test params return seealso
 #'
 #' @references
 #' Abramowicz, K., Pini, A., Schelin, L., Stamm, A., & Vantini, S. (2022).
@@ -56,7 +39,7 @@
 #' )
 #'
 #' # Selecting the significant components at 5% level
-#' which(PCT.result$adjusted_pval < 0.05)
+#' which(PCT.result$adjusted_pvalues < 0.05)
 PCT2 <- function(data1, data2, partition, 
                  mu = 0, 
                  dx = NULL, 
@@ -167,13 +150,12 @@ PCT2 <- function(data1, data2, partition,
   }
   
   out <- list(
-    test = '2pop',
+    data = data.eval,
+    group_labels = etichetta_ord,
     mu = mu.eval,
-    adjusted_pval = adjusted.pval,
-    unadjusted_pval = pval,
-    data.eval = data.eval,
-    ord_labels = etichetta_ord
+    unadjusted_pvalues = pval,
+    adjusted_pvalues = adjusted.pval
   )
-  class(out) <- "fdatest2"
+  class(out) <- "ftwosample"
   out
 }

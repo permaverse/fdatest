@@ -6,27 +6,7 @@
 #' unadjusted p-value function controls the point-wise error rate. The adjusted
 #' p-value function controls the interval-wise error rate.
 #'
-#' @inheritParams TWT2
-#' @inheritParams IWTaov
-#'
-#' @returns An object of class \code{\link{IWT2}}, which is a list containing at
-#'   least the following components:
-#' - `test`: String vector indicating the type of test performed. In this case
-#' equal to `"2pop"`.
-#' - `mu`: Evaluation on a grid of the functional mean difference under the null
-#' hypothesis (as entered by the user).
-#' - `unadjusted_pval`: Evaluation on a grid of the unadjusted p-value function.
-#' - `pval_matrix`: Matrix of dimensions `c(p, p)` of the p-values of the
-#' interval-wise tests. The element `(i, j)` of matrix `pval.matrix` contains
-#' the p-value of the test contains the p-value of the test of interval indexed
-#' by `(j,j+1,...,j+(p-i))`.
-#' - `adjusted_pval`: Evaluation on a grid of the adjusted p-value function.
-#' - `data.eval`: Evaluation on a grid of the functional data.
-#' - `ord_labels`: Vector of labels indicating the group membership of
-#' `data.eval`.
-#'
-#' @seealso See also \code{\link{plot.fdatest2}} and \code{\link{IWTimage}} for
-#'   plotting the results.
+#' @inherit functional_two_sample_test params return seealso
 #'
 #' @references 
 #' A. Pini and S. Vantini (2017). The Interval Testing Procedure: Inference
@@ -52,7 +32,7 @@
 #' IWTimage(IWT.result, abscissa_range = c(0, 12))
 #'
 #' # Selecting the significant components at 5% level
-#' which(IWT.result$adjusted_pval < 0.05)
+#' which(IWT.result$adjusted_pvalues < 0.05)
 IWT2 <- function(data1, data2, 
                  mu = 0, 
                  dx = NULL, 
@@ -179,14 +159,13 @@ IWT2 <- function(data1, data2,
     cli::cli_h1("Interval-Wise Testing completed")
   
   out <- list(
-    test = '2pop',
+    data = data.eval,
+    group_labels = etichetta_ord,
     mu = mu.eval,
-    adjusted_pval = corrected.pval,
-    unadjusted_pval = pval,
-    pval_matrix = matrice_pval_asymm,
-    data.eval = data.eval,
-    ord_labels = etichetta_ord
+    unadjusted_pvalues = pval,
+    adjusted_pvalues = corrected.pval,
+    pvalue_matrix = matrice_pval_asymm
   )
-  class(out) <- 'fdatest2'
+  class(out) <- 'ftwosample'
   out
 }

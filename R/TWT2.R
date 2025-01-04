@@ -6,45 +6,7 @@
 #' unadjusted p-value function controls the point-wise error rate. The adjusted
 #' p-value function controls the family-wise error rate asymptotically.
 #'
-#' @param data1 Either a numeric matrix or an object of class [`fda::fd`]
-#'   specifying the data in the first sample. If the data is provided within a
-#'   matrix, it should be of shape \eqn{n_1 \times J} and it should contain in
-#'   each row one of the \eqn{n_1} functions in the sample and in columns the
-#'   evaluation of each function on a **same** uniform grid of size \eqn{J}.
-#' @param data2 Either a numeric matrix or an object of class [`fda::fd`]
-#'   specifying the data in the second sample. If the data is provided within a
-#'   matrix, it should be of shape \eqn{n_2 \times J} and it should contain in
-#'   each row one of the \eqn{n_2} functions in the sample and in columns the
-#'   evaluation of each function on a **same** uniform grid of size \eqn{J}.
-#' @param mu Either a numeric value or a numeric vector or an object of class
-#'   [`fda::fd`] specifying the functional mean difference under the null
-#'   hypothesis. If `mu` is a constant, then a constant function is used. If
-#'   `mu` is a numeric vector, it must correspond to evaluation of the mean
-#'   difference function on the **same** grid that has been used to evaluate the
-#'   data samples. Defaults to `0`.
-#' @inheritParams TWTaov
-#' @param paired A boolean value specifying whether a paired test should be
-#'   performed. Defaults to `FALSE`.
-#' @param alternative A string specifying the type of alternative hypothesis.
-#'   Choices are `"two.sided"`, `"less"` or `"greater"`. Defaults to
-#'   `"two.sided"`.
-#' @param verbose A boolean value specifying whether to print the progress of
-#'  the computation. Defaults to `FALSE`.
-#' 
-#' @returns An object of class `fdatest2` containing the following components:
-#' 
-#'   - `test`: String vector indicating the type of test performed. In this case
-#'   equal to \code{"2pop"}.
-#'   - `mu`: Evaluation on a grid of the functional mean difference under the
-#'   null hypothesis (as entered by the user).
-#'   - `unadjusted_pval`: Evaluation on a grid of the unadjusted p-value
-#'   function.
-#'   - `adjusted_pval`: Evaluation on a grid of the adjusted p-value function.
-#'   - `data.eval`: Evaluation on a grid of the functional data.
-#'   - `ord_labels`: Vector of labels indicating the group membership of
-#'   `data.eval`.
-#'
-#' @seealso See also \code{\link{plot.fdatest2}} for plotting the results.
+#' @inherit functional_two_sample_test params return seealso
 #'
 #' @references
 #' Abramowicz, K., Pini, A., Schelin, L., Stamm, A., & Vantini, S. (2022).
@@ -67,7 +29,7 @@
 #' )
 #'
 #' # Selecting the significant components at 5% level
-#' which(TWT.result$adjusted_pval < 0.05)
+#' which(TWT.result$adjusted_pvalues < 0.05)
 TWT2 <- function(data1, data2, 
                  mu = 0, 
                  dx = NULL, 
@@ -168,14 +130,13 @@ TWT2 <- function(data1, data2,
   }
   
   out <- list(
-    test = '2pop',
+    data = coeff,
+    group_labels = etichetta_ord,
     mu = mu.eval,
-    adjusted_pval = adjusted.pval,
-    unadjusted_pval = pval,
-    data.eval = coeff,
-    ord_labels = etichetta_ord
+    unadjusted_pvalues = pval,
+    adjusted_pvalues = adjusted.pval
   )
-  class(out) <- "fdatest2"
+  class(out) <- "ftwosample"
   out
 }
 

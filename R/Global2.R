@@ -6,33 +6,7 @@
 #' unadjusted p-value function controls the point-wise error rate. The adjusted
 #' p-value function controls the interval-wise error rate.
 #'
-#' @inheritParams TWT2
-#' @param stat A string speicyfing the test statistic to use. Possible values
-#'   are:
-#'   
-#'   - `"Integral"`: Integral of the squared sample mean difference.
-#'   - `"Max"`: Maximum of the squared sample mean difference.
-#'   - `"Integral_std"`: Integral of the squared t-test statistic.
-#'   - `"Max_std"`: Maximum of the squared t-test statistic.
-#'   
-#'   Defaults to `"Integral"`.
-#'
-#' @return An object of class `fdatest2`, containing the following components:
-#'   
-#'   - `test`: String vector indicating the type of test performed. In this case
-#'   equal to \code{"2pop"}.
-#'   - `mu`: Evaluation on a grid of the functional mean difference under the
-#'   null hypothesis (as entered by the user).
-#'   - `unadjusted_pval`: Evaluation on a grid of the unadjusted p-value
-#'   function (it is a constant function according to the global testing
-#'   procedure).
-#'   - `adjusted_pval`: Evaluation on a grid of the adjusted p-value function.
-#'   - `data.eval`: Evaluation on a grid of the functional data.
-#'   - `ord_labels`: Vector of labels indicating the group membership of
-#'   `data.eval`.
-#'
-#' @seealso See also \code{\link{IWT2}} for local inference. See
-#'   \code{\link{plot.fdatest2}} for plotting the results.
+#' @inherit functional_two_sample_test params return seealso
 #'
 #' @references
 #' A. Pini and S. Vantini (2017). The Interval Testing Procedure: Inference for
@@ -55,14 +29,14 @@
 #' )
 #'
 #' # Selecting the significant components at 5% level
-#' which(Global.result$adjusted_pval < 0.05)
+#' which(Global.result$adjusted_pvalues < 0.05)
 Global2 <- function(data1, data2, 
                     mu = 0, 
                     dx = NULL, 
                     B = 1000L, 
                     paired = FALSE, 
-                    stat = c("Integral", "Max", "Integral_std", "Max_std")) {
-  stat <- rlang::arg_match(stat)
+                    statistic = c("Integral", "Max", "Integral_std", "Max_std")) {
+  statistic <- rlang::arg_match(statistic)
   inputs <- twosamples2coeffs(data1, data2, mu, dx = dx)
   coeff1 <- inputs$coeff1
   coeff2 <- inputs$coeff2
@@ -88,7 +62,7 @@ Global2 <- function(data1, data2,
   S2 <- stats::cov(coeff[(n1 + 1):n, ])
   Sp <- ((n1 - 1) * S1 + (n2 - 1) * S2) / (n1 + n2 - 2)
   T0 <- switch(
-    stat,
+    statistic,
     Integral     = meandiff2,
     Max          = meandiff2,
     Integral_std = meandiff2 / diag(Sp),
@@ -115,7 +89,7 @@ Global2 <- function(data1, data2,
     S2_perm <- stats::cov(coeff_perm[(n1 + 1):n, ])
     Sp_perm <- ((n1 - 1) * S1_perm + (n2 - 1) * S2_perm) / (n1 + n2 - 2)
     T_coeff[perm, ] <- switch(
-      stat,
+      statistic,
       Integral     = meandiff2_perm,
       Max          = meandiff2_perm,
       Integral_std = meandiff2_perm / diag(Sp_perm), 
@@ -133,13 +107,13 @@ Global2 <- function(data1, data2,
   ntests <- 1
   adjusted.pval <- numeric(p)
   
-  if (stat =='Integral' || stat == 'Integral_std') {
+  if (statistic =='Integral' || statistic == 'Integral_std') {
     T0_comb <- sum(T0[which(all_combs[1, ] == 1)])
     T_comb <- (rowSums(T_coeff[, which(all_combs[1, ] == 1), drop = FALSE]))
     pval.temp <- mean(T_comb >= T0_comb)
     indexes <- which(all_combs[1, ] == 1)
     adjusted.pval[indexes] <- pval.temp
-  } else if (stat == 'Max' || stat == 'Max_std') {
+  } else if (statistic == 'Max' || statistic == 'Max_std') {
     T0_comb <- max(T0[which(all_combs[1, ] == 1)])
     T_comb <- (apply(T_coeff[, which(all_combs[1, ] == 1)], 1, max))
     pval.temp <- mean(T_comb >= T0_comb)
@@ -148,14 +122,13 @@ Global2 <- function(data1, data2,
   }
   
   out <- list(
-    test = '2pop', 
+    data = data.eval,
+    group_labels = etichetta_ord,
     mu = mu.eval,
-    adjusted_pval = adjusted.pval,
-    unadjusted_pval = pval,
-    data.eval=data.eval,
-    ord_labels = etichetta_ord,
-    global_pval = adjusted.pval[1]
+    unadjusted_pvalues = pval,
+    adjusted_pvalues = adjusted.pval,
+    global_pvalue = adjusted.pval[1]
   )
-  class(out) <- 'fdatest2'
+  class(out) <- 'ftwosample'
   out
 }

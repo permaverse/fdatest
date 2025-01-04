@@ -102,22 +102,33 @@ interval-wise testing procedure should be used. Default is \code{TRUE}. See
 Pini and Vantini (2017) for details. Defaults to \code{TRUE}.}
 }
 \value{
-An object of class \code{\link{IWT2}}, which is a list containing at
-least the following components:
+An object of class \code{ftwosample} containing the following components:
 \itemize{
-\item \code{test}: String vector indicating the type of test performed. In this case
-equal to \code{"2pop"}.
-\item \code{mu}: Evaluation on a grid of the functional mean difference under the null
-hypothesis (as entered by the user).
-\item \code{unadjusted_pval}: Evaluation on a grid of the unadjusted p-value function.
-\item \code{pval_matrix}: Matrix of dimensions \code{c(p, p)} of the p-values of the
-interval-wise tests. The element \verb{(i, j)} of matrix \code{pval.matrix} contains
-the p-value of the test contains the p-value of the test of interval indexed
-by \verb{(j,j+1,...,j+(p-i))}.
-\item \code{adjusted_pval}: Evaluation on a grid of the adjusted p-value function.
-\item \code{data.eval}: Evaluation on a grid of the functional data.
-\item \code{ord_labels}: Vector of labels indicating the group membership of
-\code{data.eval}.
+\item \code{data}: A numeric matrix of shape \eqn{n \times J} containing the
+evaluation of the \eqn{n = n_1 + n_2} functions on a \strong{common} uniform
+grid of size \eqn{p}.
+\item \code{group_labels}: An integer vector of size \eqn{n = n_1 + n_2} containing
+the group membership of each function.
+\item \code{mu}: A numeric vector of shape \eqn{J} containing the evaluation of the
+functional mean difference under the null hypothesis on the same uniform
+grid used to evaluate the functional samples.
+\item \code{unadjusted_pvalues}: A numeric vector of size \eqn{J} containing the
+evaluation of the unadjusted p-value function on the \strong{same} uniform grid
+used to evaluate the functional samples.
+\item \code{adjusted_pvalues}: A numeric vector of size \eqn{J} containing the
+evaluation of the adjusted p-value functione on the \strong{same} uniform grid
+used to evaluate the functional samples.
+}
+
+Optionally, the list may contain the following components:
+\itemize{
+\item \code{global_pvalue}: A numeric value containing the global p-value. Only
+present if the \code{correction} argument is set to \code{"Global"}.
+\item \code{pvalue_matrix}: A numeric matrix of shape \eqn{p \times p} containing
+the p-values of the interval-wise tests. Element \eqn{i, j} contains
+the p-value of the test performed on the interval indexed by
+\eqn{j, j+1 , \dots, j+(p-i)}. Only present if the \code{correction} argument is
+set to \code{"IWT"}.
 }
 }
 \description{
@@ -142,7 +153,7 @@ plot(
 IWTimage(IWT.result, abscissa_range = c(0, 12))
 
 # Selecting the significant components at 5\% level
-which(IWT.result$adjusted_pval < 0.05)
+which(IWT.result$adjusted_pvalues < 0.05)
 }
 \references{
 A. Pini and S. Vantini (2017). The Interval Testing Procedure: Inference
@@ -153,6 +164,5 @@ A. Pini and S. Vantini (2017). Interval-wise testing for functional data.
 \emph{Journal of Nonparametric Statistics}, 29(2), 407-424.
 }
 \seealso{
-See also \code{\link{plot.fdatest2}} and \code{\link{IWTimage}} for
-plotting the results.
+See also \code{\link[=plot.ftwosample]{plot.ftwosample()}} for plotting the results.
 }

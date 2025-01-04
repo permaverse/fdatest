@@ -16,10 +16,9 @@
 #' 
 #' @return No value returned.
 #' 
-#' @seealso See \code{\link{plot.IWT1}}, \code{\link{plot.fdatest2}},
-#'   \code{\link{plot.IWTlm}}, and \code{\link{plot.IWTaov}} for the plot method
-#'   applied to the IWT results of one- and two-population tests, linear models,
-#'   and ANOVA, respectively.
+#' @seealso See [`plot.IWT1()`], [`plot.ftwosample()`], [`plot.IWTlm()`] and
+#'   [`plot.IWTaov()`] for the plot method applied to the IWT results of one-
+#'   and two-population tests, linear models, and ANOVA, respectively.
 #' 
 #' @references
 #' Pini, A., & Vantini, S. (2018). Interval-wise testing for functional data.

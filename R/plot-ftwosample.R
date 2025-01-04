@@ -1,12 +1,12 @@
 #' Plot method for fdatest results on two-population test
 #' 
-#' \code{plot} method for class "\code{fdatest2}". Plotting function creating a
+#' \code{plot} method for class `ftwosample`. Plotting function creating a
 #' graphical output of the testing procedures for the mean comparison of two
 #' groups: functional data and adjusted p-values are plotted.
 #' 
-#' @param x  The object to be plotted. An object of class "\code{fdatest2}",
-#'   usually, a result of a call to \code{\link{fdatest2}}, \code{\link{IWT2}},
-#'   \code{\link{TWT2}}, \code{\link{FDR2}}, or \code{\link{PCT2}}.
+#' @param x The object to be plotted. An object of class `ftwosample`, usually,
+#'   a result of a call to [`functional_two_sample_test()`], [`IWT2()`],
+#'   [`TWT2()`], [`FDR2()`] or [`PCT2()`].
 #' @param xrange Range of the \code{x} axis.
 #' @param alpha1 First level of significance used to select and display
 #'   significant effects. Default is \code{alpha1 = 0.05}.
@@ -55,9 +55,9 @@
 #' @export
 #' @examples 
 #' # Performing the TWT for two populations
-#' TWT.result <- fdatest2(
+#' TWT.result <- functional_two_sample_test(
 #'   NASAtemp$paris, NASAtemp$milan, 
-#'   method = "TWT", B = 10L
+#'   correction = "TWT", B = 10L
 #' )
 #'
 #' # Plotting the results of the TWT
@@ -71,9 +71,9 @@
 #' which(TWT.result$adjusted_pval < 0.05)
 #' 
 #' # Performing the IWT for two populations
-#' IWT.result <- fdatest2(
+#' IWT.result <- functional_two_sample_test(
 #'   NASAtemp$paris, NASAtemp$milan, 
-#'   method = "IWT", B = 10L
+#'   correction = "IWT", B = 10L
 #' )
 #'
 #' # Plotting the results of the IWT
@@ -85,17 +85,17 @@
 #'
 #' # Selecting the significant components at 5% level
 #' which(IWT.result$adjusted_pval < 0.05)
-plot.fdatest2 <- function(x, 
-                          xrange = c(0, 1), 
-                          alpha1 = 0.05, 
-                          alpha2 = 0.01,
-                          ylab = "Functional Data", 
-                          main = NULL, 
-                          lwd = 0.5, 
-                          col = c(1, 2), 
-                          ylim = NULL, 
-                          type = "l", 
-                          ...) {
+plot.ftwosample <- function(x, 
+                            xrange = c(0, 1), 
+                            alpha1 = 0.05, 
+                            alpha2 = 0.01,
+                            ylab = "Functional Data", 
+                            main = NULL, 
+                            lwd = 0.5, 
+                            col = c(1, 2), 
+                            ylim = NULL, 
+                            type = "l", 
+                            ...) {
   if (alpha1 < alpha2) {
     temp <- alpha1
     alpha1 <- alpha2
@@ -103,24 +103,24 @@ plot.fdatest2 <- function(x,
   }
   
   object <- x
-  n <- dim(t(object$data.eval))[1]
+  n <- dim(t(object$data))[1]
   
   colors <- numeric(n)
-  id_pop1 <- unique(object$ord_labels)[1]
-  id_pop2 <- unique(object$ord_labels)[2]
-  colors[which(object$ord_labels == id_pop1)] <- col[1]
-  colors[which(object$ord_labels == id_pop2)] <- col[2]
+  id_pop1 <- unique(object$group_labels)[1]
+  id_pop2 <- unique(object$group_labels)[2]
+  colors[which(object$group_labels == id_pop1)] <- col[1]
+  colors[which(object$group_labels == id_pop2)] <- col[2]
   
   grDevices::devAskNewPage(ask = TRUE) 
   
-  p <- length(object$unadjusted_pval)
+  p <- length(object$unadjusted_pvalues)
   xmin <- xrange[1]
   xmax <- xrange[2]
   abscissa_pval <- seq(xmin, xmax, len = p)
   main_data <- paste(main, ': Functional Data')
   main_data <- sub("^ : +", "", main_data)
-  n_coeff <- dim(object$data.eval)[2]
-  data_eval <- object$data.eval
+  n_coeff <- dim(object$data)[2]
+  data_eval <- object$data
   
   if (is.null(ylim)) {
     ylim <- range(data_eval,na.rm=TRUE)
@@ -139,15 +139,15 @@ plot.fdatest2 <- function(x,
   )
   
   mean1 <- colMeans(
-    object$data.eval[which(object$ord_labels == id_pop1), ], 
+    object$data[which(object$group_labels == id_pop1), ], 
     na.rm = TRUE
   )
   mean2 <- colMeans(
-    object$data.eval[which(object$ord_labels == id_pop2), ], 
+    object$data[which(object$group_labels == id_pop2), ], 
     na.rm = TRUE
   )
   
-  difference1 <- which(object$adjusted_pval < alpha1)
+  difference1 <- which(object$adjusted_pvalues < alpha1)
   if (length(difference1) > 0) {
     for (j in 1:length(difference1)) {
       min_rect <- abscissa_pval[difference1[j]] - 
@@ -172,7 +172,7 @@ plot.fdatest2 <- function(x,
       border = "black"
     )
   }
-  difference2 <- which(object$adjusted_pval < alpha2)
+  difference2 <- which(object$adjusted_pvalues < alpha2)
   if (length(difference2) > 0) {
     for (j in 1:length(difference2)) {
       min_rect <- abscissa_pval[difference2[j]] - 
@@ -214,7 +214,7 @@ plot.fdatest2 <- function(x,
   main_p <- sub("^ : +", "", main_p)
   plot(
     abscissa_pval,
-    object$adjusted_pval,
+    object$adjusted_pvalues,
     ylim = c(0, 1),
     main = main_p,
     ylab = 'p-value',
@@ -222,7 +222,7 @@ plot.fdatest2 <- function(x,
     lwd = lwd,
     ...
   )
-  difference1 <- which(object$adjusted_pval < alpha1)
+  difference1 <- which(object$adjusted_pvalues < alpha1)
   if (length(difference1) > 0) {
     for (j in 1:length(difference1)) {
       min_rect <- abscissa_pval[difference1[j]] - 
@@ -247,7 +247,7 @@ plot.fdatest2 <- function(x,
       border = "black"
     )
   }
-  difference2 <- which(object$adjusted_pval < alpha2)
+  difference2 <- which(object$adjusted_pvalues < alpha2)
   if (length(difference2) > 0) {
     for (j in 1:length(difference2)) {
       min_rect <- abscissa_pval[difference2[j]] - 
@@ -276,7 +276,7 @@ plot.fdatest2 <- function(x,
   for (j in 0:10) {
     graphics::abline(h = j / 10, col = 'lightgray', lty = "dotted")
   }
-  graphics::points(abscissa_pval, object$adjusted_pval, type = type, lwd = 2)
+  graphics::points(abscissa_pval, object$adjusted_pvalues, type = type, lwd = 2)
   
   grDevices::devAskNewPage(ask = FALSE)
 }

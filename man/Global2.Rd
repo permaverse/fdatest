@@ -11,7 +11,7 @@ Global2(
   dx = NULL,
   B = 1000L,
   paired = FALSE,
-  stat = c("Integral", "Max", "Integral_std", "Max_std")
+  statistic = c("Integral", "Max", "Integral_std", "Max_std")
 )
 }
 \arguments{
@@ -47,8 +47,8 @@ algorithm to evaluate the p-value of the permutation tests. Defaults to
 \item{paired}{A boolean value specifying whether a paired test should be
 performed. Defaults to \code{FALSE}.}
 
-\item{stat}{A string speicyfing the test statistic to use. Possible values
-are:
+\item{statistic}{A string speicyfing the test statistic to use. Possible
+values are:
 \itemize{
 \item \code{"Integral"}: Integral of the squared sample mean difference.
 \item \code{"Max"}: Maximum of the squared sample mean difference.
@@ -59,19 +59,33 @@ are:
 Defaults to \code{"Integral"}.}
 }
 \value{
-An object of class \code{fdatest2}, containing the following components:
+An object of class \code{ftwosample} containing the following components:
 \itemize{
-\item \code{test}: String vector indicating the type of test performed. In this case
-equal to \code{"2pop"}.
-\item \code{mu}: Evaluation on a grid of the functional mean difference under the
-null hypothesis (as entered by the user).
-\item \code{unadjusted_pval}: Evaluation on a grid of the unadjusted p-value
-function (it is a constant function according to the global testing
-procedure).
-\item \code{adjusted_pval}: Evaluation on a grid of the adjusted p-value function.
-\item \code{data.eval}: Evaluation on a grid of the functional data.
-\item \code{ord_labels}: Vector of labels indicating the group membership of
-\code{data.eval}.
+\item \code{data}: A numeric matrix of shape \eqn{n \times J} containing the
+evaluation of the \eqn{n = n_1 + n_2} functions on a \strong{common} uniform
+grid of size \eqn{p}.
+\item \code{group_labels}: An integer vector of size \eqn{n = n_1 + n_2} containing
+the group membership of each function.
+\item \code{mu}: A numeric vector of shape \eqn{J} containing the evaluation of the
+functional mean difference under the null hypothesis on the same uniform
+grid used to evaluate the functional samples.
+\item \code{unadjusted_pvalues}: A numeric vector of size \eqn{J} containing the
+evaluation of the unadjusted p-value function on the \strong{same} uniform grid
+used to evaluate the functional samples.
+\item \code{adjusted_pvalues}: A numeric vector of size \eqn{J} containing the
+evaluation of the adjusted p-value functione on the \strong{same} uniform grid
+used to evaluate the functional samples.
+}
+
+Optionally, the list may contain the following components:
+\itemize{
+\item \code{global_pvalue}: A numeric value containing the global p-value. Only
+present if the \code{correction} argument is set to \code{"Global"}.
+\item \code{pvalue_matrix}: A numeric matrix of shape \eqn{p \times p} containing
+the p-values of the interval-wise tests. Element \eqn{i, j} contains
+the p-value of the test performed on the interval indexed by
+\eqn{j, j+1 , \dots, j+(p-i)}. Only present if the \code{correction} argument is
+set to \code{"IWT"}.
 }
 }
 \description{
@@ -93,7 +107,7 @@ plot(
 )
 
 # Selecting the significant components at 5\% level
-which(Global.result$adjusted_pval < 0.05)
+which(Global.result$adjusted_pvalues < 0.05)
 }
 \references{
 A. Pini and S. Vantini (2017). The Interval Testing Procedure: Inference for
@@ -104,6 +118,5 @@ Pini, A., & Vantini, S. (2017). Interval-wise testing for functional data.
 \emph{Journal of Nonparametric Statistics}, 29(2), 407-424
 }
 \seealso{
-See also \code{\link{IWT2}} for local inference. See
-\code{\link{plot.fdatest2}} for plotting the results.
+See also \code{\link[=plot.ftwosample]{plot.ftwosample()}} for plotting the results.
 }
