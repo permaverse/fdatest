@@ -48,8 +48,6 @@ library(fdatest)
 withr::with_seed(1234, {
   out <- TWT2(NASAtemp$paris, NASAtemp$milan)
 })
-#> 
-#> ── Threshold-wise tests ────────────────────────────────────────────────────────
 
 # Plotting the results of the TWT
 plot(
