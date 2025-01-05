@@ -6,12 +6,14 @@
 \alias{fdatest-package}
 \title{fdatest: Interval Wise Testing for Functional Data}
 \description{
-Implementation of local inferential procedures for functional data in different frameworks (i.e., one or two-population frameworks, functional linear models). The current version of the package requires functional data evaluated on a uniform grid or fda objects, and provides the adjusted and unadjusted p-value functions based on nonparametric local tests. The package provides a plotting function creating a graphical output of the procedure: the p-value heat-map, the plot of the p-value functions, and the plot of the functional data.
+Implementation of local inferential (domain-selection) procedures for functional data in different frameworks (one- and two-sample tests, ANOVA, linear models). The current version of the package requires functional data evaluated on a common uniform grid or objects of class 'fd' as produced by the 'fda' package and provides the adjusted and unadjusted p-value functions based on nonparametric local tests. The package provides tools for visualization: (i) the p-value heatmap, the plot of the p-value functions and the plot of the functional data.
 }
 \seealso{
 Useful links:
 \itemize{
   \item \url{https://permaverse.github.io/fdatest/}
+  \item \url{https://github.com/permaverse/fdatest/}
+  \item Report bugs at \url{https://github.com/permaverse/fdatest/issues}
 }
 
 }
