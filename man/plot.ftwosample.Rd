@@ -2,82 +2,86 @@
 % Please edit documentation in R/plot-ftwosample.R
 \name{plot.ftwosample}
 \alias{plot.ftwosample}
-\title{Plot method for fdatest results on two-population test}
+\alias{autoplot.ftwosample}
+\title{Plot for Functional Two-Sample Test Results}
 \usage{
+\method{autoplot}{ftwosample}(
+  object,
+  xrange = c(0, 1),
+  alpha1 = 0.05,
+  alpha2 = 0.01,
+  ylabel = "Functional Data",
+  title = NULL,
+  linewidth = 0.5,
+  ...
+)
+
 \method{plot}{ftwosample}(
   x,
   xrange = c(0, 1),
   alpha1 = 0.05,
   alpha2 = 0.01,
-  ylab = "Functional Data",
-  main = NULL,
-  lwd = 0.5,
-  col = c(1, 2),
-  ylim = NULL,
-  type = "l",
+  ylabel = "Functional Data",
+  title = NULL,
+  linewidth = 0.5,
   ...
 )
 }
 \arguments{
-\item{x}{The object to be plotted. An object of class \code{ftwosample}, usually,
-a result of a call to \code{\link[=functional_two_sample_test]{functional_two_sample_test()}}, \code{\link[=IWT2]{IWT2()}},
-\code{\link[=TWT2]{TWT2()}}, \code{\link[=FDR2]{FDR2()}} or \code{\link[=PCT2]{PCT2()}}.}
+\item{object, x}{An object of class \code{ftwosample}, usually a result of a call
+to \code{\link[=functional_two_sample_test]{functional_two_sample_test()}}, \code{\link[=IWT2]{IWT2()}}, \code{\link[=TWT2]{TWT2()}}, \code{\link[=FDR2]{FDR2()}} or
+\code{\link[=PCT2]{PCT2()}}.}
 
-\item{xrange}{Range of the \code{x} axis.}
+\item{xrange}{A length-2 numeric vector specifying the range of the x-axis
+for the plots. Defaults to \code{c(0, 1)}. This should match the domain of the
+functional data.}
 
-\item{alpha1}{First level of significance used to select and display
-significant effects. Default is \code{alpha1 = 0.05}.}
+\item{alpha1}{A numeric value specifying the first level of significance used
+to select and display significant effects. Defaults to \code{alpha1 = 0.05}.}
 
-\item{alpha2}{Second level of significance used to select and display
-significant effects. Default is \code{alpha1 = 0.01}. \code{alpha1} and
-\code{alpha2} are s.t. \code{alpha2 < alpha1}. Otherwise the two values are
-switched.}
+\item{alpha2}{A numeric value specifying the second level of significance
+used to select and display significant effects. Defaults to \code{alpha2 = 0.01}.}
 
-\item{ylab}{Label of \code{y} axis of the plot of functional data. Default is
-"\code{Functional Data}".}
+\item{ylabel}{A string specifying the label of the y-axis of the functional
+data plot. Defaults to \code{"Functional Data"}.}
 
-\item{main}{Plot title.}
+\item{title}{A string specifying the title of the functional data plot.
+Defaults to \code{NULL} in which case no title is displayed.}
 
-\item{lwd}{Line width for the plot of the adjusted p-value function. Default
-is \code{lwd=1}.}
+\item{linewidth}{A numeric value specifying the width of the line for the
+functional data plot. Note that the line width for the adjusted p-value
+plot will be twice this value. Defaults to \code{linewidth = 0.5}.}
 
-\item{col}{Colors for the plot of functional data. Default is \code{col = 1}.}
-
-\item{ylim}{Range of the \code{y} axis. Default is \code{NULL}, giving a plot
-with automatic range for functional data.}
-
-\item{type}{line type for the plot of the adjusted p-value function. Default
-is type='l'.}
-
-\item{...}{Additional plotting arguments that can be used with function
-\code{plot}, such as \code{\link{graphical parameters}} (see
-\code{\link{par}}).}
+\item{...}{Other arguments passed to specific methods. Not used in this
+function.}
 }
 \value{
-No value returned. The function produces a graphical output of the
-fdatest results:  the plot of the functional data and the one of the
-adjusted p-values. The portions of the domain selected as significant by
-the test at level \code{alpha1} and \code{alpha2} are highlighted in the
-plot of the adjusted p-value function and in the one of functional data by
-gray areas (light and dark gray, respectively).
+The \code{autoplot.ftwosample()} function creates a ggplot object that
+displays the functional data and the adjusted p-values. The significant
+intervals at levels \code{alpha1} and \code{alpha2} are highlighted in the plots. The
+\code{plot.ftwosample()} function is a wrapper around \code{autoplot.ftwosample()}
+that prints the plot directly.
 }
 \description{
-\code{plot} method for class \code{ftwosample}. Plotting function creating a
-graphical output of the testing procedures for the mean comparison of two
-groups: functional data and adjusted p-values are plotted.
+The \code{S3} methods \code{autoplot.ftwosample()} and \code{plot.ftwosample()} are methods
+for plotting results of functional two-sample tests. They visualize the
+functional data and the adjusted p-values obtained from the testing
+procedures for mean comparison of two groups. The plots highlight significant
+effects at two levels of significance, \code{alpha1} and \code{alpha2}, using shaded
+areas.
 }
 \examples{
 # Performing the TWT for two populations
 TWT.result <- functional_two_sample_test(
-  NASAtemp$paris, NASAtemp$milan, 
+  NASAtemp$paris, NASAtemp$milan,
   correction = "TWT", B = 10L
 )
 
 # Plotting the results of the TWT
 plot(
-  TWT.result, 
-  xrange = c(0, 12), 
-  main = 'TWT results for testing mean differences'
+  TWT.result,
+  xrange = c(0, 12),
+  title = 'TWT results for testing mean differences'
 )
 
 # Selecting the significant components at 5\% level
@@ -85,15 +89,15 @@ which(TWT.result$adjusted_pval < 0.05)
 
 # Performing the IWT for two populations
 IWT.result <- functional_two_sample_test(
-  NASAtemp$paris, NASAtemp$milan, 
+  NASAtemp$paris, NASAtemp$milan,
   correction = "IWT", B = 10L
 )
 
 # Plotting the results of the IWT
 plot(
-  IWT.result, 
-  xrange = c(0, 12), 
-  main = 'IWT results for testing mean differences'
+  IWT.result,
+  xrange = c(0, 12),
+  title = 'IWT results for testing mean differences'
 )
 
 # Selecting the significant components at 5\% level
@@ -115,5 +119,5 @@ cruciate ligament. \emph{Scandinavian Journal of Statistics} 45(4),
 1036-1061.
 }
 \seealso{
-\code{\link{IWTimage}} for the plot of p-values heatmaps (for IWT).
+\code{\link[=IWTimage]{IWTimage()}} for the plot of p-values heatmaps (for IWT).
 }

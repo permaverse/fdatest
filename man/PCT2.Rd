@@ -98,10 +98,10 @@ adjusted p-value function controls the family-wise error rate asymptotically.
 # Performing the PCT for two populations
 # Choosing as partition the 4 seasons of the year
 partition <- c(
-  rep(1, 31 + 28 + 21), 
-  rep(2, 10 + 30 + 31 + 21), 
-  rep(3, 9 + 31 + 31 + 23), 
-  rep(4, 7 + 31 + 30 + 21), 
+  rep(1, 31 + 28 + 21),
+  rep(2, 10 + 30 + 31 + 21),
+  rep(3, 9 + 31 + 31 + 23),
+  rep(4, 7 + 31 + 30 + 21),
   rep(1, 10)
 )
 partition <- factor(partition)
@@ -110,9 +110,9 @@ PCT.result <- PCT2(NASAtemp$paris, NASAtemp$milan, partition = partition)
 
 # Plotting the results of the PCT
 plot(
-  PCT.result, 
-  xrange = c(0, 12), 
-  main = 'PCT results for testing mean differences'
+  PCT.result,
+  xrange = c(0, 12),
+  title = 'PCT results for testing mean differences'
 )
 
 # Selecting the significant components at 5\% level

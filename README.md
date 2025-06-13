@@ -53,8 +53,8 @@ withr::with_seed(1234, {
 plot(
   out, 
   xrange = c(0, 12), 
-  main = 'TWT results for testing mean differences'
+  title = 'TWT results for testing mean differences'
 )
 ```
 
-<img src="man/figures/README-example-1.png" width="100%" /><img src="man/figures/README-example-2.png" width="100%" />
+<img src="man/figures/README-example-1.png" width="100%" />

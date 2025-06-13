@@ -1,4 +1,4 @@
-#' Two population local testing procedures
+#' Two-sample local testing procedures
 #'
 #' @description The function implements local testing procedures for testing
 #'   mean differences between two functional populations. Functional data are
@@ -6,7 +6,7 @@
 #'   The unadjusted p-value function controls the point-wise error rate. The
 #'   adjusted p-value function can be computed according to the following
 #'   methods:
-#' 
+#'
 #'   - global testing (controlling the FWER weakly)
 #'   - interval-wise testing (controlling the interval-wise error rate)
 #'   - threshold-wise testing (controlling the FWER asymptotically)
@@ -40,12 +40,12 @@
 #'   `"two.sided"`.
 #' @param statistic A string speicyfing the test statistic to use. Possible
 #'   values are:
-#'   
+#'
 #'   - `"Integral"`: Integral of the squared sample mean difference.
 #'   - `"Max"`: Maximum of the squared sample mean difference.
 #'   - `"Integral_std"`: Integral of the squared t-test statistic.
 #'   - `"Max_std"`: Maximum of the squared t-test statistic.
-#'   
+#'
 #'   Defaults to `"Integral"`.
 #' @inheritParams IWTaov
 #' @param partition An integer vector of length \eqn{J} specifying the
@@ -56,7 +56,7 @@
 #'  the computation. Defaults to `FALSE`.
 #'
 #' @returns An object of class `ftwosample` containing the following components:
-#' 
+#'
 #'   - `data`: A numeric matrix of shape \eqn{n \times J} containing the
 #'   evaluation of the \eqn{n = n_1 + n_2} functions on a **common** uniform
 #'   grid of size \eqn{p}.
@@ -71,9 +71,9 @@
 #'   - `adjusted_pvalues`: A numeric vector of size \eqn{J} containing the
 #'   evaluation of the adjusted p-value functione on the **same** uniform grid
 #'   used to evaluate the functional samples.
-#'   
+#'
 #'   Optionally, the list may contain the following components:
-#'   
+#'
 #'   - `global_pvalue`: A numeric value containing the global p-value. Only
 #'   present if the `correction` argument is set to `"Global"`.
 #'   - `pvalue_matrix`: A numeric matrix of shape \eqn{p \times p} containing
@@ -103,52 +103,56 @@
 #' @examples
 #' # Performing the TWT for two populations
 #' TWT.result <- functional_two_sample_test(
-#'   NASAtemp$paris, NASAtemp$milan, 
+#'   NASAtemp$paris, NASAtemp$milan,
 #'   correction = "TWT", B = 10L
 #' )
 #'
 #' # Plotting the results of the TWT
 #' plot(
-#'   TWT.result, 
-#'   xrange = c(0, 12), 
-#'   main = 'TWT results for testing mean differences'
+#'   TWT.result,
+#'   xrange = c(0, 12),
+#'   title = 'TWT results for testing mean differences'
 #' )
 #'
 #' # Selecting the significant components at 5% level
 #' which(TWT.result$adjusted_pval < 0.05)
-#' 
+#'
 #' # Performing the IWT for two populations
 #' IWT.result <- functional_two_sample_test(
-#'   NASAtemp$paris, NASAtemp$milan, 
+#'   NASAtemp$paris, NASAtemp$milan,
 #'   correction = "IWT", B = 10L
 #' )
 #'
 #' # Plotting the results of the IWT
 #' plot(
-#'   IWT.result, 
-#'   xrange = c(0, 12), 
-#'   main = 'IWT results for testing mean differences'
+#'   IWT.result,
+#'   xrange = c(0, 12),
+#'   title = 'IWT results for testing mean differences'
 #' )
 #'
 #' # Selecting the significant components at 5% level
 #' which(IWT.result$adjusted_pval < 0.05)
-functional_two_sample_test <- function(data1, data2, correction, 
-                                       mu = 0, 
-                                       dx = NULL, 
-                                       B = 1000L, 
-                                       paired = FALSE, 
-                                       alternative = c("two.sided", "less", "greater"), 
-                                       statistic = c("Integral", "Max", "Integral_std", "Max_std"),
-                                       recycle = TRUE, 
-                                       partition = NULL, 
-                                       verbose = FALSE) {
+functional_two_sample_test <- function(
+  data1,
+  data2,
+  correction,
+  mu = 0,
+  dx = NULL,
+  B = 1000L,
+  paired = FALSE,
+  alternative = c("two.sided", "less", "greater"),
+  statistic = c("Integral", "Max", "Integral_std", "Max_std"),
+  recycle = TRUE,
+  partition = NULL,
+  verbose = FALSE
+) {
   if (correction == "PCT" && is.null(partition)) {
     cli::cli_abort(
       'When the {.arg correction} argument is set to {.code "PCT"}, the {.arg
       partition} argument should be explicitly provided.'
     )
   }
-  
+
   out <- switch(
     correction,
     IWT = IWT2(
@@ -161,7 +165,7 @@ functional_two_sample_test <- function(data1, data2, correction,
       alternative = alternative,
       verbose = verbose,
       recycle = recycle
-    ), 
+    ),
     TWT = TWT2(
       data1 = data1,
       data2 = data2,
@@ -171,7 +175,7 @@ functional_two_sample_test <- function(data1, data2, correction,
       paired = paired,
       alternative = alternative,
       verbose = verbose
-    ), 
+    ),
     PCT = PCT2(
       data1 = data1,
       data2 = data2,
@@ -181,7 +185,7 @@ functional_two_sample_test <- function(data1, data2, correction,
       B = B,
       paired = paired,
       alternative = alternative
-    ), 
+    ),
     Global = Global2(
       data1 = data1,
       data2 = data2,
@@ -190,7 +194,7 @@ functional_two_sample_test <- function(data1, data2, correction,
       B = B,
       paired = paired,
       statistic = statistic
-    ), 
+    ),
     FDR = FDR2(
       data1 = data1,
       data2 = data2,
@@ -201,8 +205,7 @@ functional_two_sample_test <- function(data1, data2, correction,
       alternative = alternative
     )
   )
-  
+
   out$correction <- correction
   out
 }
-

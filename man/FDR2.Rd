@@ -96,9 +96,9 @@ FDR.result <- FDR2(NASAtemp$paris, NASAtemp$milan)
 
 # Plotting the results of the fBH
 plot(
-  FDR.result, 
-  xrange = c(0, 12), 
-  main = 'FDR results for testing mean differences'
+  FDR.result,
+  xrange = c(0, 12),
+  title = 'FDR results for testing mean differences'
 )
 
 # Selecting the significant components at 5\% level

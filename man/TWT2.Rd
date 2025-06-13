@@ -98,9 +98,9 @@ TWT.result <- TWT2(NASAtemp$paris, NASAtemp$milan)
 
 # Plotting the results of the TWT
 plot(
-  TWT.result, 
-  xrange = c(0, 12), 
-  main = 'TWT results for testing mean differences'
+  TWT.result,
+  xrange = c(0, 12),
+  title = 'TWT results for testing mean differences'
 )
 
 # Selecting the significant components at 5\% level

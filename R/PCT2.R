@@ -21,62 +21,66 @@
 #' # Performing the PCT for two populations
 #' # Choosing as partition the 4 seasons of the year
 #' partition <- c(
-#'   rep(1, 31 + 28 + 21), 
-#'   rep(2, 10 + 30 + 31 + 21), 
-#'   rep(3, 9 + 31 + 31 + 23), 
-#'   rep(4, 7 + 31 + 30 + 21), 
+#'   rep(1, 31 + 28 + 21),
+#'   rep(2, 10 + 30 + 31 + 21),
+#'   rep(3, 9 + 31 + 31 + 23),
+#'   rep(4, 7 + 31 + 30 + 21),
 #'   rep(1, 10)
 #' )
 #' partition <- factor(partition)
-#' 
+#'
 #' PCT.result <- PCT2(NASAtemp$paris, NASAtemp$milan, partition = partition)
 #'
 #' # Plotting the results of the PCT
 #' plot(
-#'   PCT.result, 
-#'   xrange = c(0, 12), 
-#'   main = 'PCT results for testing mean differences'
+#'   PCT.result,
+#'   xrange = c(0, 12),
+#'   title = 'PCT results for testing mean differences'
 #' )
 #'
 #' # Selecting the significant components at 5% level
 #' which(PCT.result$adjusted_pvalues < 0.05)
-PCT2 <- function(data1, data2, partition, 
-                 mu = 0, 
-                 dx = NULL, 
-                 B = 1000L, 
-                 paired = FALSE, 
-                 alternative = c("two.sided", "less", "greater")) {
+PCT2 <- function(
+  data1,
+  data2,
+  partition,
+  mu = 0,
+  dx = NULL,
+  B = 1000L,
+  paired = FALSE,
+  alternative = c("two.sided", "less", "greater")
+) {
   alternative <- rlang::arg_match(alternative)
-  
+
   inputs <- twosamples2coeffs(data1, data2, mu, dx = dx)
   coeff1 <- inputs$coeff1
   coeff2 <- inputs$coeff2
   mu.eval <- inputs$mu
-  
+
   n1 <- dim(coeff1)[1]
   n2 <- dim(coeff2)[1]
   J <- dim(coeff1)[2]
   n <- n1 + n2
   etichetta_ord <- c(rep(1, n1), rep(2, n2))
-  
+
   #splines coefficients:
   eval <- coeff <- rbind(coeff1, coeff2)
   p <- dim(coeff)[2]
-  
+
   data.eval <- eval
-  
+
   #univariate permutations
-  meandiff <- colMeans(coeff[1:n1, , drop = FALSE], na.rm = TRUE) - 
+  meandiff <- colMeans(coeff[1:n1, , drop = FALSE], na.rm = TRUE) -
     colMeans(coeff[(n1 + 1):n, , drop = FALSE], na.rm = TRUE)
   sign.diff <- sign(meandiff)
   sign.diff[which(sign.diff == -1)] <- 0
   T0 <- switch(
     alternative,
     two.sided = (meandiff)^2,
-    greater   = (meandiff*sign.diff)^2,
-    less      = (meandiff*(sign.diff-1))^2
+    greater = (meandiff * sign.diff)^2,
+    less = (meandiff * (sign.diff - 1))^2
   )
-  
+
   T_coeff <- matrix(ncol = p, nrow = B)
   for (perm in 1:B) {
     if (paired) {
@@ -84,31 +88,33 @@ PCT2 <- function(data1, data2, partition,
       coeff_perm <- coeff
       for (couple in 1:n1) {
         if (if.perm[couple] == 1) {
-          coeff_perm[c(couple, n1 + couple), ] <- coeff[c(n1 + couple, couple), ]
+          coeff_perm[c(couple, n1 + couple), ] <- coeff[
+            c(n1 + couple, couple),
+          ]
         }
       }
     } else {
       permutazioni <- sample(n)
       coeff_perm <- coeff[permutazioni, ]
     }
-    
-    meandiff <- colMeans(coeff_perm[1:n1, , drop = FALSE], na.rm = TRUE) - 
+
+    meandiff <- colMeans(coeff_perm[1:n1, , drop = FALSE], na.rm = TRUE) -
       colMeans(coeff_perm[(n1 + 1):n, , drop = FALSE], na.rm = TRUE)
     sign.diff <- sign(meandiff)
     sign.diff[which(sign.diff == -1)] <- 0
     T_coeff[perm, ] <- switch(
       alternative,
       two.sided = (meandiff)^2,
-      greater   = (meandiff*sign.diff)^2,
-      less      = (meandiff*(sign.diff-1))^2
+      greater = (meandiff * sign.diff)^2,
+      less = (meandiff * (sign.diff - 1))^2
     )
   }
-  
+
   pval <- numeric(p)
   for (i in 1:p) {
     pval[i] <- sum(T_coeff[, i] >= T0[i]) / B
   }
-  
+
   #combination
   partition <- factor(partition)
   nintervals <- length(levels(partition))
@@ -128,7 +134,7 @@ PCT2 <- function(data1, data2, partition,
       tt <- tt + 1
     }
   }
-  
+
   #interval-wise tests
   adjusted.pval <- numeric(p)
   responsible.test <- matrix(nrow = p, ncol = p)
@@ -138,9 +144,13 @@ PCT2 <- function(data1, data2, partition,
     pval.temp <- mean(T_comb >= T0_comb)
     indexes <- which(all_combs[test, ] == 1)
     max <- apply(rbind(adjusted.pval[indexes], pval.temp), 2, which.max)
-    adjusted.pval[indexes] <- apply(rbind(adjusted.pval[indexes], pval.temp), 2, max)
+    adjusted.pval[indexes] <- apply(
+      rbind(adjusted.pval[indexes], pval.temp),
+      2,
+      max
+    )
     if (2 %in% max) {
-      responsible.test[indexes[which(max == 2)] , ] <- matrix(
+      responsible.test[indexes[which(max == 2)], ] <- matrix(
         data = all_combs[test, ],
         nrow = sum((max == 2)),
         ncol = p,
@@ -148,7 +158,7 @@ PCT2 <- function(data1, data2, partition,
       )
     }
   }
-  
+
   out <- list(
     data = data.eval,
     group_labels = etichetta_ord,

@@ -29,7 +29,9 @@ LazyData: true
 Imports: 
     cli,
     fda,
+    ggplot2,
     lifecycle,
+    patchwork,
     rlang
 RoxygenNote: 7.3.2
 Roxygen: list(markdown = TRUE)

@@ -144,9 +144,9 @@ IWT.result <- IWT2(NASAtemp$paris, NASAtemp$milan, B = 10L)
 
 # Plotting the results of the IWT
 plot(
-  IWT.result, 
-  xrange = c(0, 12), 
-  main = 'IWT results for testing mean differences'
+  IWT.result,
+  xrange = c(0, 12),
+  title = 'IWT results for testing mean differences'
 )
 
 # Plotting the p-value heatmap

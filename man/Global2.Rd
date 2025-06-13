@@ -101,9 +101,9 @@ Global.result <- Global2(NASAtemp$paris, NASAtemp$milan)
 
 # Plotting the results of the Global
 plot(
-  Global.result, 
-  xrange = c(0, 12), 
-  main = 'Global results for testing mean differences'
+  Global.result,
+  xrange = c(0, 12),
+  title = 'Global results for testing mean differences'
 )
 
 # Selecting the significant components at 5\% level

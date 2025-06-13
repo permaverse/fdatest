@@ -59,6 +59,6 @@ withr::with_seed(1234, {
 plot(
   out, 
   xrange = c(0, 12), 
-  main = 'TWT results for testing mean differences'
+  title = 'TWT results for testing mean differences'
 )
 ```

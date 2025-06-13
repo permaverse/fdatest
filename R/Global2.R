@@ -23,39 +23,42 @@
 #'
 #' # Plotting the results of the Global
 #' plot(
-#'   Global.result, 
-#'   xrange = c(0, 12), 
-#'   main = 'Global results for testing mean differences'
+#'   Global.result,
+#'   xrange = c(0, 12),
+#'   title = 'Global results for testing mean differences'
 #' )
 #'
 #' # Selecting the significant components at 5% level
 #' which(Global.result$adjusted_pvalues < 0.05)
-Global2 <- function(data1, data2, 
-                    mu = 0, 
-                    dx = NULL, 
-                    B = 1000L, 
-                    paired = FALSE, 
-                    statistic = c("Integral", "Max", "Integral_std", "Max_std")) {
+Global2 <- function(
+  data1,
+  data2,
+  mu = 0,
+  dx = NULL,
+  B = 1000L,
+  paired = FALSE,
+  statistic = c("Integral", "Max", "Integral_std", "Max_std")
+) {
   statistic <- rlang::arg_match(statistic)
   inputs <- twosamples2coeffs(data1, data2, mu, dx = dx)
   coeff1 <- inputs$coeff1
   coeff2 <- inputs$coeff2
   mu.eval <- inputs$mu
-  
+
   # Check the statistic
-  
+
   n1 <- dim(coeff1)[1]
   n2 <- dim(coeff2)[1]
   J <- dim(coeff1)[2]
-  n <- n1+n2
+  n <- n1 + n2
   etichetta_ord <- c(rep(1, n1), rep(2, n2))
-  
+
   #splines coefficients:
-  eval <- coeff <- rbind(coeff1,coeff2)
+  eval <- coeff <- rbind(coeff1, coeff2)
   p <- dim(coeff)[2]
-  
+
   data.eval <- eval
-  
+
   #univariate permutations
   meandiff2 <- (colMeans(coeff[1:n1, ]) - colMeans(coeff[(n1 + 1):n, ]))^2
   S1 <- stats::cov(coeff[1:n1, ])
@@ -63,12 +66,12 @@ Global2 <- function(data1, data2,
   Sp <- ((n1 - 1) * S1 + (n2 - 1) * S2) / (n1 + n2 - 2)
   T0 <- switch(
     statistic,
-    Integral     = meandiff2,
-    Max          = meandiff2,
+    Integral = meandiff2,
+    Max = meandiff2,
     Integral_std = meandiff2 / diag(Sp),
-    Max_std      = meandiff2 / diag(Sp)
+    Max_std = meandiff2 / diag(Sp)
   )
-  
+
   T_coeff <- matrix(ncol = p, nrow = B)
   for (perm in 1:B) {
     if (paired) {
@@ -76,38 +79,40 @@ Global2 <- function(data1, data2,
       coeff_perm <- coeff
       for (couple in 1:n1) {
         if (if.perm[couple] == 1) {
-          coeff_perm[c(couple, n1 + couple), ] <- coeff[c(n1 + couple, couple), ]
+          coeff_perm[c(couple, n1 + couple), ] <- coeff[
+            c(n1 + couple, couple),
+          ]
         }
       }
     } else {
       permutazioni <- sample(n)
       coeff_perm <- coeff[permutazioni, ]
     }
-    
-    meandiff2_perm <- (colMeans(coeff_perm[1:n1, ]) - colMeans(coeff_perm[(n1 + 1):n, ]))^2
+
+    meandiff2_perm <- (colMeans(coeff_perm[1:n1, ]) -
+      colMeans(coeff_perm[(n1 + 1):n, ]))^2
     S1_perm <- stats::cov(coeff_perm[1:n1, ])
     S2_perm <- stats::cov(coeff_perm[(n1 + 1):n, ])
     Sp_perm <- ((n1 - 1) * S1_perm + (n2 - 1) * S2_perm) / (n1 + n2 - 2)
     T_coeff[perm, ] <- switch(
       statistic,
-      Integral     = meandiff2_perm,
-      Max          = meandiff2_perm,
-      Integral_std = meandiff2_perm / diag(Sp_perm), 
-      Max_std      = meandiff2_perm / diag(Sp_perm)
+      Integral = meandiff2_perm,
+      Max = meandiff2_perm,
+      Integral_std = meandiff2_perm / diag(Sp_perm),
+      Max_std = meandiff2_perm / diag(Sp_perm)
     )
-    
   }
   pval <- numeric(p)
   for (i in 1:p) {
     pval[i] <- sum(T_coeff[, i] >= T0[i]) / B
   }
-  
+
   #combination
   all_combs <- rbind(rep(1, p))
   ntests <- 1
   adjusted.pval <- numeric(p)
-  
-  if (statistic =='Integral' || statistic == 'Integral_std') {
+
+  if (statistic == 'Integral' || statistic == 'Integral_std') {
     T0_comb <- sum(T0[which(all_combs[1, ] == 1)])
     T_comb <- (rowSums(T_coeff[, which(all_combs[1, ] == 1), drop = FALSE]))
     pval.temp <- mean(T_comb >= T0_comb)
@@ -120,7 +125,7 @@ Global2 <- function(data1, data2,
     indexes <- which(all_combs[1, ] == 1)
     adjusted.pval[indexes] <- pval.temp
   }
-  
+
   out <- list(
     data = data.eval,
     group_labels = etichetta_ord,
