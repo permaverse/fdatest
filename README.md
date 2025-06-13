@@ -39,7 +39,17 @@ pak::pak("permaverse/fdatest")
 
 ## Example
 
-This is a basic example which shows you how to solve a common problem:
+The package provides several methods for domain selection, including:
+
+- **FDR2**: False Discovery Rate for two populations.
+- **Global2**: Global testing for two populations.
+- **IWT2**: Interval-Wise Testing for two populations.
+- **PCT2**: Partition Closed Testing for two populations.
+- **TWT2**: Threshold Wise Testing for two populations.
+
+You can use these methods to test for significant differences between
+two populations of functional data. Here is an example using the `TWT2`
+method on the NASA temperatures data set:
 
 ``` r
 library(fdatest)
