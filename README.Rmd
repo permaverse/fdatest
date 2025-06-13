@@ -47,7 +47,7 @@ pak::pak("permaverse/fdatest")
 
 This is a basic example which shows you how to solve a common problem:
 
-```{r example}
+```{r example, fig.retina=2}
 library(fdatest)
 
 # Performing the TWT for two populations on the NASA temperatures data set
