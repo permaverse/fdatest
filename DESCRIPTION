@@ -33,7 +33,7 @@ Imports:
     lifecycle,
     patchwork,
     rlang
-RoxygenNote: 7.3.2
+RoxygenNote: 7.3.3
 Roxygen: list(markdown = TRUE)
 Depends: 
     R (>= 3.5.0)

@@ -7,81 +7,29 @@
 #' p-value function controls the point-wise error rate. The adjusted p-value
 #' function controls the interval-wise error rate.
 #'
-#' @inheritParams TWTaov
-#' @param recycle A boolean value specifying whether the recycled version of the
-#'   interval-wise testing procedure should be used. Default is \code{TRUE}. See
-#'   Pini and Vantini (2017) for details. Defaults to `TRUE`.
-#'
-#' @returns \code{IWTaov} returns an object of \code{\link{class}}
-#'   "\code{IWTaov}". The function \code{summary} is used to obtain and print a
-#'   summary of the results. An object of class "\code{IWTaov}" is a list
-#'   containing at least the following components:
-#'   
-#'   - `call`: The matched call.
-#'   - `design_matrix`: The design matrix of the functional-on-scalar linear
-#'   model.
-#'   - `unadjusted_pval_F`: Evaluation on a grid of the unadjusted p-value
-#'   function of the functional F-test.
-#'   - `pval_matrix_F`: Matrix of dimensions \code{c(p,p)} of the p-values of
-#'   the intervalwise F-tests. The element \eqn{(i,j)} of matrix `pval.matrix`
-#'   contains the p-value of the test of interval indexed by
-#'   \eqn{(j,j+1,...,j+(p-i))}.
-#'   - `adjusted_pval_F`: Evaluation on a grid of the adjusted p-value function
-#'   of the functional F-test.
-#'   - `unadjusted_pval_factors`: Evaluation on a grid of the unadjusted p-value
-#'   function of the functional F-tests on each factor of the analysis of
-#'   variance (rows).
-#'   - `pval_matrix_factors`: Array of dimensions `c(L+1,p,p)` of the p-values
-#'   of the multivariate F-tests on factors. The element \eqn{(l,i,j)} of array
-#'   `pval.matrix` contains the p-value of the joint NPC test on factor `l` of
-#'   the components \eqn{(j,j+1,...,j+(p-i))}.
-#'   - `adjusted_pval_factors`: Adjusted p-values of the functional F-tests on
-#'   each factor of the analysis of variance (rows) and each basis coefficient
-#'   (columns).
-#'   - `data.eval`: Evaluation on a fine uniform grid of the functional data
-#'   obtained through the basis expansion.
-#'   - `coeff.regr.eval`: Evaluation on a fine uniform grid of the functional
-#'   regression coefficients.
-#'   - `fitted.eval`: Evaluation on a fine uniform grid of the fitted values of
-#'   the functional regression.
-#'   - `residuals.eval`: Evaluation on a fine uniform grid of the residuals of
-#'   the functional regression.
-#'   - `R2.eval`: Evaluation on a fine uniform grid of the functional R-squared
-#'   of the regression.
-#'   - `heatmap.matrix.F`: Heatmap matrix of p-values of functional F-test (used
-#'   only for plots).
-#'   - `heatmap.matrix.factors`: Heatmap matrix of p-values of functional
-#'   F-tests on each factor of the analysis of variance (used only for plots).
-#'
-#' @seealso See \code{\link{summary.IWTaov}} for summaries and
-#'   \code{\link{plot.IWTaov}} for plotting the results. See
-#'   \code{\link{ITPaovbspline}} for a functional analysis of variance test
-#'   based on B-spline basis expansion. See also \code{\link{IWTlm}} to fit and
-#'   test a functional-on-scalar linear model applying the IWT, and
-#'   \code{\link{IWT1}}, \code{\link{IWT2}}  for one-population and
-#'   two-population tests.
+#' @inherit functional_anova_test params return seealso
 #'
 #' @references
 #' Pini, A., & Vantini, S. (2017). Interval-wise testing for functional data.
-#' \emph{Journal of Nonparametric Statistics}, 29(2), 407-424.
+#' *Journal of Nonparametric Statistics*, 29(2), 407-424.
 #'
 #' Pini, A., Vantini, S., Colosimo, B. M., & Grasso, M. (2018). Domain‐selective
 #' functional analysis of variance for supervised statistical profile monitoring
-#' of signal data. \emph{Journal of the Royal Statistical Society: Series C
-#' (Applied Statistics)} 67(1), 55-81.
+#' of signal data. *Journal of the Royal Statistical Society: Series C
+#' (Applied Statistics)* 67(1), 55-81.
 #'
 #' Abramowicz, K., Hager, C. K., Pini, A., Schelin, L., Sjostedt de Luna, S., &
 #' Vantini, S. (2018). Nonparametric inference for functional‐on‐scalar linear
 #' models applied to knee kinematic hop data after injury of the anterior
-#' cruciate ligament. \emph{Scandinavian Journal of Statistics} 45(4),
+#' cruciate ligament. *Scandinavian Journal of Statistics* 45(4),
 #' 1036-1061.
 #'
 #' D. Freedman and D. Lane (1983). A Nonstochastic Interpretation of Reported
-#' Significance Levels. \emph{Journal of Business & Economic Statistics} 1.4,
+#' Significance Levels. *Journal of Business & Economic Statistics* 1.4,
 #' 292-298.
 #'
-#' B. F. J. Manly (2006). Randomization, \emph{Bootstrap and Monte Carlo Methods
-#' in Biology}. Vol. 70. CRC Press.
+#' B. F. J. Manly (2006). Randomization, *Bootstrap and Monte Carlo Methods
+#' in Biology*. Vol. 70. CRC Press.
 #'
 #' @export
 #' @examples
@@ -101,17 +49,19 @@
 #' # All graphics on the same device
 #' graphics::layout(matrix(1:4, nrow = 2, byrow = FALSE))
 #' plot(
-#'   IWT.result, 
-#'   main = 'NASA data', 
-#'   plot.adjpval = TRUE, 
-#'   xlab = 'Day', 
+#'   IWT.result,
+#'   main = 'NASA data',
+#'   plot.adjpval = TRUE,
+#'   xlab = 'Day',
 #'   xrange = c(1, 365)
 #' )
-IWTaov <- function(formula, 
-                   dx = NULL, 
-                   B = 1000L, 
-                   method = c("residuals", "responses"), 
-                   recycle = TRUE) {
+IWTaov <- function(
+  formula,
+  dx = NULL,
+  B = 1000L,
+  method = c("residuals", "responses"),
+  recycle = TRUE
+) {
   cl <- match.call()
   coeff <- formula2coeff(formula, dx = dx)
 
@@ -119,7 +69,7 @@ IWTaov <- function(formula,
   formula.const <- deparse(formula[[3]], width.cutoff = 500L) #extracting the part after ~ on formula. this will not work if the formula is longer than 500 char
 
   formula.discrete <- stats::as.formula(
-    paste('coeff ~', formula.const), 
+    paste('coeff ~', formula.const),
     env = environment()
   )
   design.matrix <- stats::model.matrix(formula.discrete)
@@ -130,9 +80,9 @@ IWTaov <- function(formula,
 
   p <- dim(coeff)[2]
   npt <- J
-  
+
   cli::cli_h1("Point-wise tests")
-  
+
   #univariate permutations
   coeffnames <- paste('coeff[,', as.character(1:p), ']', sep = '')
   formula.coeff <- paste(coeffnames, '~', formula.const)
@@ -145,11 +95,11 @@ IWTaov <- function(formula,
   var.names <- var.names[-length(var.names)]
   nvar <- length(var.names)
   for (ii in 1:nvar) {
-    var.names[ii] <- gsub(' ' , '', var.names[ii])
+    var.names[ii] <- gsub(' ', '', var.names[ii])
   }
 
   index.vars <- cbind(
-    c(2, (cumsum(df.vars) + 2)[-length(df.vars)]), 
+    c(2, (cumsum(df.vars) + 2)[-length(df.vars)]),
     cumsum(df.vars) + 1
   )
   regr0 <- stats::lm.fit(design.matrix, coeff)
@@ -157,30 +107,44 @@ IWTaov <- function(formula,
   for (var in 1:(nvar + 1)) {
     MS0[var, ] <- colSums(rbind(
       regr0$effects[index.vars[var, 1]:index.vars[var, 2], ]^2
-    )) / df.vars[var]
+    )) /
+      df.vars[var]
   }
   # test statistic:
-  T0_part <- MS0[1:nvar, ] / matrix(
-    MS0[nvar + 1, ], nrow = nvar, ncol = p, byrow = TRUE
-  )
+  T0_part <- MS0[1:nvar, ] /
+    matrix(
+      MS0[nvar + 1, ],
+      nrow = nvar,
+      ncol = p,
+      byrow = TRUE
+    )
   Sigma <- chol2inv(regr0$qr$qr)
   resvar <- colSums(regr0$residuals^2) / regr0$df.residual
 
   if (nvar > 1) {
-    T0_glob <- colSums((regr0$fitted - matrix(
-      colMeans(regr0$fitted),
-      nrow = n,
-      ncol = p,
-      byrow = TRUE
-    ))^2) / ((nvar) * resvar)
-  } else if (nvar == 1) { #only one factor -> the permutation of the residuals is equivalent to the one of responses
+    T0_glob <- colSums(
+      (regr0$fitted -
+        matrix(
+          colMeans(regr0$fitted),
+          nrow = n,
+          ncol = p,
+          byrow = TRUE
+        ))^2
+    ) /
+      ((nvar) * resvar)
+  } else if (nvar == 1) {
+    #only one factor -> the permutation of the residuals is equivalent to the one of responses
     method <- 'responses'
-    T0_glob <- colSums((regr0$fitted - matrix(
-      colMeans(regr0$fitted),
-      nrow = n,
-      ncol = p,
-      byrow = TRUE
-    ))^2) / ((nvar) * resvar)
+    T0_glob <- colSums(
+      (regr0$fitted -
+        matrix(
+          colMeans(regr0$fitted),
+          nrow = n,
+          ncol = p,
+          byrow = TRUE
+        ))^2
+    ) /
+      ((nvar) * resvar)
   } else if (nvar == 0) {
     method <- 'responses' # model with only intercept -> the permutation of the residuals is equivalent to the one of responses
     T0_glob <- numeric(p)
@@ -205,11 +169,13 @@ IWTaov <- function(formula,
     formula.coeff_part <- vector('list', nvar)
     regr0_part <- vector('list', nvar)
     dummy.interaz <- grep(':', dummynames.all)
-    for (ii in 1:nvar) { #no test on intercept
+    for (ii in 1:nvar) {
+      #no test on intercept
       var.ii <- var.names2[ii]
       variables.reduced <- var.names2[-which(var.names2 == var.ii)] #removing the current variable to test
 
-      if (length(grep(':', var.ii)) > 0) { # testing interaction
+      if (length(grep(':', var.ii)) > 0) {
+        # testing interaction
         var12 <- strsplit(var.ii, ':')
         var1 <- var12[[1]][1]
         var2 <- var12[[1]][2]
@@ -222,7 +188,7 @@ IWTaov <- function(formula,
         dummy.test <- setdiff(dummy.test, dummy.interaz)
         dummynames.reduced <- dummynames.all[-dummy.test]
       }
-      
+
       if (nvar > 1) {
         formula.temp <- paste(dummynames.reduced, collapse = ' + ')
       } else {
@@ -231,26 +197,33 @@ IWTaov <- function(formula,
 
       formula.coeff.temp <- paste(coeffnames, '~', formula.temp)
       formula.coeff_part[[ii]] <- sapply(
-        formula.coeff.temp, 
-        FUN = stats::as.formula, 
+        formula.coeff.temp,
+        FUN = stats::as.formula,
         env = environment()
       )
       regr0_part[[ii]] <- lapply(formula.coeff_part[[ii]], stats::lm)
 
-      residui[ii, , ] <- simplify2array(lapply(regr0_part[[ii]], extract_residuals))
-      fitted_part[ii, , ] <- simplify2array(lapply(regr0_part[[ii]], extract_fitted))
+      residui[ii, , ] <- simplify2array(lapply(
+        regr0_part[[ii]],
+        extract_residuals
+      ))
+      fitted_part[ii, , ] <- simplify2array(lapply(
+        regr0_part[[ii]],
+        extract_fitted
+      ))
     }
   }
-  
+
   T_glob <- matrix(ncol = p, nrow = B)
   T_part <- array(dim = c(B, nvar, p))
 
   for (perm in 1:B) {
     # the F test is the same for both methods
-    if(nvar > 0) {
+    if (nvar > 0) {
       permutazioni <- sample(n)
       coeff_perm <- coeff[permutazioni, ]
-    } else { # testing intercept -> permute signs
+    } else {
+      # testing intercept -> permute signs
       signs <- stats::rbinom(n, 1, 0.5) * 2 - 1
       coeff_perm <- coeff * signs
     }
@@ -259,28 +232,36 @@ IWTaov <- function(formula,
     Sigma <- chol2inv(regr_perm$qr$qr)
     resvar <- colSums(regr_perm$residuals^2) / regr0$df.residual
 
-    if (nvar > 0)
-      T_glob[perm, ] <- colSums((
-        regr_perm$fitted - matrix(
-          colMeans(regr_perm$fitted),
-          nrow = n,
-          ncol = p,
-          byrow = TRUE
-        )
-      )^2) / ((nvar) * resvar)
+    if (nvar > 0) {
+      T_glob[perm, ] <- colSums(
+        (regr_perm$fitted -
+          matrix(
+            colMeans(regr_perm$fitted),
+            nrow = n,
+            ncol = p,
+            byrow = TRUE
+          ))^2
+      ) /
+        ((nvar) * resvar)
+    }
 
     # partial tests: differ depending on the method
     if (method == 'responses') {
       MSperm <- matrix(nrow = nvar + 1, ncol = p)
-      for (var in 1:(nvar+1)) {
+      for (var in 1:(nvar + 1)) {
         MSperm[var, ] <- colSums(rbind(
           regr_perm$effects[index.vars[var, 1]:index.vars[var, 2], ]^2
-        )) / df.vars[var]
+        )) /
+          df.vars[var]
       }
       # test statistic:
-      T_part[perm, , ] <- MSperm[1:nvar, ] / matrix(
-        MSperm[nvar + 1, ], nrow = nvar, ncol = p, byrow = TRUE
-      )
+      T_part[perm, , ] <- MSperm[1:nvar, ] /
+        matrix(
+          MSperm[nvar + 1, ],
+          nrow = nvar,
+          ncol = p,
+          byrow = TRUE
+        )
     } else if (method == 'residuals') {
       residui_perm <- residui[, permutazioni, ]
       aov_perm_part <- vector('list', nvar)
@@ -288,18 +269,20 @@ IWTaov <- function(formula,
         coeff_perm <- fitted_part[ii, , ] + residui_perm[ii, , ]
         regr_perm <- stats::lm.fit(design.matrix, coeff_perm)
         MSperm <- matrix(nrow = nvar + 1, ncol = p)
-        for (var in 1:(nvar+1)) {
+        for (var in 1:(nvar + 1)) {
           MSperm[var, ] <- colSums(rbind(
             regr_perm$effects[index.vars[var, 1]:index.vars[var, 2], ]^2
-          )) / df.vars[var]
+          )) /
+            df.vars[var]
         }
         # test statistic:
-        T_part[perm, ii, ] <- (MSperm[1:nvar, ] / matrix(
-          MSperm[nvar + 1, ],
-          nrow = nvar,
-          ncol = p,
-          byrow = TRUE
-        ))[ii, ]
+        T_part[perm, ii, ] <- (MSperm[1:nvar, ] /
+          matrix(
+            MSperm[nvar + 1, ],
+            nrow = nvar,
+            ncol = p,
+            byrow = TRUE
+          ))[ii, ]
       }
     }
   }
@@ -308,12 +291,16 @@ IWTaov <- function(formula,
   pval_part <- matrix(nrow = nvar, ncol = p)
   for (i in 1:p) {
     pval_glob[i] <- sum(T_glob[, i] >= T0_glob[i]) / B
-    pval_part[, i] = colSums(T_part[, , i] >= matrix(
-      T0_part[, i],
-      nrow = B,
-      ncol = nvar,
-      byrow = TRUE
-    )) / B
+    pval_part[, i] = colSums(
+      T_part[,, i] >=
+        matrix(
+          T0_part[, i],
+          nrow = B,
+          ncol = nvar,
+          byrow = TRUE
+        )
+    ) /
+      B
   }
 
   #combination
@@ -350,11 +337,15 @@ IWTaov <- function(formula,
           matrice_pval_asymm_part[ii, i, j] <- pval_temp
         }
       }
-      cli::cli_h1("Creating the p-value matrix: end of row {p - i + 1} out of {p}")
+      cli::cli_h1(
+        "Creating the p-value matrix: end of row {p - i + 1} out of {p}"
+      )
     }
   } else {
-    for (i in (p - 1):maxrow) { # rows
-      for (j in 1:i) { # columns
+    for (i in (p - 1):maxrow) {
+      # rows
+      for (j in 1:i) {
+        # columns
         inf <- j
         sup <- (p - i) + j
         T0_temp <- sum(T0_2x_glob[inf:sup])
@@ -368,7 +359,9 @@ IWTaov <- function(formula,
           matrice_pval_asymm_part[ii, i, j] <- pval_temp
         }
       }
-      cli::cli_h1("Creating the p-value matrix: end of row {p - i + 1} out of {p}")
+      cli::cli_h1(
+        "Creating the p-value matrix: end of row {p - i + 1} out of {p}"
+      )
     }
   }
 
@@ -378,7 +371,10 @@ IWTaov <- function(formula,
   corrected.pval_part <- matrix(nrow = nvar, ncol = p)
   corrected.pval.matrix_part <- array(dim = c(nvar, p, p))
   for (ii in 1:nvar) {
-    corrected.pval.matrix_part[ii, , ] <- pval_correct(matrice_pval_asymm_part[ii, , ])
+    corrected.pval.matrix_part[ii, , ] <- pval_correct(matrice_pval_asymm_part[
+      ii,
+      ,
+    ])
     corrected.pval_part[ii, ] <- corrected.pval.matrix_part[ii, 1, ]
   }
 
@@ -395,17 +391,24 @@ IWTaov <- function(formula,
 
   residuals.t <- coeff - fitted.t
   ybar.t <- colMeans(coeff)
-  R2.t <- colSums((fitted.t - matrix(
-    data = ybar.t,
-    nrow = n,
-    ncol = npt,
-    byrow = TRUE
-  ))^2) / colSums((coeff - matrix(
-    data = ybar.t,
-    nrow = n,
-    ncol = npt,
-    byrow = TRUE
-  ))^2)
+  R2.t <- colSums(
+    (fitted.t -
+      matrix(
+        data = ybar.t,
+        nrow = n,
+        ncol = npt,
+        byrow = TRUE
+      ))^2
+  ) /
+    colSums(
+      (coeff -
+        matrix(
+          data = ybar.t,
+          nrow = n,
+          ncol = npt,
+          byrow = TRUE
+        ))^2
+    )
 
   cli::cli_h1("Interval-Wise Testing completed")
 

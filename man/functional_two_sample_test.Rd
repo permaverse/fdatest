@@ -2,7 +2,7 @@
 % Please edit documentation in R/functional-two-sample-test.R
 \name{functional_two_sample_test}
 \alias{functional_two_sample_test}
-\title{Two-sample local testing procedures}
+\title{Local testing procedures for the functional two-sample test}
 \usage{
 functional_two_sample_test(
   data1,
@@ -60,7 +60,7 @@ performed. Defaults to \code{FALSE}.}
 Choices are \code{"two.sided"}, \code{"less"} or \code{"greater"}. Defaults to
 \code{"two.sided"}.}
 
-\item{statistic}{A string speicyfing the test statistic to use. Possible
+\item{statistic}{A string specifying the test statistic to use. Possible
 values are:
 \itemize{
 \item \code{"Integral"}: Integral of the squared sample mean difference.
@@ -72,8 +72,8 @@ values are:
 Defaults to \code{"Integral"}.}
 
 \item{recycle}{A boolean value specifying whether the recycled version of the
-interval-wise testing procedure should be used. Default is \code{TRUE}. See
-Pini and Vantini (2017) for details. Defaults to \code{TRUE}.}
+interval-wise testing procedure should be used. See Pini and Vantini (2017)
+for details. Defaults to \code{TRUE}.}
 
 \item{partition}{An integer vector of length \eqn{J} specifying the
 membership of each point of the domain to an element of the partition.

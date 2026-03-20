@@ -1,4 +1,4 @@
-#' Two-sample local testing procedures
+#' Local testing procedures for the functional two-sample test
 #'
 #' @description The function implements local testing procedures for testing
 #'   mean differences between two functional populations. Functional data are
@@ -38,7 +38,7 @@
 #' @param alternative A string specifying the type of alternative hypothesis.
 #'   Choices are `"two.sided"`, `"less"` or `"greater"`. Defaults to
 #'   `"two.sided"`.
-#' @param statistic A string speicyfing the test statistic to use. Possible
+#' @param statistic A string specifying the test statistic to use. Possible
 #'   values are:
 #'
 #'   - `"Integral"`: Integral of the squared sample mean difference.
