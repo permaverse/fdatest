@@ -404,6 +404,6 @@ TWTaov <- function(
     residuals.eval = residuals.t,
     R2.eval = R2.t
   )
-  class(out) <- "IWTaov"
+  class(out) <- "fanova"
   out
 }

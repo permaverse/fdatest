@@ -8,8 +8,8 @@
 #' areas.
 #'
 #' @param object,x An object of class `ftwosample`, usually a result of a call
-#'   to [`functional_two_sample_test()`], [`IWT2()`], [`TWT2()`], [`FDR2()`] or
-#'   [`PCT2()`].
+#'   to [`functional_two_sample_test()`], [`IWT2()`], [`TWT2()`], [`FDR2()`],
+#'   [`PCT2()`] or [`Global2()`].
 #' @param xrange A length-2 numeric vector specifying the range of the x-axis
 #'   for the plots. Defaults to `c(0, 1)`. This should match the domain of the
 #'   functional data.
@@ -156,7 +156,7 @@ autoplot.ftwosample <- function(
     )
   ) +
     {
-      if (nrow(sig_regions) > 0)
+      if (nrow(sig_regions) > 0) {
         ggplot2::geom_rect(
           data = sig_regions,
           ggplot2::aes(
@@ -169,6 +169,7 @@ autoplot.ftwosample <- function(
           inherit.aes = FALSE,
           alpha = 0.3
         )
+      }
     } +
     ggplot2::geom_line(linewidth = linewidth) +
     ggplot2::scale_color_viridis_d(name = "Group") +
@@ -191,7 +192,7 @@ autoplot.ftwosample <- function(
 
   p2 <- ggplot2::ggplot(pval_data, ggplot2::aes(x = .data$x, y = .data$pval)) +
     {
-      if (nrow(sig_regions) > 0)
+      if (nrow(sig_regions) > 0) {
         ggplot2::geom_rect(
           data = sig_regions,
           ggplot2::aes(
@@ -204,6 +205,7 @@ autoplot.ftwosample <- function(
           inherit.aes = FALSE,
           alpha = 0.3
         )
+      }
     } +
     ggplot2::geom_hline(
       yintercept = seq(0, 1, 0.1),
