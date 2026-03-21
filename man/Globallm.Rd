@@ -85,20 +85,20 @@ summary(Global.result)
 # Plot of the IWT results
 layout(1)
 plot(
-  Global.result, 
-  main = 'NASA data', 
-  plot_adjpval = TRUE, 
-  xlab = 'Day', 
+  Global.result,
+  main = 'NASA data',
+  plot_adjpval = TRUE,
+  xlab = 'Day',
   xrange = c(1, 365)
 )
 
 # All graphics on the same device
 layout(matrix(1:6, nrow = 3, byrow = FALSE))
 plot(
-  Global.result, 
-  main = 'NASA data', 
-  plot_adjpval = TRUE, 
-  xlab = 'Day', 
+  Global.result,
+  main = 'NASA data',
+  plot_adjpval = TRUE,
+  xlab = 'Day',
   xrange = c(1, 365)
 )
 }
@@ -116,9 +116,7 @@ in Biology}. Vol. 70. CRC Press.
 }
 \seealso{
 See \code{\link{summary.IWTlm}} for summaries and
-\code{\link{plot.IWTlm}} for plotting the results. See
-\code{\link{ITPlmbspline}} for a functional linear model test based on an
-a-priori selected B-spline basis expansion. See also \code{\link{IWTaov}}
+\code{\link{plot.IWTlm}} for plotting the results. See also \code{\link{IWTaov}}
 to fit and test a functional analysis of variance applying the IWT, and
 \code{\link{IWT1}}, \code{\link{IWT2}} for one-population and
 two-population tests.

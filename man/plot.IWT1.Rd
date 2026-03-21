@@ -94,8 +94,5 @@ cruciate ligament. \emph{Scandinavian Journal of Statistics} 45(4),
 1036-1061.
 }
 \seealso{
-\code{\link{IWTimage}} for the plot of p-values heatmaps. See also
-\code{\link{IWT2}} to perform the ITP to test differences between two
-populations. See \code{\link{ITP1bspline}} for one-population test based on
-B-spline basis representation.
+\code{\link{IWTimage}} for the plot of p-values heatmaps.
 }

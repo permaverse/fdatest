@@ -19,6 +19,9 @@
 #'   a matrix of dimension \eqn{n \times J} containing the pointwise evaluations
 #'   of \eqn{n} functions on the **same** grid of \eqn{J} points, or an object
 #'   of class [`fda::fd`].
+#' @param correction A string specifying the method used to calculate the adjusted
+#'   p-value function. Choices are either `"Global"` for global testing, `"IWT"`
+#'   for interval-wise testing or `"TWT"` for threshold-wise testing.
 #' @param dx A numeric value specifying the discretization step of the grid used
 #'   to evaluate functional data when it is provided as objects of class
 #'   [`fda::fd`]. Defaults to `NULL`, in which case a default value of `0.01` is
@@ -134,7 +137,7 @@
 #' plot(
 #'   TWT.result,
 #'   xrange = c(0, 12),
-#'   title = 'TWT results for testing mean differences'
+#'   main = 'TWT results for testing mean differences'
 #' )
 #'
 #' # Selecting the significant components at 5% level
@@ -151,7 +154,7 @@
 #' plot(
 #'   IWT.result,
 #'   xrange = c(0, 12),
-#'   title = 'IWT results for testing mean differences'
+#'   main = 'IWT results for testing mean differences'
 #' )
 #'
 #' # Selecting the significant components at 5% level

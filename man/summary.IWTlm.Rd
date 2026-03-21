@@ -52,10 +52,10 @@ plot(IWT.result)
 # All graphics on the same device
 layout(matrix(1:4, nrow = 2, byrow = FALSE))
 plot(
-  IWT.result, 
-  main = 'NASA data', 
-  plot_adjpval = TRUE, 
-  xlab = 'Day', 
+  IWT.result,
+  main = 'NASA data',
+  plot_adjpval = TRUE,
+  xlab = 'Day',
   xrange = c(1, 365)
 )
 }
@@ -77,8 +77,6 @@ cruciate ligament. \emph{Scandinavian Journal of Statistics} 45(4),
 \seealso{
 \code{\link{IWTimage}} for the plot of p-values heatmaps.
 \code{\link{plot.IWTlm}} for the plot of regression results. See also
-\code{\link{IWT1}}, \code{\link{IWT2}} to perform the ITP to test on the
-mean of one population and test of differences between two populations. See
-\code{\link{ITPlmbspline}} for functional linear model based on B-spline
-basis representation
+\code{\link{IWT1}}, \code{\link{IWT2}} to perform the IWT to test on the
+mean of one population and test of differences between two populations.
 }

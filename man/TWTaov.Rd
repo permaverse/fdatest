@@ -96,7 +96,7 @@ groups <- c(rep(0, 22), rep(1, 22))
 # Performing the TWT
 TWT.result <- TWTaov(temperature ~ groups, B = 100L)
 
-# Summary of the ITP results
+# Summary of the TWT results
 summary(TWT.result)
 
 # Plot of the TWT results

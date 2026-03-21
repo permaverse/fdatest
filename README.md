@@ -61,10 +61,10 @@ withr::with_seed(1234, {
 
 # Plotting the results of the TWT
 plot(
-  out, 
-  xrange = c(0, 12), 
-  title = 'TWT results for testing mean differences'
+  out,
+  xrange = c(0, 12),
+  main = 'TWT results for testing mean differences'
 )
 ```
 
-<img src="man/figures/README-example-1.png" width="100%" />
+<img src="man/figures/README-example-1.png" alt="" width="100%" />

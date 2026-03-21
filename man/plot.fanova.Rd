@@ -15,7 +15,7 @@
   col = 1,
   ylabel = "Functional Data",
   title = NULL,
-  lwd = 0.5,
+  linewidth = 0.5,
   type = "l",
   ...
 )
@@ -49,18 +49,30 @@ to select and display significant effects. Defaults to \code{alpha1 = 0.05}.}
 \item{alpha2}{A numeric value specifying the second level of significance
 used to select and display significant effects. Defaults to \code{alpha2 = 0.01}.}
 
-\item{ylabel}{A string specifying the label of the y-axis of the functional
+\item{plot_adjpval}{A boolean value specifying whether the plots of adjusted
+p-values should be displayed. Defaults to \code{FALSE}.}
+
+\item{ylim}{A 2-length numeric vector specifying the range of the y-axis.
+Defaults to \code{NULL}, which determines automatically the range from functional data.}
+
+\item{col}{An integer specifying the color for the plot of functional data. Defaults
+to \code{1L}.}
+
+\item{ylabel, ylab}{A string specifying the label of the y-axis of the functional
 data plot. Defaults to \code{"Functional Data"}.}
 
-\item{title}{A string specifying the title of the functional data plot.
+\item{title, main}{A string specifying the title of the functional data plot.
 Defaults to \code{NULL} in which case no title is displayed.}
+
+\item{linewidth, lwd}{A numeric value specifying the width of the line for the
+functional data plot. Note that the line width for the adjusted p-value
+plot will be twice this value. Defaults to \code{0.5}.}
+
+\item{type}{A string specifying the type of plot for the functional data. Defaults
+to \code{"l"} for lines.}
 
 \item{...}{Other arguments passed to specific methods. Not used in this
 function.}
-
-\item{linewidth}{A numeric value specifying the width of the line for the
-functional data plot. Note that the line width for the adjusted p-value
-plot will be twice this value. Defaults to \code{linewidth = 0.5}.}
 }
 \value{
 The \code{autoplot.fanova()} function creates a ggplot object that
@@ -92,7 +104,7 @@ TWT.result <- functional_anova_test(
 plot(
   TWT.result,
   xrange = c(0, 12),
-  title = 'TWT results for testing mean differences'
+  main = 'TWT results for testing mean differences'
 )
 }
 \references{

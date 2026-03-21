@@ -34,7 +34,7 @@ responses, according to the Manly scheme. Defaults to \code{"residuals"}.}
 \value{
 An object of class \code{TWTlm}. The function \code{summary} is used to
 obtain and print a summary of the results. An object of class
-"\code{ITPlm}" is a list containing at least the following components:
+"\code{TWTlm}" is a list containing at least the following components:
 \itemize{
 \item \code{call}: Call of the function.
 \item \code{design_matrix}: Design matrix of the linear model.
@@ -71,20 +71,20 @@ summary(TWT.result)
 # Plot of the TWT results
 layout(1)
 plot(
-  TWT.result, 
-  main = 'NASA data', 
-  plot_adjpval = TRUE, 
-  xlab = 'Day', 
+  TWT.result,
+  main = 'NASA data',
+  plot_adjpval = TRUE,
+  xlab = 'Day',
   xrange = c(1, 365)
 )
 
 # All graphics on the same device
 layout(matrix(1:6, nrow = 3, byrow = FALSE))
 plot(
-  TWT.result, 
-  main = 'NASA data', 
-  plot_adjpval = TRUE, 
-  xlab = 'Day', 
+  TWT.result,
+  main = 'NASA data',
+  plot_adjpval = TRUE,
+  xlab = 'Day',
   xrange = c(1, 365)
 )
 }

@@ -106,7 +106,7 @@ groups <- c(rep(0, 22), rep(1, 22))
 # Performing the IWT
 IWT.result <- IWTaov(temperature ~ groups, B = 10L)
 
-# Summary of the ITP results
+# Summary of the IWT results
 summary(IWT.result)
 
 # Plot of the IWT results

@@ -22,6 +22,10 @@ a matrix of dimension \eqn{n \times J} containing the pointwise evaluations
 of \eqn{n} functions on the \strong{same} grid of \eqn{J} points, or an object
 of class \code{\link[fda:fd]{fda::fd}}.}
 
+\item{correction}{A string specifying the method used to calculate the adjusted
+p-value function. Choices are either \code{"Global"} for global testing, \code{"IWT"}
+for interval-wise testing or \code{"TWT"} for threshold-wise testing.}
+
 \item{dx}{A numeric value specifying the discretization step of the grid used
 to evaluate functional data when it is provided as objects of class
 \code{\link[fda:fd]{fda::fd}}. Defaults to \code{NULL}, in which case a default value of \code{0.01} is
@@ -129,7 +133,7 @@ TWT.result <- functional_anova_test(
 plot(
   TWT.result,
   xrange = c(0, 12),
-  title = 'TWT results for testing mean differences'
+  main = 'TWT results for testing mean differences'
 )
 
 # Selecting the significant components at 5\% level
@@ -146,7 +150,7 @@ IWT.result <- functional_anova_test(
 plot(
   IWT.result,
   xrange = c(0, 12),
-  title = 'IWT results for testing mean differences'
+  main = 'IWT results for testing mean differences'
 )
 
 # Selecting the significant components at 5\% level

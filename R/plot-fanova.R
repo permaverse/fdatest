@@ -17,13 +17,21 @@
 #' @param alpha2 A numeric value specifying the second level of significance
 #'   used to select and display significant effects. Defaults to `alpha2 =
 #'   0.01`.
-#' @param ylabel A string specifying the label of the y-axis of the functional
+#' @param plot_adjpval A boolean value specifying whether the plots of adjusted
+#'   p-values should be displayed. Defaults to `FALSE`.
+#' @param ylim A 2-length numeric vector specifying the range of the y-axis.
+#'   Defaults to `NULL`, which determines automatically the range from functional data.
+#' @param col An integer specifying the color for the plot of functional data. Defaults
+#'   to `1L`.
+#' @param ylabel,ylab A string specifying the label of the y-axis of the functional
 #'   data plot. Defaults to `"Functional Data"`.
-#' @param title A string specifying the title of the functional data plot.
+#' @param title,main A string specifying the title of the functional data plot.
 #'   Defaults to `NULL` in which case no title is displayed.
-#' @param linewidth A numeric value specifying the width of the line for the
+#' @param linewidth,lwd A numeric value specifying the width of the line for the
 #'   functional data plot. Note that the line width for the adjusted p-value
-#'   plot will be twice this value. Defaults to `linewidth = 0.5`.
+#'   plot will be twice this value. Defaults to `0.5`.
+#' @param type A string specifying the type of plot for the functional data. Defaults
+#'   to `"l"` for lines.
 #' @param ... Other arguments passed to specific methods. Not used in this
 #'   function.
 #'
@@ -67,7 +75,7 @@
 #' plot(
 #'   TWT.result,
 #'   xrange = c(0, 12),
-#'   title = 'TWT results for testing mean differences'
+#'   main = 'TWT results for testing mean differences'
 #' )
 NULL
 
@@ -85,7 +93,7 @@ autoplot.fanova <- function(
   col = 1,
   ylabel = "Functional Data",
   title = NULL,
-  lwd = 0.5,
+  linewidth = 0.5,
   type = "l",
   ...
 ) {
@@ -111,22 +119,25 @@ autoplot.fanova <- function(
     sig1 <- which(pvals < alpha1)
     sig2 <- which(pvals < alpha2)
     dx <- abscissa[2] - abscissa[1]
-    dplyr::bind_rows(
-      if (length(sig1) > 0) {
-        data.frame(
-          xmin = abscissa[sig1] - dx / 2,
-          xmax = abscissa[sig1] + dx / 2,
-          level = "alpha1"
-        )
-      },
-      if (length(sig2) > 0) {
-        data.frame(
-          xmin = abscissa[sig2] - dx / 2,
-          xmax = abscissa[sig2] + dx / 2,
-          level = "alpha2"
-        )
-      }
-    )
+    rows1 <- if (length(sig1) > 0) {
+      data.frame(
+        xmin = abscissa[sig1] - dx / 2,
+        xmax = abscissa[sig1] + dx / 2,
+        level = "alpha1"
+      )
+    } else {
+      data.frame(xmin = numeric(0), xmax = numeric(0), level = character(0))
+    }
+    rows2 <- if (length(sig2) > 0) {
+      data.frame(
+        xmin = abscissa[sig2] - dx / 2,
+        xmax = abscissa[sig2] + dx / 2,
+        level = "alpha2"
+      )
+    } else {
+      data.frame(xmin = numeric(0), xmax = numeric(0), level = character(0))
+    }
+    rbind(rows1, rows2)
   }
 
   # Helper: add significance ribbons to a ggplot
@@ -161,12 +172,14 @@ autoplot.fanova <- function(
   # Build long-format data for functional data lines
   data_long <- as.data.frame(t(object$data.eval))
   data_long$x <- abscissa_pval
-  data_long <- tidyr::pivot_longer(
+  data_long <- stats::reshape(
     data_long,
-    cols = -"x",
-    names_to = "curve",
-    values_to = "y"
-  )
+    varying = setdiff(names(data_long), "x"),
+    v.names = "y",
+    timevar = "curve",
+    times = setdiff(names(data_long), "x"),
+    direction = "long"
+  )[, c("x", "curve", "y")]
 
   plots <- list()
 
@@ -192,7 +205,7 @@ autoplot.fanova <- function(
     p_f <- p_f +
       ggplot2::geom_line(
         color = if (is.numeric(col)) "black" else col,
-        linewidth = lwd
+        linewidth = linewidth
       ) +
       ggplot2::coord_cartesian(ylim = ylim) +
       ggplot2::labs(title = main_f, x = NULL, y = ylabel) +
@@ -243,7 +256,7 @@ autoplot.fanova <- function(
       curve_names <- paste0("V", seq_len(n_obs))
     }
     color_map <- data.frame(curve = curve_names, group = colors)
-    data_long_var <- dplyr::left_join(data_long, color_map, by = "curve")
+    data_long_var <- merge(data_long, color_map, by = "curve", sort = FALSE)
 
     sig_df_var <- make_sig_df(
       object$adjusted_pval_factors[var, ],
@@ -263,7 +276,7 @@ autoplot.fanova <- function(
     )
     p_var <- add_sig_ribbons(p_var, sig_df_var, ylim)
     p_var <- p_var +
-      ggplot2::geom_line(linewidth = lwd) +
+      ggplot2::geom_line(linewidth = linewidth) +
       ggplot2::geom_hline(
         yintercept = 0,
         linetype = "dashed",
@@ -304,7 +317,7 @@ autoplot.fanova <- function(
         color = "lightgray",
         linetype = "dotted"
       ) +
-      ggplot2::geom_line(linewidth = lwd * 2) +
+      ggplot2::geom_line(linewidth = linewidth * 2) +
       ggplot2::coord_cartesian(ylim = c(0, 1)) +
       ggplot2::labs(title = main_p, x = NULL, y = "p-value") +
       ggplot2::theme_bw() +
@@ -343,7 +356,7 @@ autoplot.fanova <- function(
           color = "lightgray",
           linetype = "dotted"
         ) +
-        ggplot2::geom_line(linewidth = lwd * 2) +
+        ggplot2::geom_line(linewidth = linewidth * 2) +
         ggplot2::coord_cartesian(ylim = c(0, 1)) +
         ggplot2::labs(title = main_p, x = NULL, y = "p-value") +
         ggplot2::theme_bw() +
@@ -388,7 +401,7 @@ plot.fanova <- function(
     col = col,
     ylabel = ylab,
     title = main,
-    lwd = lwd,
+    linewidth = lwd,
     type = type,
     ...
   ))

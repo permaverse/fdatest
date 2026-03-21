@@ -32,7 +32,7 @@
 #'   `mu` is a numeric vector, it must correspond to evaluation of the mean
 #'   difference function on the **same** grid that has been used to evaluate the
 #'   data samples. Defaults to `0`.
-#' @inheritParams TWTaov
+#' @inheritParams functional_anova_test
 #' @param paired A boolean value specifying whether a paired test should be
 #'   performed. Defaults to `FALSE`.
 #' @param alternative A string specifying the type of alternative hypothesis.
@@ -47,7 +47,6 @@
 #'   - `"Max_std"`: Maximum of the squared t-test statistic.
 #'
 #'   Defaults to `"Integral"`.
-#' @inheritParams IWTaov
 #' @param partition An integer vector of length \eqn{J} specifying the
 #'   membership of each point of the domain to an element of the partition.
 #'   Only used and **must** be set if the `correction` argument is set to

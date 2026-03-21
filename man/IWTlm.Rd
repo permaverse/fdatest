@@ -44,7 +44,7 @@ for details. Defaults to \code{TRUE}.}
 \value{
 \code{IWTlm} returns an object of \code{\link{class}} "\code{IWTlm}".
 The function \code{summary} is used to obtain and print a summary of the
-results. An object of class "\code{ITPlm}" is a list containing at least
+results. An object of class "\code{IWTlm}" is a list containing at least
 the following components:
 \itemize{
 \item \code{call}: Call of the function.
@@ -89,20 +89,20 @@ summary(IWT.result)
 # Plot of the IWT results
 graphics::layout(1)
 plot(
-  IWT.result, 
-  main = 'NASA data', 
-  plot_adjpval = TRUE, 
-  xlab = 'Day', 
+  IWT.result,
+  main = 'NASA data',
+  plot_adjpval = TRUE,
+  xlab = 'Day',
   xrange = c(1, 365)
 )
 
 # All graphics on the same device
 graphics::layout(matrix(1:6, nrow = 3, byrow = FALSE))
 plot(
-  IWT.result, 
-  main = 'NASA data', 
-  plot_adjpval = TRUE, 
-  xlab = 'Day', 
+  IWT.result,
+  main = 'NASA data',
+  plot_adjpval = TRUE,
+  xlab = 'Day',
   xrange = c(1, 365)
 )
 }
@@ -131,9 +131,7 @@ in Biology}. Vol. 70. CRC Press.
 }
 \seealso{
 See \code{\link{summary.IWTlm}} for summaries and
-\code{\link{plot.IWTlm}} for plotting the results. See
-\code{\link{ITPlmbspline}} for a functional linear model test based on an
-a-priori selected B-spline basis expansion. See also \code{\link{IWTaov}}
+\code{\link{plot.IWTlm}} for plotting the results. See also \code{\link{IWTaov}}
 to fit and test a functional analysis of variance applying the IWT, and
 \code{\link{IWT1}}, \code{\link{IWT2}} for one-population and
 two-population tests.
