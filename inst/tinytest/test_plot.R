@@ -10,6 +10,8 @@ using(tinysnapshot)
 
 # Use PNG device (no rsvg dependency) for snapshot comparisons
 options(tinysnapshot_device = "png")
+# Snapshots were produced on macOS; skip comparisons on other OSes
+options(tinysnapshot_os = "Darwin")
 
 data("NASAtemp", package = "fdatest")
 d1 <- NASAtemp$milan[1:4, 1:8]
