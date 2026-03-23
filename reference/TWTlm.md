@@ -9,6 +9,13 @@ of the effects of scalar covariates on a functional population.
 
 ``` r
 TWTlm(formula, dx = NULL, B = 1000L, method = c("residuals", "responses"))
+
+twt_lm(
+  formula,
+  dx = NULL,
+  n_perm = 1000L,
+  method = c("residuals", "responses")
+)
 ```
 
 ## Arguments
@@ -47,6 +54,11 @@ TWTlm(formula, dx = NULL, B = 1000L, method = c("residuals", "responses"))
   Freedman and Lane scheme or `"responses"`, which performs permutation
   of the responses, according to the Manly scheme. Defaults to
   `"residuals"`.
+
+- n_perm:
+
+  An integer value specifying the number of permutations for the
+  permutation tests. Defaults to `1000L`.
 
 ## Value
 
@@ -146,7 +158,7 @@ TWT_result <- TWTlm(temperature ~ groups, B = 100L)
 # Summary of the TWT results
 summary(TWT_result)
 #> $call
-#> TWTlm(formula = temperature ~ groups, B = 100L)
+#> twt_lm(formula = formula, dx = dx, n_perm = B, method = method)
 #> 
 #> $ttest
 #>             Minimum p-value    

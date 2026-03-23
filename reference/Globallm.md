@@ -15,6 +15,14 @@ Globallm(
   method = c("residuals", "responses"),
   stat = c("Integral", "Max")
 )
+
+global_lm(
+  formula,
+  dx = NULL,
+  n_perm = 1000L,
+  method = c("residuals", "responses"),
+  stat = c("Integral", "Max")
+)
 ```
 
 ## Arguments
@@ -61,6 +69,11 @@ Globallm(
   defined as the integral of the F-test statistic over the domain, or
   `"Max"`, in which case the statistic is defined as the maximum of the
   F-test statistic over the domain. Defaults to `"Integral"`.
+
+- n_perm:
+
+  An integer value specifying the number of permutations for the
+  permutation tests. Defaults to `1000L`.
 
 ## Value
 
@@ -160,7 +173,8 @@ Global_result <- Globallm(temperature ~ groups, B = 1000)
 # Summary of the IWT results
 summary(Global_result)
 #> $call
-#> Globallm(formula = temperature ~ groups, B = 1000)
+#> global_lm(formula = formula, dx = dx, n_perm = B, method = method, 
+#>     stat = stat)
 #> 
 #> $ttest
 #>             Minimum p-value    

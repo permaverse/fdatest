@@ -15,6 +15,14 @@ IWTlm(
   method = c("residuals", "responses"),
   recycle = TRUE
 )
+
+iwt_lm(
+  formula,
+  dx = NULL,
+  n_perm = 1000L,
+  method = c("residuals", "responses"),
+  recycle = TRUE
+)
 ```
 
 ## Arguments
@@ -59,6 +67,11 @@ IWTlm(
   A boolean value specifying whether the recycled version of the
   interval-wise testing procedure should be used. See Pini and
   Vantini (2017) for details. Defaults to `TRUE`.
+
+- n_perm:
+
+  An integer value specifying the number of permutations for the
+  permutation tests. Defaults to `1000L`.
 
 ## Value
 
@@ -367,7 +380,8 @@ IWT_result <- IWTlm(temperature ~ groups, B = 2L)
 # Summary of the IWT results
 summary(IWT_result)
 #> $call
-#> IWTlm(formula = temperature ~ groups, B = 2L)
+#> iwt_lm(formula = formula, dx = dx, n_perm = B, method = method, 
+#>     recycle = recycle)
 #> 
 #> $ttest
 #>             Minimum p-value    

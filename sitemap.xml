@@ -5,7 +5,6 @@
 <url><loc>https://permaverse.github.io/fdatest/index.html</loc></url>
 <url><loc>https://permaverse.github.io/fdatest/reference/FDR2.html</loc></url>
 <url><loc>https://permaverse.github.io/fdatest/reference/Global2.html</loc></url>
-<url><loc>https://permaverse.github.io/fdatest/reference/Globalaov.html</loc></url>
 <url><loc>https://permaverse.github.io/fdatest/reference/Globallm.html</loc></url>
 <url><loc>https://permaverse.github.io/fdatest/reference/ITPaovbspline.html</loc></url>
 <url><loc>https://permaverse.github.io/fdatest/reference/ITPimage.html</loc></url>
@@ -24,6 +23,7 @@
 <url><loc>https://permaverse.github.io/fdatest/reference/functional_anova_test.html</loc></url>
 <url><loc>https://permaverse.github.io/fdatest/reference/functional_lm_test.html</loc></url>
 <url><loc>https://permaverse.github.io/fdatest/reference/functional_two_sample_test.html</loc></url>
+<url><loc>https://permaverse.github.io/fdatest/reference/global_aov.html</loc></url>
 <url><loc>https://permaverse.github.io/fdatest/reference/index.html</loc></url>
 <url><loc>https://permaverse.github.io/fdatest/reference/plot.IWT1.html</loc></url>
 <url><loc>https://permaverse.github.io/fdatest/reference/plot.fanova.html</loc></url>

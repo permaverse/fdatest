@@ -283,7 +283,8 @@ IWT_result <- functional_lm_test(
 # Summary of the IWT results
 summary(IWT_result)
 #> $call
-#> IWTlm(formula = formula, dx = dx, B = B, method = method, recycle = recycle)
+#> iwt_lm(formula = formula, dx = dx, n_perm = B, method = method, 
+#>     recycle = recycle)
 #> 
 #> $ttest
 #>             Minimum p-value    

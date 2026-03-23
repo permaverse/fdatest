@@ -19,6 +19,16 @@ Global2(
   paired = FALSE,
   statistic = c("Integral", "Max", "Integral_std", "Max_std")
 )
+
+global2(
+  data1,
+  data2,
+  mu = 0,
+  dx = NULL,
+  n_perm = 1000L,
+  paired = FALSE,
+  statistic = c("Integral", "Max", "Integral_std", "Max_std")
+)
 ```
 
 ## Arguments
@@ -84,6 +94,11 @@ Global2(
   - `"Max_std"`: Maximum of the squared t-test statistic.
 
   Defaults to `"Integral"`.
+
+- n_perm:
+
+  An integer value specifying the number of permutations for the
+  permutation tests. Defaults to `1000L`.
 
 ## Value
 

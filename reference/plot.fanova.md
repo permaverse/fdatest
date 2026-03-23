@@ -49,10 +49,10 @@ plot(
 
   An object of class `fanova`, usually a result of a call to
   [`functional_anova_test()`](https://permaverse.github.io/fdatest/reference/functional_anova_test.md),
-  [`IWTaov()`](https://permaverse.github.io/fdatest/reference/IWTaov.md),
-  [`TWTaov()`](https://permaverse.github.io/fdatest/reference/TWTaov.md)
+  [`iwt_aov()`](https://permaverse.github.io/fdatest/reference/IWTaov.md),
+  [`twt_aov()`](https://permaverse.github.io/fdatest/reference/TWTaov.md)
   or
-  [`Globalaov()`](https://permaverse.github.io/fdatest/reference/Globalaov.md).
+  [`global_aov()`](https://permaverse.github.io/fdatest/reference/global_aov.md).
 
 - xrange:
 

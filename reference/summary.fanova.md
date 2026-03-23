@@ -812,7 +812,8 @@ IWT_result <- functional_anova_test(
 # Summary of the IWT results
 summary(IWT_result)
 #> $call
-#> IWTaov(formula = formula, dx = dx, B = B, method = method, recycle = recycle)
+#> iwt_aov(formula = formula, dx = dx, n_perm = B, method = method, 
+#>     recycle = recycle)
 #> 
 #> $factors
 #>        Minimum p-value    

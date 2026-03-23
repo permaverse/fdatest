@@ -58,6 +58,16 @@ p-value function controls the interval-wise error rate.</p>
 <span>  B <span class="op">=</span> <span class="fl">1000L</span>,</span>
 <span>  paired <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  statistic <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Integral"</span>, <span class="st">"Max"</span>, <span class="st">"Integral_std"</span>, <span class="st">"Max_std"</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">global2</span><span class="op">(</span></span>
+<span>  <span class="va">data1</span>,</span>
+<span>  <span class="va">data2</span>,</span>
+<span>  mu <span class="op">=</span> <span class="fl">0</span>,</span>
+<span>  dx <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  n_perm <span class="op">=</span> <span class="fl">1000L</span>,</span>
+<span>  paired <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  statistic <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Integral"</span>, <span class="st">"Max"</span>, <span class="st">"Integral_std"</span>, <span class="st">"Max_std"</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -116,6 +126,11 @@ values are:</p><ul><li><p><code>"Integral"</code>: Integral of the squared sampl
 <li><p><code>"Integral_std"</code>: Integral of the squared t-test statistic.</p></li>
 <li><p><code>"Max_std"</code>: Maximum of the squared t-test statistic.</p></li>
 </ul><p>Defaults to <code>"Integral"</code>.</p></dd>
+
+
+<dt id="arg-n-perm">n_perm<a class="anchor" aria-label="anchor" href="#arg-n-perm"></a></dt>
+<dd><p>An integer value specifying the number of permutations for the
+permutation tests. Defaults to <code>1000L</code>.</p></dd>
 
 </dl></div>
     <div class="section level2">

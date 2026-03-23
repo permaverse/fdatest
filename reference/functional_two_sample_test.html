@@ -234,18 +234,19 @@ functional data <em>TEST</em> 30, 784–809.</p>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Selecting the significant components at 5% level</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/which.html" class="external-link">which</a></span><span class="op">(</span><span class="va">TWT_result</span><span class="op">$</span><span class="va">adjusted_pval</span> <span class="op">&lt;</span> <span class="fl">0.05</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   [1]  39  40  45  47  49  50  52  53  57  61  62  63  64  65  70  71  72  73</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [19]  74  81  84  86  88  89  90  91  92  93  94  95  96  97  98 100 101 102</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [37] 103 104 105 106 107 108 110 111 112 113 114 115 116 117 118 119 120 121</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [55] 122 123 124 125 126 127 128 129 130 131 132 133 134 135 136 137 138 139</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [73] 140 141 142 143 144 145 146 147 148 149 150 151 152 153 154 155 156 157</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [91] 158 159 160 161 162 163 164 165 166 167 168 169 170 171 172 173 174 175</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [109] 176 177 178 179 180 181 182 183 184 185 186 187 188 189 190 191 192 193</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [127] 194 195 197 198 199 200 201 202 203 204 205 206 207 208 209 210 211 212</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [145] 213 214 215 216 217 218 219 220 221 222 223 224 225 226 227 228 229 230</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [163] 231 232 233 234 235 236 237 238 239 240 242 243 244 245 247 248 249 250</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [181] 251 253 254 255 256 257 258 259 260 261 264 265 266 267 268 269 270 271</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [199] 272 273 274 275 276 278 281 283 289 290 291 294 296 297 298 299 328</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   [1]  29  49  50  53  61  65  66  68  69  70  71  72  73  81  82  83  86  87</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [19]  88  89  91  92  93  94  95  96  97  98  99 100 101 102 103 104 105 106</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [37] 107 108 109 110 111 112 113 114 115 116 117 118 119 120 121 122 123 124</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [55] 125 126 127 128 129 130 131 132 133 134 135 136 137 138 139 140 141 142</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [73] 143 144 145 146 147 148 149 150 151 152 153 154 155 156 157 158 159 160</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [91] 161 162 163 164 165 166 167 168 169 170 171 172 173 174 175 176 177 178</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [109] 179 180 181 182 183 184 185 186 187 188 189 190 191 192 193 194 195 196</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [127] 197 198 199 200 201 202 203 204 205 206 207 208 209 210 211 212 213 214</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [145] 215 216 217 218 219 220 221 222 223 224 225 226 227 228 229 230 231 232</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [163] 233 234 235 236 237 238 239 240 241 242 243 244 245 246 247 248 249 250</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [181] 251 252 253 254 255 256 257 258 259 260 261 262 263 264 265 266 267 269</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [199] 270 272 273 274 275 276 281 285 286 287 288 289 290 291 295 298 299 304</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [217] 321 328 364</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Performing the IWT for two populations</span></span></span>
 <span class="r-in"><span><span class="va">IWT_result</span> <span class="op">&lt;-</span> <span class="fu">functional_two_sample_test</span><span class="op">(</span></span></span>
@@ -263,16 +264,16 @@ functional data <em>TEST</em> 30, 784–809.</p>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Selecting the significant components at 5% level</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/which.html" class="external-link">which</a></span><span class="op">(</span><span class="va">IWT_result</span><span class="op">$</span><span class="va">adjusted_pval</span> <span class="op">&lt;</span> <span class="fl">0.05</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   [1]  88  89  90  91  92  93  94  95  96  97 101 102 103 104 105 106 107 108</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [19] 109 110 111 112 113 114 115 116 117 118 119 120 122 123 124 125 126 127</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [37] 128 129 130 131 132 133 134 135 136 137 138 139 140 141 142 143 144 145</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [55] 146 147 148 149 150 151 152 153 154 155 156 157 158 159 160 161 162 163</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [73] 164 165 166 167 168 169 170 171 172 173 174 175 176 177 178 179 180 181</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [91] 182 183 184 185 186 187 188 189 190 191 192 193 194 195 196 197 198 199</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [109] 200 201 202 203 204 205 206 207 208 209 210 211 212 213 214 215 216 217</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [127] 218 219 220 224 225 226 227 228 229 230 231 232 233 234 235 236 237 238</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [145] 239 240 241 242 243 244 245 246 247 248 249 250 251 252 253 254 255 256</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [163] 257 258 259 260 268 269 270 271 272 273</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   [1] 101 102 103 104 105 106 111 112 113 114 115 116 117 118 119 120 121 122</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [19] 123 124 125 126 127 128 129 130 131 132 133 134 135 136 137 138 139 140</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [37] 141 142 143 144 145 146 147 148 149 150 151 152 153 154 155 156 157 158</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [55] 159 160 161 162 163 164 165 166 167 168 169 170 171 172 173 174 175 176</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [73] 177 178 179 180 181 182 183 184 185 186 187 188 189 190 191 192 193 194</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [91] 195 196 197 198 199 200 201 202 203 204 205 206 207 208 209 210 211 212</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [109] 213 214 215 216 217 218 219 220 221 222 223 224 225 226 227 228 229 230</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [127] 231 232 233 234 235 236 237 238 239 240 241 242 243 244 245 246 247 248</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [145] 249 250 251 252 253 254 255 256 257 258 259 260 261 265 266 267 268 269</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [163] 270 271 272 273 274 275 276 277 278 281</span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

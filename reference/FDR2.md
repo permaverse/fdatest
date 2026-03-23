@@ -19,6 +19,16 @@ FDR2(
   paired = FALSE,
   alternative = c("two.sided", "less", "greater")
 )
+
+fdr2(
+  data1,
+  data2,
+  mu = 0,
+  dx = NULL,
+  n_perm = 1000L,
+  paired = FALSE,
+  alternative = c("two.sided", "less", "greater")
+)
 ```
 
 ## Arguments
@@ -75,6 +85,11 @@ FDR2(
 
   A string specifying the type of alternative hypothesis. Choices are
   `"two.sided"`, `"less"` or `"greater"`. Defaults to `"two.sided"`.
+
+- n_perm:
+
+  An integer value specifying the number of permutations for the
+  permutation tests. Defaults to `1000L`.
 
 ## Value
 

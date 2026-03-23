@@ -200,7 +200,7 @@ TWT_result <- TWTlm(temperature ~ groups, B = 100L)
 # Summary of the TWT results
 summary(TWT_result)
 #> $call
-#> TWTlm(formula = temperature ~ groups, B = 100L)
+#> twt_lm(formula = formula, dx = dx, n_perm = B, method = method)
 #> 
 #> $ttest
 #>             Minimum p-value    

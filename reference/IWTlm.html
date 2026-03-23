@@ -53,6 +53,14 @@ effects of scalar covariates on a functional population.</p>
 <span>  B <span class="op">=</span> <span class="fl">1000L</span>,</span>
 <span>  method <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"residuals"</span>, <span class="st">"responses"</span><span class="op">)</span>,</span>
 <span>  recycle <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">iwt_lm</span><span class="op">(</span></span>
+<span>  <span class="va">formula</span>,</span>
+<span>  dx <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  n_perm <span class="op">=</span> <span class="fl">1000L</span>,</span>
+<span>  method <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"residuals"</span>, <span class="st">"responses"</span><span class="op">)</span>,</span>
+<span>  recycle <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -95,6 +103,11 @@ responses, according to the Manly scheme. Defaults to <code>"residuals"</code>.<
 <dd><p>A boolean value specifying whether the recycled version of the
 interval-wise testing procedure should be used. See Pini and Vantini (2017)
 for details. Defaults to <code>TRUE</code>.</p></dd>
+
+
+<dt id="arg-n-perm">n_perm<a class="anchor" aria-label="anchor" href="#arg-n-perm"></a></dt>
+<dd><p>An integer value specifying the number of permutations for the
+permutation tests. Defaults to <code>1000L</code>.</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -379,7 +392,8 @@ of variance.</p></div>
 <span class="r-in"><span><span class="co"># Summary of the IWT results</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">IWT_result</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $call</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> IWTlm(formula = temperature ~ groups, B = 2L)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> iwt_lm(formula = formula, dx = dx, n_perm = B, method = method, </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     recycle = recycle)</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $ttest</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>             Minimum p-value    </span>

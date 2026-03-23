@@ -356,7 +356,8 @@ IWT_result <- IWTlm(temperature ~ groups, B = 2L)
 # Summary of the IWT results
 summary(IWT_result)
 #> $call
-#> IWTlm(formula = temperature ~ groups, B = 2L)
+#> iwt_lm(formula = formula, dx = dx, n_perm = B, method = method, 
+#>     recycle = recycle)
 #> 
 #> $ttest
 #>             Minimum p-value    

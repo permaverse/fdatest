@@ -59,6 +59,17 @@ adjusted p-value function controls the family-wise error rate asymptotically.</p
 <span>  B <span class="op">=</span> <span class="fl">1000L</span>,</span>
 <span>  paired <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  alternative <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"two.sided"</span>, <span class="st">"less"</span>, <span class="st">"greater"</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">pct2</span><span class="op">(</span></span>
+<span>  <span class="va">data1</span>,</span>
+<span>  <span class="va">data2</span>,</span>
+<span>  <span class="va">partition</span>,</span>
+<span>  mu <span class="op">=</span> <span class="fl">0</span>,</span>
+<span>  dx <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  n_perm <span class="op">=</span> <span class="fl">1000L</span>,</span>
+<span>  paired <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  alternative <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"two.sided"</span>, <span class="st">"less"</span>, <span class="st">"greater"</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -121,6 +132,11 @@ performed. Defaults to <code>FALSE</code>.</p></dd>
 <dd><p>A string specifying the type of alternative hypothesis.
 Choices are <code>"two.sided"</code>, <code>"less"</code> or <code>"greater"</code>. Defaults to
 <code>"two.sided"</code>.</p></dd>
+
+
+<dt id="arg-n-perm">n_perm<a class="anchor" aria-label="anchor" href="#arg-n-perm"></a></dt>
+<dd><p>An integer value specifying the number of permutations for the
+permutation tests. Defaults to <code>1000L</code>.</p></dd>
 
 </dl></div>
     <div class="section level2">

@@ -923,7 +923,8 @@ ITP_result <- ITPaovbspline(temperature ~ groups,B=5,nknots=20,order=3)
 # Summary of the ITP results
 summary(ITP_result)
 #> $call
-#> IWTaov(formula = formula, B = B, method = method)
+#> iwt_aov(formula = formula, dx = dx, n_perm = B, method = method, 
+#>     recycle = recycle)
 #> 
 #> $factors
 #>        Minimum p-value    

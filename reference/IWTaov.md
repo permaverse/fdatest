@@ -18,6 +18,14 @@ IWTaov(
   method = c("residuals", "responses"),
   recycle = TRUE
 )
+
+iwt_aov(
+  formula,
+  dx = NULL,
+  n_perm = 1000L,
+  method = c("residuals", "responses"),
+  recycle = TRUE
+)
 ```
 
 ## Arguments
@@ -62,6 +70,11 @@ IWTaov(
   A boolean value specifying whether the recycled version of the
   interval-wise testing procedure should be used. See Pini and
   Vantini (2017) for details. Defaults to `TRUE`.
+
+- n_perm:
+
+  An integer value specifying the number of permutations for the
+  permutation tests. Defaults to `1000L`.
 
 ## Value
 
@@ -908,7 +921,8 @@ IWT_result <- IWTaov(temperature ~ groups, B = 10L)
 # Summary of the IWT results
 summary(IWT_result)
 #> $call
-#> IWTaov(formula = temperature ~ groups, B = 10L)
+#> iwt_aov(formula = formula, dx = dx, n_perm = B, method = method, 
+#>     recycle = recycle)
 #> 
 #> $factors
 #>        Minimum p-value    
