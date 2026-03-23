@@ -1,0 +1,129 @@
+# fdatest
+
+The goal of fdatest is to implement various statistical methods for
+domain selection in functional data analysis, that is selecting a subset
+of the domain where the difference between two populations is
+significant. The package is based on the paper by Abramowicz et
+al. (2022) and Pini & Vantini (2017).
+
+## Installation
+
+You can install the package from [CRAN](https://CRAN.R-project.org)
+with:
+
+``` r
+install.packages("fdatest")
+```
+
+Alternatively, You can install the development version of fdatest from
+[GitHub](https://github.com/) with:
+
+``` r
+# install.packages("pak")
+pak::pak("permaverse/fdatest")
+```
+
+## Example
+
+The package provides several methods for domain selection, including:
+
+- **FDR2**: False Discovery Rate for two populations.
+- **Global2**: Global testing for two populations.
+- **IWT2**: Interval-Wise Testing for two populations.
+- **PCT2**: Partition Closed Testing for two populations.
+- **TWT2**: Threshold Wise Testing for two populations.
+
+You can use these methods to test for significant differences between
+two populations of functional data. Here is an example using the `TWT2`
+method on the NASA temperatures data set:
+
+``` r
+library(fdatest)
+
+# Performing the TWT for two populations on the NASA temperatures data set
+withr::with_seed(1234, {
+  out <- TWT2(NASAtemp$paris, NASAtemp$milan)
+})
+
+# Plotting the results of the TWT
+plot(
+  out,
+  xrange = c(0, 12),
+  main = 'TWT results for testing mean differences'
+)
+```
+
+![](reference/figures/README-example-1.png)
+
+# Package index
+
+## All functions
+
+- [`FDR2()`](https://permaverse.github.io/fdatest/reference/FDR2.md) :
+  Two population functional Benjamini-Hochberg procedure
+- [`Global2()`](https://permaverse.github.io/fdatest/reference/Global2.md)
+  : Two population Global Testing procedure
+- [`Globalaov()`](https://permaverse.github.io/fdatest/reference/Globalaov.md)
+  : Global testing procedure for testing functional analysis of variance
+- [`Globallm()`](https://permaverse.github.io/fdatest/reference/Globallm.md)
+  : Global testing procedure for testing functional-on-scalar linear
+  models
+- [`ITPaovbspline()`](https://permaverse.github.io/fdatest/reference/ITPaovbspline.md)
+  : Interval Testing Procedure for testing unctional analysis of
+  variance with B-spline basis
+- [`ITPimage()`](https://permaverse.github.io/fdatest/reference/ITPimage.md)
+  : Heatmap plot of the Interval Testing Procedure results
+- [`ITPlmbspline()`](https://permaverse.github.io/fdatest/reference/ITPlmbspline.md)
+  : Interval Testing Procedure for testing Functional-on-Scalar Linear
+  Models with B-spline basis
+- [`ITP1bspline()`](https://permaverse.github.io/fdatest/reference/IWT1.md)
+  [`ITP1fourier()`](https://permaverse.github.io/fdatest/reference/IWT1.md)
+  [`IWT1()`](https://permaverse.github.io/fdatest/reference/IWT1.md) :
+  One population Interval Wise Testing procedure
+- [`ITP2bspline()`](https://permaverse.github.io/fdatest/reference/IWT2.md)
+  [`ITP2fourier()`](https://permaverse.github.io/fdatest/reference/IWT2.md)
+  [`ITP2pafourier()`](https://permaverse.github.io/fdatest/reference/IWT2.md)
+  [`IWT2()`](https://permaverse.github.io/fdatest/reference/IWT2.md) :
+  Two population Interval Wise Testing procedure
+- [`IWTaov()`](https://permaverse.github.io/fdatest/reference/IWTaov.md)
+  : Interval Wise Testing procedure for testing functional analysis of
+  variance
+- [`IWTimage()`](https://permaverse.github.io/fdatest/reference/IWTimage.md)
+  : Heatmap plot of the Interval Wise Testing Procedure results
+- [`IWTlm()`](https://permaverse.github.io/fdatest/reference/IWTlm.md) :
+  Interval-wise testing procedure for testing functional-on-scalar
+  linear models
+- [`NASAtemp`](https://permaverse.github.io/fdatest/reference/NASAtemp.md)
+  : NASA daily temperatures data set
+- [`PCT2()`](https://permaverse.github.io/fdatest/reference/PCT2.md) :
+  Two population Partition Closed Testing procedure
+- [`TWT2()`](https://permaverse.github.io/fdatest/reference/TWT2.md) :
+  Two population Threshold Wise Testing procedure
+- [`TWTaov()`](https://permaverse.github.io/fdatest/reference/TWTaov.md)
+  : Threshold Wise Testing procedure for testing functional analysis of
+  variance
+- [`TWTlm()`](https://permaverse.github.io/fdatest/reference/TWTlm.md) :
+  Threshold-wise testing procedure for testing functional-on-scalar
+  linear models
+- [`functional_anova_test()`](https://permaverse.github.io/fdatest/reference/functional_anova_test.md)
+  : Local testing procedures for the functional analysis of variance
+- [`functional_lm_test()`](https://permaverse.github.io/fdatest/reference/functional_lm_test.md)
+  : Local testing procedures for functional-on-scalar linear models
+- [`functional_two_sample_test()`](https://permaverse.github.io/fdatest/reference/functional_two_sample_test.md)
+  : Local testing procedures for the functional two-sample test
+- [`plot(`*`<IWT1>`*`)`](https://permaverse.github.io/fdatest/reference/plot.IWT1.md)
+  : Plot method for IWT results on one-population test
+- [`autoplot(`*`<fanova>`*`)`](https://permaverse.github.io/fdatest/reference/plot.fanova.md)
+  [`plot(`*`<fanova>`*`)`](https://permaverse.github.io/fdatest/reference/plot.fanova.md)
+  : Plot for Functional ANOVA Test Results
+- [`autoplot(`*`<flm>`*`)`](https://permaverse.github.io/fdatest/reference/plot.flm.md)
+  [`plot(`*`<flm>`*`)`](https://permaverse.github.io/fdatest/reference/plot.flm.md)
+  : Plot for Functional Regression Test Results
+- [`autoplot(`*`<ftwosample>`*`)`](https://permaverse.github.io/fdatest/reference/plot.ftwosample.md)
+  [`plot(`*`<ftwosample>`*`)`](https://permaverse.github.io/fdatest/reference/plot.ftwosample.md)
+  : Plot for Functional Two-Sample Test Results
+- [`summary(`*`<fanova>`*`)`](https://permaverse.github.io/fdatest/reference/summary.fanova.md)
+  : Summarizing Functional Analysis of Variance Fits
+- [`summary(`*`<flm>`*`)`](https://permaverse.github.io/fdatest/reference/summary.flm.md)
+  : Summarizing Functional Linear Model Fits
+

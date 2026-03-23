@@ -21,19 +21,15 @@
 <url><loc>https://permaverse.github.io/fdatest/reference/TWTaov.html</loc></url>
 <url><loc>https://permaverse.github.io/fdatest/reference/TWTlm.html</loc></url>
 <url><loc>https://permaverse.github.io/fdatest/reference/fdatest-package.html</loc></url>
-<url><loc>https://permaverse.github.io/fdatest/reference/fdatest2.html</loc></url>
+<url><loc>https://permaverse.github.io/fdatest/reference/functional_anova_test.html</loc></url>
+<url><loc>https://permaverse.github.io/fdatest/reference/functional_lm_test.html</loc></url>
+<url><loc>https://permaverse.github.io/fdatest/reference/functional_two_sample_test.html</loc></url>
 <url><loc>https://permaverse.github.io/fdatest/reference/index.html</loc></url>
-<url><loc>https://permaverse.github.io/fdatest/reference/plot.ITP1.html</loc></url>
-<url><loc>https://permaverse.github.io/fdatest/reference/plot.ITP2.html</loc></url>
-<url><loc>https://permaverse.github.io/fdatest/reference/plot.ITPaov.html</loc></url>
-<url><loc>https://permaverse.github.io/fdatest/reference/plot.ITPlm.html</loc></url>
 <url><loc>https://permaverse.github.io/fdatest/reference/plot.IWT1.html</loc></url>
-<url><loc>https://permaverse.github.io/fdatest/reference/plot.IWTaov.html</loc></url>
-<url><loc>https://permaverse.github.io/fdatest/reference/plot.IWTlm.html</loc></url>
-<url><loc>https://permaverse.github.io/fdatest/reference/plot.fdatest2.html</loc></url>
-<url><loc>https://permaverse.github.io/fdatest/reference/summary.ITPaov.html</loc></url>
-<url><loc>https://permaverse.github.io/fdatest/reference/summary.ITPlm.html</loc></url>
-<url><loc>https://permaverse.github.io/fdatest/reference/summary.IWTaov.html</loc></url>
-<url><loc>https://permaverse.github.io/fdatest/reference/summary.IWTlm.html</loc></url>
+<url><loc>https://permaverse.github.io/fdatest/reference/plot.fanova.html</loc></url>
+<url><loc>https://permaverse.github.io/fdatest/reference/plot.flm.html</loc></url>
+<url><loc>https://permaverse.github.io/fdatest/reference/plot.ftwosample.html</loc></url>
+<url><loc>https://permaverse.github.io/fdatest/reference/summary.fanova.html</loc></url>
+<url><loc>https://permaverse.github.io/fdatest/reference/summary.flm.html</loc></url>
 </urlset>
 

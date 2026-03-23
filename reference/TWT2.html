@@ -15,7 +15,7 @@ p-value function controls the family-wise error rate asymptotically."></head><bo
 
     <a class="navbar-brand me-2" href="../index.html">fdatest</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.1.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.1.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -26,6 +26,7 @@ p-value function controls the family-wise error rate asymptotically."></head><bo
       <ul class="navbar-nav me-auto"><li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
       </ul><ul class="navbar-nav"><li class="nav-item"><form class="form-inline" role="search">
  <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="../search.json"></form></li>
+<li class="nav-item"><a class="external-link nav-link" href="https://github.com/permaverse/fdatest/" aria-label="GitHub"><span class="fa fab fa-github fa-lg"></span></a></li>
       </ul></div>
 
 
@@ -35,7 +36,7 @@ p-value function controls the family-wise error rate asymptotically."></head><bo
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Two population Threshold Wise Testing procedure</h1>
-
+      <small class="dont-index">Source: <a href="https://github.com/permaverse/fdatest/blob/master/R/two-twt.R" class="external-link"><code>R/two-twt.R</code></a></small>
       <div class="d-none name"><code>TWT2.Rd</code></div>
     </div>
 
@@ -53,10 +54,11 @@ p-value function controls the family-wise error rate asymptotically.</p>
 <span>  <span class="va">data1</span>,</span>
 <span>  <span class="va">data2</span>,</span>
 <span>  mu <span class="op">=</span> <span class="fl">0</span>,</span>
+<span>  dx <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  B <span class="op">=</span> <span class="fl">1000L</span>,</span>
 <span>  paired <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>  dx <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  alternative <span class="op">=</span> <span class="st">"two.sided"</span></span>
+<span>  alternative <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"two.sided"</span>, <span class="st">"less"</span>, <span class="st">"greater"</span><span class="op">)</span>,</span>
+<span>  verbose <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -65,65 +67,83 @@ p-value function controls the family-wise error rate asymptotically.</p>
 
 
 <dl><dt id="arg-data-">data1<a class="anchor" aria-label="anchor" href="#arg-data-"></a></dt>
-<dd><p>First population's data. Either pointwise evaluations of the
-functional data set on a uniform grid, or a <code>fd</code> object from the
-package <code>fda</code>. If pointwise evaluations are provided, <code>data2</code> is
-a matrix of dimensions <code>c(n1,J)</code>, with <code>J</code> evaluations on columns
-and <code>n1</code> units on rows.</p></dd>
+<dd><p>Either a numeric matrix or an object of class <code><a href="https://rdrr.io/pkg/fda/man/fd.html" class="external-link">fda::fd</a></code>
+specifying the data in the first sample. If the data is provided within a
+matrix, it should be of shape \(n_1 \times J\) and it should contain in
+each row one of the \(n_1\) functions in the sample and in columns the
+evaluation of each function on a <strong>same</strong> uniform grid of size \(J\).</p></dd>
 
 
 <dt id="arg-data-">data2<a class="anchor" aria-label="anchor" href="#arg-data-"></a></dt>
-<dd><p>Second population's data. Either pointwise evaluations of the
-functional data set on a uniform grid, or a <code>fd</code> object from the
-package <code>fda</code>. If pointwise evaluations are provided, <code>data2</code> is
-a matrix of dimensions <code>c(n1,J)</code>, with <code>J</code> evaluations on columns
-and <code>n2</code> units on rows.</p></dd>
+<dd><p>Either a numeric matrix or an object of class <code><a href="https://rdrr.io/pkg/fda/man/fd.html" class="external-link">fda::fd</a></code>
+specifying the data in the second sample. If the data is provided within a
+matrix, it should be of shape \(n_2 \times J\) and it should contain in
+each row one of the \(n_2\) functions in the sample and in columns the
+evaluation of each function on a <strong>same</strong> uniform grid of size \(J\).</p></dd>
 
 
 <dt id="arg-mu">mu<a class="anchor" aria-label="anchor" href="#arg-mu"></a></dt>
-<dd><p>Functional mean difference under the null hypothesis. Three
-possibilities are available for <code>mu</code>: a constant (in this case, a
-constant function is used); a <code>J</code>-dimensional vector containing the
-evaluations on the same grid which <code>data</code> are evaluated; a <code>fd</code>
-object from the package <code>fda</code> containing one function. The default is
-<code>mu=0</code>.</p></dd>
-
-
-<dt id="arg-b">B<a class="anchor" aria-label="anchor" href="#arg-b"></a></dt>
-<dd><p>The number of iterations of the MC algorithm to evaluate the
-p-values of the permutation tests. The defualt is <code>B=1000</code>.</p></dd>
-
-
-<dt id="arg-paired">paired<a class="anchor" aria-label="anchor" href="#arg-paired"></a></dt>
-<dd><p>Flag indicating whether a paired test has to be performed.
-Default is <code>FALSE</code>.</p></dd>
+<dd><p>Either a numeric value or a numeric vector or an object of class
+<code><a href="https://rdrr.io/pkg/fda/man/fd.html" class="external-link">fda::fd</a></code> specifying the functional mean difference under the null
+hypothesis. If <code>mu</code> is a constant, then a constant function is used. If
+<code>mu</code> is a numeric vector, it must correspond to evaluation of the mean
+difference function on the <strong>same</strong> grid that has been used to evaluate the
+data samples. Defaults to <code>0</code>.</p></dd>
 
 
 <dt id="arg-dx">dx<a class="anchor" aria-label="anchor" href="#arg-dx"></a></dt>
-<dd><p>Used only if a <code>fd</code> object is provided. In this case,
-<code>dx</code> is the size of the discretization step of the grid  used to
-evaluate functional data. If set to <code>NULL</code>, a grid of size 100 is
-used. Default is <code>NULL</code>.</p></dd>
+<dd><p>A numeric value specifying the discretization step of the grid used
+to evaluate functional data when it is provided as objects of class
+<code><a href="https://rdrr.io/pkg/fda/man/fd.html" class="external-link">fda::fd</a></code>. Defaults to <code>NULL</code>, in which case a default value of <code>0.01</code> is
+used which corresponds to a grid of size <code>100L</code>. Unused if functional data
+is provided in the form of matrices.</p></dd>
+
+
+<dt id="arg-b">B<a class="anchor" aria-label="anchor" href="#arg-b"></a></dt>
+<dd><p>An integer value specifying the number of iterations of the MC
+algorithm to evaluate the p-value of the permutation tests. Defaults to
+<code>1000L</code>.</p></dd>
+
+
+<dt id="arg-paired">paired<a class="anchor" aria-label="anchor" href="#arg-paired"></a></dt>
+<dd><p>A boolean value specifying whether a paired test should be
+performed. Defaults to <code>FALSE</code>.</p></dd>
 
 
 <dt id="arg-alternative">alternative<a class="anchor" aria-label="anchor" href="#arg-alternative"></a></dt>
-<dd><p>A character string specifying the alternative hypothesis,
-must be one of "<code>two.sided</code>" (default), "<code>greater</code>" or
-"<code>less</code>".</p></dd>
+<dd><p>A string specifying the type of alternative hypothesis.
+Choices are <code>"two.sided"</code>, <code>"less"</code> or <code>"greater"</code>. Defaults to
+<code>"two.sided"</code>.</p></dd>
+
+
+<dt id="arg-verbose">verbose<a class="anchor" aria-label="anchor" href="#arg-verbose"></a></dt>
+<dd><p>A boolean value specifying whether to print the progress of
+the computation. Defaults to <code>FALSE</code>.</p></dd>
 
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>An object of class <code>fdatest2</code> containing the following components:</p><ul><li><p><code>test</code>: String vector indicating the type of test performed. In this case
-equal to <code>"2pop"</code>.</p></li>
-<li><p><code>mu</code>: Evaluation on a grid of the functional mean difference under the
-null hypothesis (as entered by the user).</p></li>
-<li><p><code>unadjusted_pval</code>: Evaluation on a grid of the unadjusted p-value
-function.</p></li>
-<li><p><code>adjusted_pval</code>: Evaluation on a grid of the adjusted p-value function.</p></li>
-<li><p><code>data.eval</code>: Evaluation on a grid of the functional data.</p></li>
-<li><p><code>ord_labels</code>: Vector of labels indicating the group membership of
-<code>data.eval</code>.</p></li>
+    <p>An object of class <code>ftwosample</code> containing the following components:</p><ul><li><p><code>data</code>: A numeric matrix of shape \(n \times J\) containing the
+evaluation of the \(n = n_1 + n_2\) functions on a <strong>common</strong> uniform
+grid of size \(p\).</p></li>
+<li><p><code>group_labels</code>: An integer vector of size \(n = n_1 + n_2\) containing
+the group membership of each function.</p></li>
+<li><p><code>mu</code>: A numeric vector of shape \(J\) containing the evaluation of the
+functional mean difference under the null hypothesis on the same uniform
+grid used to evaluate the functional samples.</p></li>
+<li><p><code>unadjusted_pvalues</code>: A numeric vector of size \(J\) containing the
+evaluation of the unadjusted p-value function on the <strong>same</strong> uniform grid
+used to evaluate the functional samples.</p></li>
+<li><p><code>adjusted_pvalues</code>: A numeric vector of size \(J\) containing the
+evaluation of the adjusted p-value functione on the <strong>same</strong> uniform grid
+used to evaluate the functional samples.</p></li>
+</ul><p>Optionally, the list may contain the following components:</p><ul><li><p><code>global_pvalue</code>: A numeric value containing the global p-value. Only
+present if the <code>correction</code> argument is set to <code>"Global"</code>.</p></li>
+<li><p><code>pvalue_matrix</code>: A numeric matrix of shape \(p \times p\) containing
+the p-values of the interval-wise tests. Element \(i, j\) contains
+the p-value of the test performed on the interval indexed by
+\(j, j+1 , \dots, j+(p-i)\). Only present if the <code>correction</code> argument is
+set to <code>"IWT"</code>.</p></li>
 </ul></div>
     <div class="section level2">
     <h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a></h2>
@@ -135,30 +155,24 @@ framework. <em>Biometrics</em> 79(2), 1119-1132.</p>
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
-    <div class="dont-index"><p>See also <code><a href="plot.fdatest2.html">plot.fdatest2</a></code> for plotting the results.</p></div>
+    <div class="dont-index"><p>See also <code><a href="plot.ftwosample.html">plot.ftwosample()</a></code> for plotting the results.</p></div>
     </div>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># Importing the NASA temperatures data set</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">NASAtemp</span><span class="op">)</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># Performing the TWT for two populations</span></span></span>
-<span class="r-in"><span><span class="va">TWT.result</span> <span class="op">&lt;-</span> <span class="fu">TWT2</span><span class="op">(</span><span class="va">NASAtemp</span><span class="op">$</span><span class="va">paris</span>, <span class="va">NASAtemp</span><span class="op">$</span><span class="va">milan</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">Threshold-wise tests</span> <span style="color: #00BBBB;">────────────────────────────────────────────────────────</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># Performing the TWT for two populations</span></span></span>
+<span class="r-in"><span><span class="va">TWT_result</span> <span class="op">&lt;-</span> <span class="fu">TWT2</span><span class="op">(</span><span class="va">NASAtemp</span><span class="op">$</span><span class="va">paris</span>, <span class="va">NASAtemp</span><span class="op">$</span><span class="va">milan</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Plotting the results of the TWT</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="va">TWT.result</span>, </span></span>
-<span class="r-in"><span>  xrange <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">12</span><span class="op">)</span>, </span></span>
-<span class="r-in"><span>  main <span class="op">=</span> <span class="st">'TWT results for testing mean differences'</span></span></span>
+<span class="r-in"><span>  <span class="va">TWT_result</span>,</span></span>
+<span class="r-in"><span>  xrange <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">12</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  title <span class="op">=</span> <span class="st">'TWT results for testing mean differences'</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="TWT2-1.png" alt="" width="700" height="433"></span>
-<span class="r-plt img"><img src="TWT2-2.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Selecting the significant components at 5% level</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/which.html" class="external-link">which</a></span><span class="op">(</span><span class="va">TWT.result</span><span class="op">$</span><span class="va">adjusted_pval</span> <span class="op">&lt;</span> <span class="fl">0.05</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/which.html" class="external-link">which</a></span><span class="op">(</span><span class="va">TWT_result</span><span class="op">$</span><span class="va">adjusted_pvalues</span> <span class="op">&lt;</span> <span class="fl">0.05</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   [1]  49  50  61  64  65  69  70  71  72  73  74  81  88  89  90  91  92  93</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  [19]  94  95  96 101 102 103 104 105 106 107 108 109 110 111 112 113 114 115</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  [37] 116 117 118 119 120 121 122 123 124 125 126 127 128 129 130 131 132 133</span>
@@ -182,7 +196,7 @@ framework. <em>Biometrics</em> 79(2), 1119-1132.</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
 </div>
 
     </footer></div>
