@@ -191,8 +191,29 @@ groups <- c(rep(0, 22), rep(1, 22))
 
 # Performing the TWT
 TWT_result <- TWTlm(temperature ~ groups, B = 100L)
-#> Error in eval(predvars, data, env): object 'groups' not found
+#> 
+#> ── Point-wise tests ────────────────────────────────────────────────────────────
+#> 
+#> ── Threshold-wise tests ────────────────────────────────────────────────────────
+#> 
+#> ── Threshold-Wise Testing completed ────────────────────────────────────────────
 # Summary of the TWT results
 summary(TWT_result)
-#> Error: object 'TWT_result' not found
+#> $call
+#> TWTlm(formula = temperature ~ groups, B = 100L)
+#> 
+#> $ttest
+#>             Minimum p-value    
+#> (Intercept)               0 ***
+#> groups                    0 ***
+#> 
+#> $R2
+#>               Range of functional R-squared
+#> Min R-squared                  3.390203e-05
+#> Max R-squared                  5.399620e-01
+#> 
+#> $ftest
+#>   Minimum p-value    
+#> 1               0 ***
+#> 
 ```

@@ -152,7 +152,12 @@ TWT_result <- functional_anova_test(
   correction = "TWT",
   B = 5L
 )
-#> Error in eval(predvars, data, env): object 'groups' not found
+#> 
+#> ── Point-wise tests ────────────────────────────────────────────────────────────
+#> 
+#> ── Threshold-wise tests ────────────────────────────────────────────────────────
+#> 
+#> ── Threshold-Wise Testing completed ────────────────────────────────────────────
 
 # Plotting the results of the TWT
 plot(
@@ -160,5 +165,4 @@ plot(
   xrange = c(0, 12),
   main = 'TWT results for testing mean differences'
 )
-#> Error: object 'TWT_result' not found
 ```

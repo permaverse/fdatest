@@ -194,7 +194,7 @@ for summarizing the results of the functional analysis of variance.
 ## Examples
 
 ``` r
-temperature <- rbind(NASAtemp$milan, NASAtemp$paris)
+temperature <- rbind(NASAtemp$milan[, 1:100], NASAtemp$paris[, 1:100])
 groups <- c(rep(0, 22), rep(1, 22))
 
 # Performing the TWT for two populations
@@ -203,7 +203,12 @@ TWT_result <- functional_anova_test(
   correction = "TWT",
   B = 10L
 )
-#> Error in eval(predvars, data, env): object 'groups' not found
+#> 
+#> ── Point-wise tests ────────────────────────────────────────────────────────────
+#> 
+#> ── Threshold-wise tests ────────────────────────────────────────────────────────
+#> 
+#> ── Threshold-Wise Testing completed ────────────────────────────────────────────
 
 # Plotting the results of the TWT
 plot(
@@ -211,11 +216,11 @@ plot(
   xrange = c(0, 12),
   main = 'TWT results for testing mean differences'
 )
-#> Error: object 'TWT_result' not found
+
 
 # Selecting the significant components at 5% level
 which(TWT_result$adjusted_pval < 0.05)
-#> Error: object 'TWT_result' not found
+#> integer(0)
 
 # Performing the IWT for two populations
 IWT_result <- functional_anova_test(
@@ -223,7 +228,210 @@ IWT_result <- functional_anova_test(
   correction = "IWT",
   B = 10L
 )
-#> Error in eval(predvars, data, env): object 'groups' not found
+#> 
+#> ── Point-wise tests ────────────────────────────────────────────────────────────
+#> 
+#> ── Interval-wise tests ─────────────────────────────────────────────────────────
+#> 
+#> ── Creating the p-value matrix: end of row 2 out of 100 ────────────────────────
+#> 
+#> ── Creating the p-value matrix: end of row 3 out of 100 ────────────────────────
+#> 
+#> ── Creating the p-value matrix: end of row 4 out of 100 ────────────────────────
+#> 
+#> ── Creating the p-value matrix: end of row 5 out of 100 ────────────────────────
+#> 
+#> ── Creating the p-value matrix: end of row 6 out of 100 ────────────────────────
+#> 
+#> ── Creating the p-value matrix: end of row 7 out of 100 ────────────────────────
+#> 
+#> ── Creating the p-value matrix: end of row 8 out of 100 ────────────────────────
+#> 
+#> ── Creating the p-value matrix: end of row 9 out of 100 ────────────────────────
+#> 
+#> ── Creating the p-value matrix: end of row 10 out of 100 ───────────────────────
+#> 
+#> ── Creating the p-value matrix: end of row 11 out of 100 ───────────────────────
+#> 
+#> ── Creating the p-value matrix: end of row 12 out of 100 ───────────────────────
+#> 
+#> ── Creating the p-value matrix: end of row 13 out of 100 ───────────────────────
+#> 
+#> ── Creating the p-value matrix: end of row 14 out of 100 ───────────────────────
+#> 
+#> ── Creating the p-value matrix: end of row 15 out of 100 ───────────────────────
+#> 
+#> ── Creating the p-value matrix: end of row 16 out of 100 ───────────────────────
+#> 
+#> ── Creating the p-value matrix: end of row 17 out of 100 ───────────────────────
+#> 
+#> ── Creating the p-value matrix: end of row 18 out of 100 ───────────────────────
+#> 
+#> ── Creating the p-value matrix: end of row 19 out of 100 ───────────────────────
+#> 
+#> ── Creating the p-value matrix: end of row 20 out of 100 ───────────────────────
+#> 
+#> ── Creating the p-value matrix: end of row 21 out of 100 ───────────────────────
+#> 
+#> ── Creating the p-value matrix: end of row 22 out of 100 ───────────────────────
+#> 
+#> ── Creating the p-value matrix: end of row 23 out of 100 ───────────────────────
+#> 
+#> ── Creating the p-value matrix: end of row 24 out of 100 ───────────────────────
+#> 
+#> ── Creating the p-value matrix: end of row 25 out of 100 ───────────────────────
+#> 
+#> ── Creating the p-value matrix: end of row 26 out of 100 ───────────────────────
+#> 
+#> ── Creating the p-value matrix: end of row 27 out of 100 ───────────────────────
+#> 
+#> ── Creating the p-value matrix: end of row 28 out of 100 ───────────────────────
+#> 
+#> ── Creating the p-value matrix: end of row 29 out of 100 ───────────────────────
+#> 
+#> ── Creating the p-value matrix: end of row 30 out of 100 ───────────────────────
+#> 
+#> ── Creating the p-value matrix: end of row 31 out of 100 ───────────────────────
+#> 
+#> ── Creating the p-value matrix: end of row 32 out of 100 ───────────────────────
+#> 
+#> ── Creating the p-value matrix: end of row 33 out of 100 ───────────────────────
+#> 
+#> ── Creating the p-value matrix: end of row 34 out of 100 ───────────────────────
+#> 
+#> ── Creating the p-value matrix: end of row 35 out of 100 ───────────────────────
+#> 
+#> ── Creating the p-value matrix: end of row 36 out of 100 ───────────────────────
+#> 
+#> ── Creating the p-value matrix: end of row 37 out of 100 ───────────────────────
+#> 
+#> ── Creating the p-value matrix: end of row 38 out of 100 ───────────────────────
+#> 
+#> ── Creating the p-value matrix: end of row 39 out of 100 ───────────────────────
+#> 
+#> ── Creating the p-value matrix: end of row 40 out of 100 ───────────────────────
+#> 
+#> ── Creating the p-value matrix: end of row 41 out of 100 ───────────────────────
+#> 
+#> ── Creating the p-value matrix: end of row 42 out of 100 ───────────────────────
+#> 
+#> ── Creating the p-value matrix: end of row 43 out of 100 ───────────────────────
+#> 
+#> ── Creating the p-value matrix: end of row 44 out of 100 ───────────────────────
+#> 
+#> ── Creating the p-value matrix: end of row 45 out of 100 ───────────────────────
+#> 
+#> ── Creating the p-value matrix: end of row 46 out of 100 ───────────────────────
+#> 
+#> ── Creating the p-value matrix: end of row 47 out of 100 ───────────────────────
+#> 
+#> ── Creating the p-value matrix: end of row 48 out of 100 ───────────────────────
+#> 
+#> ── Creating the p-value matrix: end of row 49 out of 100 ───────────────────────
+#> 
+#> ── Creating the p-value matrix: end of row 50 out of 100 ───────────────────────
+#> 
+#> ── Creating the p-value matrix: end of row 51 out of 100 ───────────────────────
+#> 
+#> ── Creating the p-value matrix: end of row 52 out of 100 ───────────────────────
+#> 
+#> ── Creating the p-value matrix: end of row 53 out of 100 ───────────────────────
+#> 
+#> ── Creating the p-value matrix: end of row 54 out of 100 ───────────────────────
+#> 
+#> ── Creating the p-value matrix: end of row 55 out of 100 ───────────────────────
+#> 
+#> ── Creating the p-value matrix: end of row 56 out of 100 ───────────────────────
+#> 
+#> ── Creating the p-value matrix: end of row 57 out of 100 ───────────────────────
+#> 
+#> ── Creating the p-value matrix: end of row 58 out of 100 ───────────────────────
+#> 
+#> ── Creating the p-value matrix: end of row 59 out of 100 ───────────────────────
+#> 
+#> ── Creating the p-value matrix: end of row 60 out of 100 ───────────────────────
+#> 
+#> ── Creating the p-value matrix: end of row 61 out of 100 ───────────────────────
+#> 
+#> ── Creating the p-value matrix: end of row 62 out of 100 ───────────────────────
+#> 
+#> ── Creating the p-value matrix: end of row 63 out of 100 ───────────────────────
+#> 
+#> ── Creating the p-value matrix: end of row 64 out of 100 ───────────────────────
+#> 
+#> ── Creating the p-value matrix: end of row 65 out of 100 ───────────────────────
+#> 
+#> ── Creating the p-value matrix: end of row 66 out of 100 ───────────────────────
+#> 
+#> ── Creating the p-value matrix: end of row 67 out of 100 ───────────────────────
+#> 
+#> ── Creating the p-value matrix: end of row 68 out of 100 ───────────────────────
+#> 
+#> ── Creating the p-value matrix: end of row 69 out of 100 ───────────────────────
+#> 
+#> ── Creating the p-value matrix: end of row 70 out of 100 ───────────────────────
+#> 
+#> ── Creating the p-value matrix: end of row 71 out of 100 ───────────────────────
+#> 
+#> ── Creating the p-value matrix: end of row 72 out of 100 ───────────────────────
+#> 
+#> ── Creating the p-value matrix: end of row 73 out of 100 ───────────────────────
+#> 
+#> ── Creating the p-value matrix: end of row 74 out of 100 ───────────────────────
+#> 
+#> ── Creating the p-value matrix: end of row 75 out of 100 ───────────────────────
+#> 
+#> ── Creating the p-value matrix: end of row 76 out of 100 ───────────────────────
+#> 
+#> ── Creating the p-value matrix: end of row 77 out of 100 ───────────────────────
+#> 
+#> ── Creating the p-value matrix: end of row 78 out of 100 ───────────────────────
+#> 
+#> ── Creating the p-value matrix: end of row 79 out of 100 ───────────────────────
+#> 
+#> ── Creating the p-value matrix: end of row 80 out of 100 ───────────────────────
+#> 
+#> ── Creating the p-value matrix: end of row 81 out of 100 ───────────────────────
+#> 
+#> ── Creating the p-value matrix: end of row 82 out of 100 ───────────────────────
+#> 
+#> ── Creating the p-value matrix: end of row 83 out of 100 ───────────────────────
+#> 
+#> ── Creating the p-value matrix: end of row 84 out of 100 ───────────────────────
+#> 
+#> ── Creating the p-value matrix: end of row 85 out of 100 ───────────────────────
+#> 
+#> ── Creating the p-value matrix: end of row 86 out of 100 ───────────────────────
+#> 
+#> ── Creating the p-value matrix: end of row 87 out of 100 ───────────────────────
+#> 
+#> ── Creating the p-value matrix: end of row 88 out of 100 ───────────────────────
+#> 
+#> ── Creating the p-value matrix: end of row 89 out of 100 ───────────────────────
+#> 
+#> ── Creating the p-value matrix: end of row 90 out of 100 ───────────────────────
+#> 
+#> ── Creating the p-value matrix: end of row 91 out of 100 ───────────────────────
+#> 
+#> ── Creating the p-value matrix: end of row 92 out of 100 ───────────────────────
+#> 
+#> ── Creating the p-value matrix: end of row 93 out of 100 ───────────────────────
+#> 
+#> ── Creating the p-value matrix: end of row 94 out of 100 ───────────────────────
+#> 
+#> ── Creating the p-value matrix: end of row 95 out of 100 ───────────────────────
+#> 
+#> ── Creating the p-value matrix: end of row 96 out of 100 ───────────────────────
+#> 
+#> ── Creating the p-value matrix: end of row 97 out of 100 ───────────────────────
+#> 
+#> ── Creating the p-value matrix: end of row 98 out of 100 ───────────────────────
+#> 
+#> ── Creating the p-value matrix: end of row 99 out of 100 ───────────────────────
+#> 
+#> ── Creating the p-value matrix: end of row 100 out of 100 ──────────────────────
+#> 
+#> ── Interval-Wise Testing completed ─────────────────────────────────────────────
 
 # Plotting the results of the IWT
 plot(
@@ -231,9 +439,9 @@ plot(
   xrange = c(0, 12),
   main = 'IWT results for testing mean differences'
 )
-#> Error: object 'IWT_result' not found
+
 
 # Selecting the significant components at 5% level
 which(IWT_result$adjusted_pval < 0.05)
-#> Error: object 'IWT_result' not found
+#> integer(0)
 ```

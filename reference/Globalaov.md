@@ -163,16 +163,36 @@ groups <- c(rep(0, 22), rep(1, 22))
 
 # Performing the test
 Global_result <- Globalaov(temperature ~ groups, B = 1000)
-#> Error in eval(predvars, data, env): object 'groups' not found
+#> 
+#> ── Point-wise tests ────────────────────────────────────────────────────────────
+#> 
+#> ── Global test ─────────────────────────────────────────────────────────────────
+#> 
+#> ── Interval-Wise Testing completed ─────────────────────────────────────────────
 
 # Summary of the test results
 summary(Global_result)
-#> Error: object 'Global_result' not found
+#> $call
+#> Globalaov(formula = temperature ~ groups, B = 1000)
+#> 
+#> $factors
+#>        Minimum p-value    
+#> groups               0 ***
+#> 
+#> $R2
+#>               Range of functional R-squared
+#> Min R-squared                  3.390203e-05
+#> Max R-squared                  5.399620e-01
+#> 
+#> $ftest
+#>   Minimum p-value    
+#> 1               0 ***
+#> 
 
 # Plot of the results
 layout(1)
 plot(Global_result)
-#> Error: object 'Global_result' not found
+
 
 # All graphics on the same device
 layout(matrix(1:4, nrow = 2, byrow = FALSE))
@@ -183,5 +203,4 @@ plot(
   xlab = 'Day',
   xrange = c(1, 365)
 )
-#> Error: object 'Global_result' not found
 ```

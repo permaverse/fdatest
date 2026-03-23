@@ -214,10 +214,31 @@ of variance.</p></div>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Performing the TWT</span></span></span>
 <span class="r-in"><span><span class="va">TWT_result</span> <span class="op">&lt;-</span> <span class="fu"><a href="TWTlm.html">TWTlm</a></span><span class="op">(</span><span class="va">temperature</span> <span class="op">~</span> <span class="va">groups</span>, B <span class="op">=</span> <span class="fl">100L</span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in eval(predvars, data, env):</span> object 'groups' not found</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">Point-wise tests</span> <span style="color: #00BBBB;">────────────────────────────────────────────────────────────</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">Threshold-wise tests</span> <span style="color: #00BBBB;">────────────────────────────────────────────────────────</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">Threshold-Wise Testing completed</span> <span style="color: #00BBBB;">────────────────────────────────────────────</span></span>
 <span class="r-in"><span><span class="co"># Summary of the TWT results</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">TWT_result</span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> object 'TWT_result' not found</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $call</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> TWTlm(formula = temperature ~ groups, B = 100L)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $ttest</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>             Minimum p-value    </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> (Intercept)               0 ***</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> groups                    0 ***</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $R2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>               Range of functional R-squared</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Min R-squared                  3.390203e-05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Max R-squared                  5.399620e-01</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $ftest</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   Minimum p-value    </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1               0 ***</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

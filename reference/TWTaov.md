@@ -148,16 +148,36 @@ groups <- c(rep(0, 22), rep(1, 22))
 
 # Performing the TWT
 TWT_result <- TWTaov(temperature ~ groups, B = 100L)
-#> Error in eval(predvars, data, env): object 'groups' not found
+#> 
+#> ── Point-wise tests ────────────────────────────────────────────────────────────
+#> 
+#> ── Threshold-wise tests ────────────────────────────────────────────────────────
+#> 
+#> ── Threshold-Wise Testing completed ────────────────────────────────────────────
 
 # Summary of the TWT results
 summary(TWT_result)
-#> Error: object 'TWT_result' not found
+#> $call
+#> TWTaov(formula = temperature ~ groups, B = 100L)
+#> 
+#> $factors
+#>        Minimum p-value    
+#> groups               0 ***
+#> 
+#> $R2
+#>               Range of functional R-squared
+#> Min R-squared                  3.390203e-05
+#> Max R-squared                  5.399620e-01
+#> 
+#> $ftest
+#>   Minimum p-value    
+#> 1               0 ***
+#> 
 
 # Plot of the TWT results
 layout(1)
 plot(TWT_result)
-#> Error: object 'TWT_result' not found
+
 
 # All graphics on the same device
 layout(matrix(1:4, nrow = 2, byrow = FALSE))
@@ -168,5 +188,4 @@ plot(
   xlab = 'Day',
   xrange = c(1, 365)
 )
-#> Error: object 'TWT_result' not found
 ```
