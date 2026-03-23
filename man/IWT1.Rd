@@ -59,10 +59,10 @@ equal to \code{"1pop"}.
 hypothesis (as entered by the user).
 \item \code{unadjusted_pval}: Evaluation on a grid of the unadjusted p-value function.
 \item \code{pval_matrix}: Matrix of dimensions \code{c(p, p)} of the p-values of the
-multivariate tests. The element \verb{(i,j)} of matrix \code{pval.matrix} contains the
+multivariate tests. The element \verb{(i,j)} of matrix \code{pval_matrix} contains the
 p-value of the joint NPC test of the components \verb{(j,j+1,...,j+(p-i))}.
 \item \code{adjusted_pval}: Evaluation on a grid of the adjusted p-value function.
-\item \code{data.eval}: Evaluation on a grid of the functional data.
+\item \code{data_eval}: Evaluation on a grid of the functional data.
 }
 }
 \description{
@@ -74,16 +74,16 @@ p-value function controls the interval-wise error rate.
 }
 \examples{
 # Performing the IWT for one population
-IWT.result <- IWT1(NASAtemp$paris, mu = 4, B = 10L)
+IWT_result <- IWT1(NASAtemp$paris, mu = 4, B = 10L)
 
 # Plotting the results of the IWT
-plot(IWT.result, xrange = c(0, 12), main = 'Paris temperatures')
+plot(IWT_result, xrange = c(0, 12), main = 'Paris temperatures')
 
 # Plotting the p-value heatmap
-IWTimage(IWT.result, abscissa_range = c(0, 12))
+IWTimage(IWT_result, abscissa_range = c(0, 12))
 
 # Selecting the significant components at 5\% level
-which(IWT.result$adjusted_pval < 0.05)
+which(IWT_result$adjusted_pval < 0.05)
 }
 \references{
 A. Pini and S. Vantini (2017). The Interval Testing Procedure: Inference

@@ -28,12 +28,12 @@ extract_fitted <- function(x) {
   x$fitted
 }
 
-pval_correct <- function(pval.matrix) {
-  matrice_pval_2_2x <- cbind(pval.matrix, pval.matrix)
-  p <- dim(pval.matrix)[2]
+pval_correct <- function(pval_matrix) {
+  matrice_pval_2_2x <- cbind(pval_matrix, pval_matrix)
+  p <- dim(pval_matrix)[2]
   matrice_pval_2_2x <- matrice_pval_2_2x[, (2 * p):1]
-  corrected.pval.matrix <- matrix(nrow = p, ncol = p)
-  corrected.pval.matrix[p, ] <- pval.matrix[p, p:1]
+  corrected_pval_matrix <- matrix(nrow = p, ncol = p)
+  corrected_pval_matrix[p, ] <- pval_matrix[p, p:1]
   for (var in 1:p) {
     pval_var <- matrice_pval_2_2x[p, var]
     inizio <- var
@@ -42,14 +42,15 @@ pval_correct <- function(pval.matrix) {
       fine <- fine + 1
       pval_cono <- matrice_pval_2_2x[riga, inizio:fine]
       pval_var <- max(pval_var, pval_cono, na.rm = TRUE)
-      corrected.pval.matrix[riga, var] <- pval_var
+      corrected_pval_matrix[riga, var] <- pval_var
     }
   }
-  corrected.pval.matrix[, p:1]
+  corrected_pval_matrix[, p:1]
 }
 
 onesample2coeffs <- function(data, mu, dx = NULL) {
-  if (fda::is.fd(data)) { # data is a functional data object
+  if (fda::is.fd(data)) {
+    # data is a functional data object
     rangeval <- data$basis$rangeval
     if (is.null(dx)) {
       dx <- (rangeval[2] - rangeval[1]) * 0.01
@@ -64,30 +65,31 @@ onesample2coeffs <- function(data, mu, dx = NULL) {
       {.cls fd} or a matrix."
     )
   }
-  
-  if (fda::is.fd(mu)) { # mu is a functional data
-    rangeval.mu <- mu$basis$rangeval
-    if (sum(rangeval.mu == rangeval) != 2) {
+
+  if (fda::is.fd(mu)) {
+    # mu is a functional data
+    rangeval_mu <- mu$basis$rangeval
+    if (sum(rangeval_mu == rangeval) != 2) {
       cli::cli_abort(
         "The range of values of {.arg mu} must be the same as the range of
         values of {.arg data}."
       )
     }
     if (is.null(dx)) {
-      dx <- (rangeval.mu[2] - rangeval.mu[1]) * 0.01
+      dx <- (rangeval_mu[2] - rangeval_mu[1]) * 0.01
     }
-    abscissa <- seq(rangeval.mu[1], rangeval.mu[2], by = dx)
-    mu.eval <- t(fda::eval.fd(fdobj = mu, evalarg = abscissa))
+    abscissa <- seq(rangeval_mu[1], rangeval_mu[2], by = dx)
+    mu_eval <- t(fda::eval.fd(fdobj = mu, evalarg = abscissa))
   } else if (is.vector(mu)) {
-    mu.eval <- mu
+    mu_eval <- mu
   } else {
     cli::cli_abort(
       "The {.arg mu} argument must be either a functional data object of class
       {.cls fd} or a numeric vector."
     )
   }
-  
-  list(coeff = coeff, mu = mu.eval)
+
+  list(coeff = coeff, mu = mu_eval)
 }
 
 twosamples2coeffs <- function(data1, data2, mu, dx = NULL) {
@@ -115,39 +117,41 @@ twosamples2coeffs <- function(data1, data2, mu, dx = NULL) {
       of class {.cls fd} or matrices."
     )
   }
-  
-  if (fda::is.fd(mu)) { # mu is a functional data
-    rangeval.mu <- mu$basis$rangeval
-    if (sum(rangeval.mu == rangeval1) != 2) {
+
+  if (fda::is.fd(mu)) {
+    # mu is a functional data
+    rangeval_mu <- mu$basis$rangeval
+    if (sum(rangeval_mu == rangeval1) != 2) {
       cli::cli_abort(
         "The range of values of {.arg mu} must be the same as the range of
         values of {.arg data1}."
       )
     }
     if (is.null(dx)) {
-      dx <- (rangeval.mu[2] - rangeval.mu[1]) * 0.01
+      dx <- (rangeval_mu[2] - rangeval_mu[1]) * 0.01
     }
-    abscissa <- seq(rangeval.mu[1], rangeval.mu[2], by = dx)
-    mu.eval <- t(fda::eval.fd(fdobj = mu, evalarg = abscissa))
+    abscissa <- seq(rangeval_mu[1], rangeval_mu[2], by = dx)
+    mu_eval <- t(fda::eval.fd(fdobj = mu, evalarg = abscissa))
   } else if (is.vector(mu)) {
-    mu.eval <- mu
+    mu_eval <- mu
   } else {
     cli::cli_abort(
       "The {.arg mu} argument must be either a functional dataobject of class
       {.cls fd} or a numeric vector."
     )
   }
-  
-  list(coeff1 = coeff1, coeff2 = coeff2, mu = mu.eval)
+
+  list(coeff1 = coeff1, coeff2 = coeff2, mu = mu_eval)
 }
 
 formula2coeff <- function(formula, dx = NULL) {
   env <- environment(formula)
   variables <- all.vars(formula)
-  y.name <- variables[1]
-  covariates.names <- colnames(attr(stats::terms(formula), "factors"))
-  data <- get(y.name, envir = env)
-  if (fda::is.fd(data)) { # data is a functional data object
+  y_name <- variables[1]
+  covariates_names <- colnames(attr(stats::terms(formula), "factors"))
+  data <- get(y_name, envir = env)
+  if (fda::is.fd(data)) {
+    # data is a functional data object
     rangeval <- data$basis$rangeval
     if (is.null(dx)) {
       dx <- (rangeval[2] - rangeval[1]) * 0.01
@@ -162,17 +166,17 @@ formula2coeff <- function(formula, dx = NULL) {
       of class {.cls fd} or a matrix."
     )
   }
-  
+
   coeff
 }
 
 formula2design_matrix <- function(formula, coeff) {
   # extracting the part after ~ on formula. this will not work if the formula is
   # longer than 500 char
-  formula.const <- deparse(formula[[3]], width.cutoff = 500L) 
-  formula.discrete <- stats::as.formula(
-    paste('coeff ~', formula.const), 
+  formula_const <- deparse(formula[[3]], width.cutoff = 500L)
+  formula_discrete <- stats::as.formula(
+    paste('coeff ~', formula_const),
     env = environment()
   )
-  stats::model.matrix(formula.discrete)
+  stats::model.matrix(formula_discrete)
 }

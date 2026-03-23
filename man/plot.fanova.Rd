@@ -94,7 +94,7 @@ temperature <- rbind(NASAtemp$milan, NASAtemp$paris)
 groups <- c(rep(0, 22), rep(1, 22))
 
 # Performing the TWT
-TWT.result <- functional_anova_test(
+TWT_result <- functional_anova_test(
   temperature ~ groups,
   correction = "TWT",
   B = 5L
@@ -102,7 +102,7 @@ TWT.result <- functional_anova_test(
 
 # Plotting the results of the TWT
 plot(
-  TWT.result,
+  TWT_result,
   xrange = c(0, 12),
   main = 'TWT results for testing mean differences'
 )

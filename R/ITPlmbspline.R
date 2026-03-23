@@ -15,23 +15,23 @@
 #' @return \code{ITPlmbspline} returns an object of \code{\link{class}} "\code{ITPlm}". The function \code{summary} is used to obtain and print a summary of the results.
 #' An object of class "\code{ITPlm}" is a list containing at least the following components:
 #' \item{call}{The matched call.}
-#' \item{design.matrix}{The design matrix of the functional-on-scalar linear model.}
+#' \item{design_matrix}{The design matrix of the functional-on-scalar linear model.}
 #' \item{basis}{String vector indicating the basis used for the first phase of the algorithm. In this case equal to \code{"B-spline"}.}
 #' \item{coeff}{Matrix of dimensions \code{c(n,p)} of the \code{p} coefficients of the B-spline basis expansion. Rows are associated to units and columns to the basis index.}
-#' \item{coeff.regr}{Matrix of dimensions \code{c(L+1,p)} of the \code{p} coefficients of the B-spline basis expansion of the intercept (first row) and the \code{L} effects of the covariates specified in \code{formula}. Columns are associated to the basis index.}
-#' \item{pval.F}{Unadjusted p-values of the functional F-test for each basis coefficient.}
-#' \item{pval.matrix.F}{Matrix of dimensions \code{c(p,p)} of the p-values of the multivariate F-tests. The element \code{(i,j)} of matrix \code{pval.matrix} contains the p-value of the joint NPC test of the components \code{(j,j+1,...,j+(p-i))}.}
-#' \item{adjusted.pval.F}{Adjusted p-values of the functional F-test for each basis coefficient.}
-#' \item{pval.t}{Unadjusted p-values of the functional t-tests for each partial regression coefficient including the intercept (rows) and each basis coefficient (columns).}
-#' \item{pval.matrix.t}{Array of dimensions \code{c(L+1,p,p)} of the p-values of the multivariate t-tests. The element \code{(l,i,j)} of array \code{pval.matrix} contains the p-value of the joint NPC test on covariate \code{l} of the components \code{(j,j+1,...,j+(p-i))}.}
-#' \item{adjusted.pval.t}{adjusted p-values of the functional t-tests for each partial regression coefficient including the intercept (rows) and each basis coefficient (columns).}
-#' \item{data.eval}{Evaluation on a fine uniform grid of the functional data obtained through the basis expansion.}
-#' \item{coeff.regr.eval}{Evaluation on a fine uniform grid of the functional regression coefficients.}
-#' \item{fitted.eval}{Evaluation on a fine uniform grid of the fitted values of the functional regression.}
-#' \item{residuals.eval}{Evaluation on a fine uniform grid of the residuals of the functional regression.}
-#' \item{R2.eval}{Evaluation on a fine uniform grid of the functional R-squared of the regression.}
-#' \item{heatmap.matrix.F}{Heatmap matrix of p-values of functional F-test (used only for plots).}
-#' \item{heatmap.matrix.t}{Heatmap matrix of p-values of functional t-tests (used only for plots).}
+#' \item{coeff_regr}{Matrix of dimensions \code{c(L+1,p)} of the \code{p} coefficients of the B-spline basis expansion of the intercept (first row) and the \code{L} effects of the covariates specified in \code{formula}. Columns are associated to the basis index.}
+#' \item{pval_F}{Unadjusted p-values of the functional F-test for each basis coefficient.}
+#' \item{pval_matrix_F}{Matrix of dimensions \code{c(p,p)} of the p-values of the multivariate F-tests. The element \code{(i,j)} of matrix \code{pval_matrix} contains the p-value of the joint NPC test of the components \code{(j,j+1,...,j+(p-i))}.}
+#' \item{adjusted_pval_F}{Adjusted p-values of the functional F-test for each basis coefficient.}
+#' \item{pval_t}{Unadjusted p-values of the functional t-tests for each partial regression coefficient including the intercept (rows) and each basis coefficient (columns).}
+#' \item{pval_matrix_t}{Array of dimensions \code{c(L+1,p,p)} of the p-values of the multivariate t-tests. The element \code{(l,i,j)} of array \code{pval_matrix} contains the p-value of the joint NPC test on covariate \code{l} of the components \code{(j,j+1,...,j+(p-i))}.}
+#' \item{adjusted_pval_t}{adjusted p-values of the functional t-tests for each partial regression coefficient including the intercept (rows) and each basis coefficient (columns).}
+#' \item{data_eval}{Evaluation on a fine uniform grid of the functional data obtained through the basis expansion.}
+#' \item{coeff_regr_eval}{Evaluation on a fine uniform grid of the functional regression coefficients.}
+#' \item{fitted_eval}{Evaluation on a fine uniform grid of the fitted values of the functional regression.}
+#' \item{residuals_eval}{Evaluation on a fine uniform grid of the residuals of the functional regression.}
+#' \item{R2_eval}{Evaluation on a fine uniform grid of the functional R-squared of the regression.}
+#' \item{heatmap_matrix_F}{Heatmap matrix of p-values of functional F-test (used only for plots).}
+#' \item{heatmap_matrix_t}{Heatmap matrix of p-values of functional t-tests (used only for plots).}
 #'
 #' @examples
 #' # Defining the covariates
@@ -39,14 +39,14 @@
 #' groups <- c(rep(0,22),rep(1,22))
 #'
 #' # Performing the ITP
-#' #ITP.result <- ITPlmbspline(temperature ~ groups,B=100,nknots=20)
+#' #ITP_result <- ITPlmbspline(temperature ~ groups,B=100,nknots=20)
 #' # Summary of the ITP results
-#' #summary(ITP.result)
+#' #summary(ITP_result)
 #'
 #' # Plot of the ITP results
-#' #plot(ITP.result,main='NASA data', plot.adjpval = TRUE,xlab='Day',xrange=c(1,365))
+#' #plot(ITP_result,main='NASA data', plot_adjpval = TRUE,xlab='Day',xrange=c(1,365))
 #'
-#' #plot(ITP.result,main='NASA data', plot.adjpval = TRUE,xlab='Day',xrange=c(1,365))
+#' #plot(ITP_result,main='NASA data', plot_adjpval = TRUE,xlab='Day',xrange=c(1,365))
 #'
 #' @references
 #' A. Pini and S. Vantini (2017).

@@ -26,13 +26,13 @@
 #' groups <- c(rep(0, 22), rep(1, 22))
 #'
 #' # Performing the IWT
-#' Global.result <- Globallm(temperature ~ groups, B = 1000)
+#' Global_result <- Globallm(temperature ~ groups, B = 1000)
 #' # Summary of the IWT results
-#' summary(Global.result)
+#' summary(Global_result)
 #'
 #' # Plot of the IWT results
 #' plot(
-#'   Global.result,
+#'   Global_result,
 #'   main = 'NASA data',
 #'   plot_adjpval = TRUE,
 #'   xlab = 'Day',
@@ -40,7 +40,7 @@
 #' )
 #'
 #' plot(
-#'   Global.result,
+#'   Global_result,
 #'   main = 'NASA data',
 #'   plot_adjpval = TRUE,
 #'   xlab = 'Day',
@@ -279,11 +279,11 @@ Globallm <- function(
       Global_pval_part[ii] <- sum(T_temp >= T0_temp) / B
     }
 
-    corrected.pval_glob <- rep(Global_pval_F, p)
+    corrected_pval_glob <- rep(Global_pval_F, p)
 
-    corrected.pval_part <- matrix(nrow = nvar + 1, ncol = p)
+    corrected_pval_part <- matrix(nrow = nvar + 1, ncol = p)
     for (ii in 1:(nvar + 1)) {
-      corrected.pval_part[ii, ] <- rep(Global_pval_part[ii], p)
+      corrected_pval_part[ii, ] <- rep(Global_pval_part[ii], p)
     }
   } else if (stat == 'Max') {
     T0_temp <- max(T0_glob)
@@ -297,41 +297,41 @@ Globallm <- function(
       Global_pval_part[ii] <- sum(T_temp >= T0_temp) / B
     }
 
-    corrected.pval_glob <- rep(Global_pval_F, p)
-    corrected.pval_part <- matrix(nrow = nvar + 1, ncol = p)
+    corrected_pval_glob <- rep(Global_pval_F, p)
+    corrected_pval_part <- matrix(nrow = nvar + 1, ncol = p)
     for (ii in 1:(nvar + 1)) {
-      corrected.pval_part[ii, ] <- rep(Global_pval_part[ii], p)
+      corrected_pval_part[ii, ] <- rep(Global_pval_part[ii], p)
     }
   }
 
-  coeff.regr <- regr0$coeff
-  coeff.t <- coeff.regr
+  coeff_regr <- regr0$coeff
+  coeff_t <- coeff_regr
 
-  fitted.regr <- regr0$fitted
-  fitted.t <- fitted.regr
+  fitted_regr <- regr0$fitted
+  fitted_t <- fitted_regr
 
-  rownames(corrected.pval_part) <- var_names
-  rownames(coeff.t) <- var_names
-  rownames(coeff.regr) <- var_names
+  rownames(corrected_pval_part) <- var_names
+  rownames(coeff_t) <- var_names
+  rownames(coeff_regr) <- var_names
   rownames(pval_part) <- var_names
 
-  data.eval <- coeff
-  residuals.t <- data.eval - fitted.t
-  ybar.t <- colMeans(data.eval)
+  data_eval <- coeff
+  residuals_t <- data_eval - fitted_t
+  ybar_t <- colMeans(data_eval)
   npt <- p
-  R2.t <- colSums(
-    (fitted.t -
+  R2_t <- colSums(
+    (fitted_t -
       matrix(
-        data = ybar.t,
+        data = ybar_t,
         nrow = n,
         ncol = npt,
         byrow = TRUE
       ))^2
   ) /
     colSums(
-      (data.eval -
+      (data_eval -
         matrix(
-          data = ybar.t,
+          data = ybar_t,
           nrow = n,
           ncol = npt,
           byrow = TRUE
@@ -344,16 +344,16 @@ Globallm <- function(
     call = cl,
     design_matrix = design_matrix,
     unadjusted_pval_F = pval_glob,
-    adjusted_pval_F = corrected.pval_glob,
+    adjusted_pval_F = corrected_pval_glob,
     unadjusted_pval_part = pval_part,
-    adjusted_pval_part = corrected.pval_part,
+    adjusted_pval_part = corrected_pval_part,
     Global_pval_F = Global_pval_F,
     Global_pval_part = Global_pval_part,
-    data.eval = coeff,
-    coeff.regr.eval = coeff.t,
-    fitted.eval = fitted.t,
-    residuals.eval = residuals.t,
-    R2.eval = R2.t
+    data_eval = coeff,
+    coeff_regr_eval = coeff_t,
+    fitted_eval = fitted_t,
+    residuals_eval = residuals_t,
+    R2_eval = R2_t
   )
   class(out) <- 'flm'
   out

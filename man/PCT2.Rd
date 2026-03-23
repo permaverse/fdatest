@@ -106,17 +106,17 @@ partition <- c(
 )
 partition <- factor(partition)
 
-PCT.result <- PCT2(NASAtemp$paris, NASAtemp$milan, partition = partition)
+PCT_result <- PCT2(NASAtemp$paris, NASAtemp$milan, partition = partition)
 
 # Plotting the results of the PCT
 plot(
-  PCT.result,
+  PCT_result,
   xrange = c(0, 12),
   title = 'PCT results for testing mean differences'
 )
 
 # Selecting the significant components at 5\% level
-which(PCT.result$adjusted_pvalues < 0.05)
+which(PCT_result$adjusted_pvalues < 0.05)
 }
 \references{
 Abramowicz, K., Pini, A., Schelin, L., Stamm, A., & Vantini, S. (2022).

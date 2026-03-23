@@ -140,20 +140,20 @@ p-value function controls the interval-wise error rate.
 }
 \examples{
 # Performing the IWT for two populations
-IWT.result <- IWT2(NASAtemp$paris, NASAtemp$milan, B = 10L)
+IWT_result <- IWT2(NASAtemp$paris, NASAtemp$milan, B = 10L)
 
 # Plotting the results of the IWT
 plot(
-  IWT.result,
+  IWT_result,
   xrange = c(0, 12),
   title = 'IWT results for testing mean differences'
 )
 
 # Plotting the p-value heatmap
-IWTimage(IWT.result, abscissa_range = c(0, 12))
+IWTimage(IWT_result, abscissa_range = c(0, 12))
 
 # Selecting the significant components at 5\% level
-which(IWT.result$adjusted_pvalues < 0.05)
+which(IWT_result$adjusted_pvalues < 0.05)
 }
 \references{
 A. Pini and S. Vantini (2017). The Interval Testing Procedure: Inference

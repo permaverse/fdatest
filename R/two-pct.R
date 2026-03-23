@@ -29,17 +29,17 @@
 #' )
 #' partition <- factor(partition)
 #'
-#' PCT.result <- PCT2(NASAtemp$paris, NASAtemp$milan, partition = partition)
+#' PCT_result <- PCT2(NASAtemp$paris, NASAtemp$milan, partition = partition)
 #'
 #' # Plotting the results of the PCT
 #' plot(
-#'   PCT.result,
+#'   PCT_result,
 #'   xrange = c(0, 12),
 #'   title = 'PCT results for testing mean differences'
 #' )
 #'
 #' # Selecting the significant components at 5% level
-#' which(PCT.result$adjusted_pvalues < 0.05)
+#' which(PCT_result$adjusted_pvalues < 0.05)
 PCT2 <- function(
   data1,
   data2,
@@ -55,7 +55,7 @@ PCT2 <- function(
   inputs <- twosamples2coeffs(data1, data2, mu, dx = dx)
   coeff1 <- inputs$coeff1
   coeff2 <- inputs$coeff2
-  mu.eval <- inputs$mu
+  mu_eval <- inputs$mu
 
   n1 <- dim(coeff1)[1]
   n2 <- dim(coeff2)[1]
@@ -67,27 +67,27 @@ PCT2 <- function(
   eval <- coeff <- rbind(coeff1, coeff2)
   p <- dim(coeff)[2]
 
-  data.eval <- eval
+  data_eval <- eval
 
   #univariate permutations
   meandiff <- colMeans(coeff[1:n1, , drop = FALSE], na.rm = TRUE) -
     colMeans(coeff[(n1 + 1):n, , drop = FALSE], na.rm = TRUE)
-  sign.diff <- sign(meandiff)
-  sign.diff[which(sign.diff == -1)] <- 0
+  sign_diff <- sign(meandiff)
+  sign_diff[which(sign_diff == -1)] <- 0
   T0 <- switch(
     alternative,
     two.sided = (meandiff)^2,
-    greater = (meandiff * sign.diff)^2,
-    less = (meandiff * (sign.diff - 1))^2
+    greater = (meandiff * sign_diff)^2,
+    less = (meandiff * (sign_diff - 1))^2
   )
 
   T_coeff <- matrix(ncol = p, nrow = B)
   for (perm in 1:B) {
     if (paired) {
-      if.perm <- stats::rbinom(n1, 1, 0.5)
+      if_perm <- stats::rbinom(n1, 1, 0.5)
       coeff_perm <- coeff
       for (couple in 1:n1) {
-        if (if.perm[couple] == 1) {
+        if (if_perm[couple] == 1) {
           coeff_perm[c(couple, n1 + couple), ] <- coeff[
             c(n1 + couple, couple),
           ]
@@ -100,13 +100,13 @@ PCT2 <- function(
 
     meandiff <- colMeans(coeff_perm[1:n1, , drop = FALSE], na.rm = TRUE) -
       colMeans(coeff_perm[(n1 + 1):n, , drop = FALSE], na.rm = TRUE)
-    sign.diff <- sign(meandiff)
-    sign.diff[which(sign.diff == -1)] <- 0
+    sign_diff <- sign(meandiff)
+    sign_diff[which(sign_diff == -1)] <- 0
     T_coeff[perm, ] <- switch(
       alternative,
       two.sided = (meandiff)^2,
-      greater = (meandiff * sign.diff)^2,
-      less = (meandiff * (sign.diff - 1))^2
+      greater = (meandiff * sign_diff)^2,
+      less = (meandiff * (sign_diff - 1))^2
     )
   }
 
@@ -124,8 +124,8 @@ PCT2 <- function(
   tt <- 1
   for (nint in 1:nintervals) {
     combinations <- utils::combn(labels, nint)
-    n.comb <- dim(combinations)[2]
-    for (comb in 1:n.comb) {
+    n_comb <- dim(combinations)[2]
+    for (comb in 1:n_comb) {
       index <- rep(0, p)
       for (ii in 1:dim(combinations)[1]) {
         index <- index + as.numeric(partition == combinations[ii, comb])
@@ -136,21 +136,21 @@ PCT2 <- function(
   }
 
   #interval-wise tests
-  adjusted.pval <- numeric(p)
-  responsible.test <- matrix(nrow = p, ncol = p)
+  adjusted_pval <- numeric(p)
+  responsible_test <- matrix(nrow = p, ncol = p)
   for (test in 1:ntests) {
     T0_comb <- sum(T0[which(all_combs[test, ] == 1)])
     T_comb <- (rowSums(T_coeff[, which(all_combs[test, ] == 1), drop = FALSE]))
-    pval.temp <- mean(T_comb >= T0_comb)
+    pval_temp <- mean(T_comb >= T0_comb)
     indexes <- which(all_combs[test, ] == 1)
-    max <- apply(rbind(adjusted.pval[indexes], pval.temp), 2, which.max)
-    adjusted.pval[indexes] <- apply(
-      rbind(adjusted.pval[indexes], pval.temp),
+    max <- apply(rbind(adjusted_pval[indexes], pval_temp), 2, which.max)
+    adjusted_pval[indexes] <- apply(
+      rbind(adjusted_pval[indexes], pval_temp),
       2,
       max
     )
     if (2 %in% max) {
-      responsible.test[indexes[which(max == 2)], ] <- matrix(
+      responsible_test[indexes[which(max == 2)], ] <- matrix(
         data = all_combs[test, ],
         nrow = sum((max == 2)),
         ncol = p,
@@ -160,11 +160,11 @@ PCT2 <- function(
   }
 
   out <- list(
-    data = data.eval,
+    data = data_eval,
     group_labels = etichetta_ord,
-    mu = mu.eval,
+    mu = mu_eval,
     unadjusted_pvalues = pval,
-    adjusted_pvalues = adjusted.pval
+    adjusted_pvalues = adjusted_pval
   )
   class(out) <- "ftwosample"
   out

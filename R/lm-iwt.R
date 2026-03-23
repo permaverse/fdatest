@@ -34,25 +34,17 @@
 #' @export
 #' @examples
 #' # Defining the covariates
-#' temperature <- rbind(NASAtemp$milan, NASAtemp$paris)
+#' temperature <- rbind(NASAtemp$milan[, 1:100], NASAtemp$paris[, 1:100])
 #' groups <- c(rep(0, 22), rep(1, 22))
 #'
 #' # Performing the IWT
-#' IWT.result <- IWTlm(temperature ~ groups, B = 2L)
+#' IWT_result <- IWTlm(temperature ~ groups, B = 2L)
 #' # Summary of the IWT results
-#' summary(IWT.result)
+#' summary(IWT_result)
 #'
 #' # Plot of the IWT results
 #' plot(
-#'   IWT.result,
-#'   main = 'NASA data',
-#'   plot_adjpval = TRUE,
-#'   xlab = 'Day',
-#'   xrange = c(1, 365)
-#' )
-#'
-#' plot(
-#'   IWT.result,
+#'   IWT_result,
 #'   main = 'NASA data',
 #'   plot_adjpval = TRUE,
 #'   xlab = 'Day',
@@ -337,47 +329,47 @@ IWTlm <- function(
     }
   }
 
-  corrected.pval.matrix_glob <- pval_correct(matrice_pval_asymm_glob)
-  corrected.pval_glob <- corrected.pval.matrix_glob[1, ]
+  corrected_pval_matrix_glob <- pval_correct(matrice_pval_asymm_glob)
+  corrected_pval_glob <- corrected_pval_matrix_glob[1, ]
 
-  corrected.pval_part <- matrix(nrow = nvar + 1, ncol = p)
-  corrected.pval.matrix_part <- array(dim = c(nvar + 1, p, p))
+  corrected_pval_part <- matrix(nrow = nvar + 1, ncol = p)
+  corrected_pval_matrix_part <- array(dim = c(nvar + 1, p, p))
   for (ii in 1:(nvar + 1)) {
-    corrected.pval.matrix_part[ii, , ] <- pval_correct(matrice_pval_asymm_part[
+    corrected_pval_matrix_part[ii, , ] <- pval_correct(matrice_pval_asymm_part[
       ii,
       ,
     ])
-    corrected.pval_part[ii, ] <- corrected.pval.matrix_part[ii, 1, ]
+    corrected_pval_part[ii, ] <- corrected_pval_matrix_part[ii, 1, ]
   }
 
-  coeff.regr <- regr0$coeff
-  coeff.t <- coeff.regr
+  coeff_regr <- regr0$coeff
+  coeff_t <- coeff_regr
 
-  fitted.regr <- regr0$fitted
-  fitted.t <- fitted.regr
+  fitted_regr <- regr0$fitted
+  fitted_t <- fitted_regr
 
-  rownames(corrected.pval_part) <- var_names
-  rownames(coeff.t) <- var_names
-  rownames(coeff.regr) <- var_names
+  rownames(corrected_pval_part) <- var_names
+  rownames(coeff_t) <- var_names
+  rownames(coeff_regr) <- var_names
   rownames(pval_part) <- var_names
 
-  data.eval <- coeff
-  residuals.t <- data.eval - fitted.t
-  ybar.t <- colMeans(data.eval)
+  data_eval <- coeff
+  residuals_t <- data_eval - fitted_t
+  ybar_t <- colMeans(data_eval)
   npt <- p
-  R2.t <- colSums(
-    (fitted.t -
+  R2_t <- colSums(
+    (fitted_t -
       matrix(
-        data = ybar.t,
+        data = ybar_t,
         nrow = n,
         ncol = npt,
         byrow = TRUE
       ))^2
   ) /
     colSums(
-      (data.eval -
+      (data_eval -
         matrix(
-          data = ybar.t,
+          data = ybar_t,
           nrow = n,
           ncol = npt,
           byrow = TRUE
@@ -391,15 +383,15 @@ IWTlm <- function(
     design_matrix = design_matrix,
     unadjusted_pval_F = pval_glob,
     pval_matrix_F = matrice_pval_asymm_glob,
-    adjusted_pval_F = corrected.pval_glob,
+    adjusted_pval_F = corrected_pval_glob,
     unadjusted_pval_part = pval_part,
     pval_matrix_part = matrice_pval_asymm_part,
-    adjusted_pval_part = corrected.pval_part,
-    data.eval = coeff,
-    coeff.regr.eval = coeff.t,
-    fitted.eval = fitted.t,
-    residuals.eval = residuals.t,
-    R2.eval = R2.t
+    adjusted_pval_part = corrected_pval_part,
+    data_eval = coeff,
+    coeff_regr_eval = coeff_t,
+    fitted_eval = fitted_t,
+    residuals_eval = residuals_t,
+    R2_eval = R2_t
   )
   class(out) <- "flm"
   out

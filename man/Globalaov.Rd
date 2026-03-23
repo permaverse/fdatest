@@ -58,33 +58,33 @@ variance (rows).
 \item \code{adjusted_pval_factors}: Adjusted p-values of the functional F-tests on
 each factor of the analysis of variance (rows) and each basis coefficient
 (columns).
-\item \code{data.eval}: Evaluation on a fine uniform grid of the functional data
+\item \code{data_eval}: Evaluation on a fine uniform grid of the functional data
 obtained through the basis expansion.
-\item \code{coeff.regr.eval}: Evaluation on a fine uniform grid of the functional
+\item \code{coeff_regr_eval}: Evaluation on a fine uniform grid of the functional
 regression coefficients.
-\item \code{fitted.eval}: Evaluation on a fine uniform grid of the fitted values of
+\item \code{fitted_eval}: Evaluation on a fine uniform grid of the fitted values of
 the functional regression.
-\item \code{residuals.eval}: Evaluation on a fine uniform grid of the residuals of
+\item \code{residuals_eval}: Evaluation on a fine uniform grid of the residuals of
 the functional regression.
-\item \code{R2.eval}: Evaluation on a fine uniform grid of the functional R-squared
+\item \code{R2_eval}: Evaluation on a fine uniform grid of the functional R-squared
 of the regression.
 }
 
 Optionally, the list may contain the following components:
 \itemize{
 \item \code{pval_matrix_F}: Matrix of dimensions \code{c(p,p)} of the p-values of
-the intervalwise F-tests. The element \eqn{(i,j)} of matrix \code{pval.matrix}
+the intervalwise F-tests. The element \eqn{(i,j)} of matrix \code{pval_matrix}
 contains the p-value of the test of interval indexed by
 \eqn{(j,j+1,...,j+(p-i))}; this component is present only if \code{correction}
 is set to \code{"IWT"}.
 \item \code{pval_matrix_factors}: Array of dimensions \code{c(L+1,p,p)} of the p-values
 of the multivariate F-tests on factors. The element \eqn{(l,i,j)} of array
-\code{pval.matrix} contains the p-value of the joint NPC test on factor \code{l} of
+\code{pval_matrix} contains the p-value of the joint NPC test on factor \code{l} of
 the components \eqn{(j,j+1,...,j+(p-i))}; this component is present only if
 \code{correction} is set to \code{"IWT"}.
-\item \code{heatmap.matrix.F}: Heatmap matrix of p-values of functional F-test (used
+\item \code{heatmap_matrix_F}: Heatmap matrix of p-values of functional F-test (used
 only for plots); this component is present only if \code{correction} is set to \code{"IWT"}.
-\item \code{heatmap.matrix.factors}: Heatmap matrix of p-values of functional
+\item \code{heatmap_matrix_factors}: Heatmap matrix of p-values of functional
 F-tests on each factor of the analysis of variance (used only for plots); this
 component is present only if \code{correction} is set to \code{"IWT"}.
 \item \code{Global_pval_F}: Global p-value of the overall test F; this component is
@@ -107,19 +107,19 @@ temperature <- rbind(NASAtemp$milan, NASAtemp$paris)
 groups <- c(rep(0, 22), rep(1, 22))
 
 # Performing the test
-Global.result <- Globalaov(temperature ~ groups, B = 1000)
+Global_result <- Globalaov(temperature ~ groups, B = 1000)
 
 # Summary of the test results
-summary(Global.result)
+summary(Global_result)
 
 # Plot of the results
 layout(1)
-plot(Global.result)
+plot(Global_result)
 
 # All graphics on the same device
 layout(matrix(1:4, nrow = 2, byrow = FALSE))
 plot(
-  Global.result,
+  Global_result,
   main = 'NASA data',
   plot.adjpval = TRUE,
   xlab = 'Day',

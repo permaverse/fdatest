@@ -59,32 +59,32 @@
 #'   - `adjusted_pval_factors`: Adjusted p-values of the functional F-tests on
 #'   each factor of the analysis of variance (rows) and each basis coefficient
 #'   (columns).
-#'   - `data.eval`: Evaluation on a fine uniform grid of the functional data
+#'   - `data_eval`: Evaluation on a fine uniform grid of the functional data
 #'   obtained through the basis expansion.
-#'   - `coeff.regr.eval`: Evaluation on a fine uniform grid of the functional
+#'   - `coeff_regr_eval`: Evaluation on a fine uniform grid of the functional
 #'   regression coefficients.
-#'   - `fitted.eval`: Evaluation on a fine uniform grid of the fitted values of
+#'   - `fitted_eval`: Evaluation on a fine uniform grid of the fitted values of
 #'   the functional regression.
-#'   - `residuals.eval`: Evaluation on a fine uniform grid of the residuals of
+#'   - `residuals_eval`: Evaluation on a fine uniform grid of the residuals of
 #'   the functional regression.
-#'   - `R2.eval`: Evaluation on a fine uniform grid of the functional R-squared
+#'   - `R2_eval`: Evaluation on a fine uniform grid of the functional R-squared
 #'   of the regression.
 #'
 #'   Optionally, the list may contain the following components:
 #'
 #'   - `pval_matrix_F`: Matrix of dimensions \code{c(p,p)} of the p-values of
-#'   the intervalwise F-tests. The element \eqn{(i,j)} of matrix `pval.matrix`
+#'   the intervalwise F-tests. The element \eqn{(i,j)} of matrix `pval_matrix`
 #'   contains the p-value of the test of interval indexed by
 #'   \eqn{(j,j+1,...,j+(p-i))}; this component is present only if `correction`
 #'   is set to `"IWT"`.
 #'   - `pval_matrix_factors`: Array of dimensions `c(L+1,p,p)` of the p-values
 #'   of the multivariate F-tests on factors. The element \eqn{(l,i,j)} of array
-#'   `pval.matrix` contains the p-value of the joint NPC test on factor `l` of
+#'   `pval_matrix` contains the p-value of the joint NPC test on factor `l` of
 #'   the components \eqn{(j,j+1,...,j+(p-i))}; this component is present only if
 #'   `correction` is set to `"IWT"`.
-#'   - `heatmap.matrix.F`: Heatmap matrix of p-values of functional F-test (used
+#'   - `heatmap_matrix_F`: Heatmap matrix of p-values of functional F-test (used
 #'   only for plots); this component is present only if `correction` is set to `"IWT"`.
-#'   - `heatmap.matrix.factors`: Heatmap matrix of p-values of functional
+#'   - `heatmap_matrix_factors`: Heatmap matrix of p-values of functional
 #'   F-tests on each factor of the analysis of variance (used only for plots); this
 #'   component is present only if `correction` is set to `"IWT"`.
 #'   - `Global_pval_F`: Global p-value of the overall test F; this component is
@@ -127,7 +127,7 @@
 #' groups <- c(rep(0, 22), rep(1, 22))
 #'
 #' # Performing the TWT for two populations
-#' TWT.result <- functional_anova_test(
+#' TWT_result <- functional_anova_test(
 #'   temperature ~ groups,
 #'   correction = "TWT",
 #'   B = 10L
@@ -135,16 +135,16 @@
 #'
 #' # Plotting the results of the TWT
 #' plot(
-#'   TWT.result,
+#'   TWT_result,
 #'   xrange = c(0, 12),
 #'   main = 'TWT results for testing mean differences'
 #' )
 #'
 #' # Selecting the significant components at 5% level
-#' which(TWT.result$adjusted_pval < 0.05)
+#' which(TWT_result$adjusted_pval < 0.05)
 #'
 #' # Performing the IWT for two populations
-#' IWT.result <- functional_anova_test(
+#' IWT_result <- functional_anova_test(
 #'   temperature ~ groups,
 #'   correction = "IWT",
 #'   B = 10L
@@ -152,13 +152,13 @@
 #'
 #' # Plotting the results of the IWT
 #' plot(
-#'   IWT.result,
+#'   IWT_result,
 #'   xrange = c(0, 12),
 #'   main = 'IWT results for testing mean differences'
 #' )
 #'
 #' # Selecting the significant components at 5% level
-#' which(IWT.result$adjusted_pval < 0.05)
+#' which(IWT_result$adjusted_pval < 0.05)
 functional_anova_test <- function(
   formula,
   correction,

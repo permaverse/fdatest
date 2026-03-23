@@ -27,13 +27,13 @@
 #' groups <- c(rep(0, 22), rep(1, 22))
 #'
 #' # Performing the TWT
-#' TWT.result <- TWTlm(temperature ~ groups, B = 100L)
+#' TWT_result <- TWTlm(temperature ~ groups, B = 100L)
 #' # Summary of the TWT results
-#' summary(TWT.result)
+#' summary(TWT_result)
 #'
 #' # Plot of the TWT results
 #' plot(
-#'   TWT.result,
+#'   TWT_result,
 #'   main = 'NASA data',
 #'   plot_adjpval = TRUE,
 #'   xlab = 'Day',
@@ -41,7 +41,7 @@
 #' )
 #'
 #' plot(
-#'   TWT.result,
+#'   TWT_result,
 #'   main = 'NASA data',
 #'   plot_adjpval = TRUE,
 #'   xlab = 'Day',
@@ -269,91 +269,91 @@ TWTlm <- function(
 
   # F-test
   thresholds <- c(0, sort(unique(pval_glob)), 1)
-  adjusted.pval_glob <- pval_glob # we initialize the adjusted p-value as unadjusted one
-  pval.tmp <- rep(0, p) # inizialize p-value vector resulting from combined test
+  adjusted_pval_glob <- pval_glob # we initialize the adjusted p-value as unadjusted one
+  pval_tmp <- rep(0, p) # inizialize p-value vector resulting from combined test
   for (test in 1:length(thresholds)) {
     # test below threshold
-    points.1 <- which(pval_glob <= thresholds[test])
-    T0_comb <- sum(T0_glob[points.1], na.rm = TRUE) # combined test statistic
-    T_comb <- (rowSums(T_glob[, points.1, drop = FALSE], na.rm = TRUE))
-    pval.test <- mean(T_comb >= T0_comb)
-    pval.tmp[points.1] <- pval.test
+    points_1 <- which(pval_glob <= thresholds[test])
+    T0_comb <- sum(T0_glob[points_1], na.rm = TRUE) # combined test statistic
+    T_comb <- (rowSums(T_glob[, points_1, drop = FALSE], na.rm = TRUE))
+    pval_test <- mean(T_comb >= T0_comb)
+    pval_tmp[points_1] <- pval_test
     # compute maximum
-    adjusted.pval_glob <- apply(rbind(adjusted.pval_glob, pval.tmp), 2, max)
+    adjusted_pval_glob <- apply(rbind(adjusted_pval_glob, pval_tmp), 2, max)
 
     # test above threshold
-    points.2 <- which(pval_glob > thresholds[test])
-    T0_comb <- sum(T0_glob[points.2]) # combined test statistic
-    T_comb <- rowSums(T_glob[, points.2, drop = FALSE], na.rm = TRUE)
-    pval.test <- mean(T_comb >= T0_comb)
-    pval.tmp[points.2] <- pval.test
+    points_2 <- which(pval_glob > thresholds[test])
+    T0_comb <- sum(T0_glob[points_2]) # combined test statistic
+    T_comb <- rowSums(T_glob[, points_2, drop = FALSE], na.rm = TRUE)
+    pval_test <- mean(T_comb >= T0_comb)
+    pval_tmp[points_2] <- pval_test
     # compute maximum
-    adjusted.pval_glob <- apply(rbind(adjusted.pval_glob, pval.tmp), 2, max)
+    adjusted_pval_glob <- apply(rbind(adjusted_pval_glob, pval_tmp), 2, max)
   }
 
   # F-tests on single factors
   thresholds <- c(0, sort(unique(as.numeric(pval_part))), 1)
-  adjusted.pval_part <- pval_part # we initialize the adjusted p-value as unadjusted one
+  adjusted_pval_part <- pval_part # we initialize the adjusted p-value as unadjusted one
 
   for (ii in 1:(nvar + 1)) {
-    pval.tmp <- rep(0, p)
+    pval_tmp <- rep(0, p)
     for (test in 1:length(thresholds)) {
       # test below threshold
-      points.1 <- which(pval_part[ii, ] <= thresholds[test])
-      T0_comb <- sum(T0_part[ii, points.1], na.rm = TRUE) # combined test statistic
-      T_comb <- rowSums(T_part[, ii, points.1, drop = FALSE], na.rm = TRUE)
-      pval.test <- mean(T_comb >= T0_comb)
-      pval.tmp[points.1] <- pval.test
+      points_1 <- which(pval_part[ii, ] <= thresholds[test])
+      T0_comb <- sum(T0_part[ii, points_1], na.rm = TRUE) # combined test statistic
+      T_comb <- rowSums(T_part[, ii, points_1, drop = FALSE], na.rm = TRUE)
+      pval_test <- mean(T_comb >= T0_comb)
+      pval_tmp[points_1] <- pval_test
       # compute maximum
-      adjusted.pval_part[ii, ] <- apply(
-        rbind(adjusted.pval_part[ii, ], pval.tmp),
+      adjusted_pval_part[ii, ] <- apply(
+        rbind(adjusted_pval_part[ii, ], pval_tmp),
         2,
         max
       )
 
       # test above threshold
-      points.2 <- which(pval_part[ii, ] > thresholds[test])
-      T0_comb <- sum(T0_part[ii, points.2]) # combined test statistic
-      T_comb <- rowSums(T_part[, ii, points.2, drop = FALSE], na.rm = TRUE)
-      pval.test <- mean(T_comb >= T0_comb)
-      pval.tmp[points.2] <- pval.test
+      points_2 <- which(pval_part[ii, ] > thresholds[test])
+      T0_comb <- sum(T0_part[ii, points_2]) # combined test statistic
+      T_comb <- rowSums(T_part[, ii, points_2, drop = FALSE], na.rm = TRUE)
+      pval_test <- mean(T_comb >= T0_comb)
+      pval_tmp[points_2] <- pval_test
       # compute maximum
-      adjusted.pval_part[ii, ] <- apply(
-        rbind(adjusted.pval_part[ii, ], pval.tmp),
+      adjusted_pval_part[ii, ] <- apply(
+        rbind(adjusted_pval_part[ii, ], pval_tmp),
         2,
         max
       )
     }
   }
 
-  coeff.regr <- regr0$coeff
-  coeff.t <- coeff.regr
+  coeff_regr <- regr0$coeff
+  coeff_t <- coeff_regr
 
-  fitted.regr <- regr0$fitted
-  fitted.t <- fitted.regr
+  fitted_regr <- regr0$fitted
+  fitted_t <- fitted_regr
 
-  rownames(adjusted.pval_part) <- var_names
-  rownames(coeff.t) <- var_names
-  rownames(coeff.regr) <- var_names
+  rownames(adjusted_pval_part) <- var_names
+  rownames(coeff_t) <- var_names
+  rownames(coeff_regr) <- var_names
   rownames(pval_part) <- var_names
 
-  data.eval <- coeff
-  residuals.t <- data.eval - fitted.t
-  ybar.t <- colMeans(data.eval)
+  data_eval <- coeff
+  residuals_t <- data_eval - fitted_t
+  ybar_t <- colMeans(data_eval)
   npt <- p
-  R2.t = colSums(
-    (fitted.t -
+  R2_t = colSums(
+    (fitted_t -
       matrix(
-        data = ybar.t,
+        data = ybar_t,
         nrow = n,
         ncol = npt,
         byrow = TRUE
       ))^2
   ) /
     colSums(
-      (data.eval -
+      (data_eval -
         matrix(
-          data = ybar.t,
+          data = ybar_t,
           nrow = n,
           ncol = npt,
           byrow = TRUE
@@ -366,14 +366,14 @@ TWTlm <- function(
     call = cl,
     design_matrix = design_matrix,
     unadjusted_pval_F = pval_glob,
-    adjusted_pval_F = adjusted.pval_glob,
+    adjusted_pval_F = adjusted_pval_glob,
     unadjusted_pval_part = pval_part,
-    adjusted_pval_part = adjusted.pval_part,
-    data.eval = coeff,
-    coeff.regr.eval = coeff.t,
-    fitted.eval = fitted.t,
-    residuals.eval = residuals.t,
-    R2.eval = R2.t
+    adjusted_pval_part = adjusted_pval_part,
+    data_eval = coeff,
+    coeff_regr_eval = coeff_t,
+    fitted_eval = fitted_t,
+    residuals_eval = residuals_t,
+    R2_eval = R2_t
   )
   class(out) <- "flm"
   out

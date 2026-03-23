@@ -35,20 +35,18 @@
 #' @name plot.flm
 #'
 #' @examples
-#' temperature <- rbind(NASAtemp$milan, NASAtemp$paris)
+#' temperature <- rbind(NASAtemp$milan[, 1:100], NASAtemp$paris[, 1:100])
 #' groups <- c(rep(0, 22), rep(1, 22))
 #'
 #' # Performing the IWT
-#' IWT.result <- IWTlm(temperature ~ groups, B = 2L)
+#' IWT_result <- IWTlm(temperature ~ groups, B = 2L)
 #'
 #' # Summary of the IWT results
-#' summary(IWT.result)
+#' summary(IWT_result)
 #'
 #' # Plot of the IWT results
-#' plot(IWT.result)
-#'
 #' plot(
-#'   IWT.result,
+#'   IWT_result,
 #'   main = 'NASA data',
 #'   plot_adjpval = TRUE,
 #'   xlab = 'Day',
@@ -82,7 +80,7 @@ autoplot.flm <- function(
 
   p <- length(object$unadjusted_pval_F)
   J <- p
-  n <- dim(object$data.eval)[1]
+  n <- dim(object$data_eval)[1]
   xmin <- xrange[1]
   xmax <- xrange[2]
   abscissa_pval <- seq(xmin, xmax, len = p)
@@ -132,7 +130,7 @@ autoplot.flm <- function(
 
   data_long <- data.frame(
     x = rep(abscissa_smooth, each = n),
-    y = as.vector(t(object$data.eval)),
+    y = as.vector(t(object$data_eval)),
     id = rep(seq_len(n), times = J)
   )
 
@@ -190,7 +188,7 @@ autoplot.flm <- function(
 
     coeff_df <- data.frame(
       x = abscissa_smooth,
-      y = object$coeff.regr.eval[var, ]
+      y = object$coeff_regr_eval[var, ]
     )
 
     p_t <- ggplot2::ggplot()

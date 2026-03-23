@@ -45,14 +45,14 @@
 #' groups <- c(rep(0, 22), rep(1, 22))
 #'
 #' # Performing the IWT
-#' IWT.result <- functional_anova_test(
+#' IWT_result <- functional_anova_test(
 #'   temperature ~ groups,
 #'   B = 10L,
 #'   correction = "IWT"
 #' )
 #'
 #' # Summary of the IWT results
-#' summary(IWT.result)
+#' summary(IWT_result)
 summary.fanova <- function(object, ...) {
   printresult <- vector('list')
   printresult$call <- object$call
@@ -79,26 +79,26 @@ summary.fanova <- function(object, ...) {
   )] <- '.'
   printresult$factors[, 2] <- signif
   colnames(printresult$factors) <- c('Minimum p-value', '')
-  printresult$R2 <- as.matrix(range(object$R2.eval))
+  printresult$R2 <- as.matrix(range(object$R2_eval))
   colnames(printresult$R2) <- 'Range of functional R-squared'
   rownames(printresult$R2) <- c('Min R-squared', 'Max R-squared')
   printresult$ftest <- as.matrix(min(object$adjusted_pval_F))
   printresult$ftest <- as.data.frame(printresult$ftest)
-  signif.f <- ''
-  signif.f[which(printresult$ftest[, 1] < 0.001)] <- '***'
-  signif.f[which(
+  signif_f <- ''
+  signif_f[which(printresult$ftest[, 1] < 0.001)] <- '***'
+  signif_f[which(
     printresult$ftest[, 1] < 0.01 &
       printresult$ftest[, 1] >= 0.001
   )] <- '**'
-  signif.f[which(
+  signif_f[which(
     printresult$ftest[, 1] < 0.05 &
       printresult$ftest[, 1] >= 0.01
   )] <- '*'
-  signif.f[which(
+  signif_f[which(
     printresult$ftest[, 1] < 0.1 &
       printresult$ftest[, 1] >= 0.05
   )] <- '.'
-  printresult$ftest[, 2] <- signif.f
+  printresult$ftest[, 2] <- signif_f
   colnames(printresult$ftest) <- c('Minimum p-value', '')
   printresult
 }

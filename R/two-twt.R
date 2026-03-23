@@ -19,17 +19,17 @@
 #' @export
 #' @examples
 #' # Performing the TWT for two populations
-#' TWT.result <- TWT2(NASAtemp$paris, NASAtemp$milan)
+#' TWT_result <- TWT2(NASAtemp$paris, NASAtemp$milan)
 #'
 #' # Plotting the results of the TWT
 #' plot(
-#'   TWT.result,
+#'   TWT_result,
 #'   xrange = c(0, 12),
 #'   title = 'TWT results for testing mean differences'
 #' )
 #'
 #' # Selecting the significant components at 5% level
-#' which(TWT.result$adjusted_pvalues < 0.05)
+#' which(TWT_result$adjusted_pvalues < 0.05)
 TWT2 <- function(
   data1,
   data2,
@@ -45,14 +45,14 @@ TWT2 <- function(
   inputs <- twosamples2coeffs(data1, data2, mu, dx = dx)
   coeff1 <- inputs$coeff1
   coeff2 <- inputs$coeff2
-  mu.eval <- inputs$mu
+  mu_eval <- inputs$mu
 
   n1 <- dim(coeff1)[1]
   n2 <- dim(coeff2)[1]
   n <- n1 + n2
-  data.eval <- rbind(coeff1, coeff2)
-  p <- dim(data.eval)[2]
-  coeff1 <- coeff1 - matrix(data = mu.eval, nrow = n1, ncol = p)
+  data_eval <- rbind(coeff1, coeff2)
+  p <- dim(data_eval)[2]
+  coeff1 <- coeff1 - matrix(data = mu_eval, nrow = n1, ncol = p)
 
   coeff <- rbind(coeff1, coeff2)
   etichetta_ord <- c(rep(1, n1), rep(2, n2))
@@ -62,13 +62,13 @@ TWT2 <- function(
   # this is the computation that needs to be done for each voxel
   meandiff <- colMeans(coeff[1:n1, , drop = FALSE], na.rm = TRUE) -
     colMeans(coeff[(n1 + 1):n, , drop = FALSE], na.rm = TRUE)
-  sign.diff <- sign(meandiff)
-  sign.diff[which(sign.diff == -1)] <- 0
+  sign_diff <- sign(meandiff)
+  sign_diff[which(sign_diff == -1)] <- 0
   T0 <- switch(
     alternative,
     two.sided = (meandiff)^2,
-    greater = (meandiff * sign.diff)^2,
-    less = (meandiff * (sign.diff - 1))^2
+    greater = (meandiff * sign_diff)^2,
+    less = (meandiff * (sign_diff - 1))^2
   )
 
   T_coeff <- matrix(ncol = p, nrow = B)
@@ -76,10 +76,10 @@ TWT2 <- function(
     # loop on random permutations
     if (paired) {
       # paired test (for brain data we will not need it)
-      if.perm <- stats::rbinom(n1, 1, 0.5)
+      if_perm <- stats::rbinom(n1, 1, 0.5)
       coeff_perm <- coeff
       for (couple in 1:n1) {
-        if (if.perm[couple] == 1) {
+        if (if_perm[couple] == 1) {
           coeff_perm[c(couple, n1 + couple), ] <- coeff[
             c(n1 + couple, couple),
           ]
@@ -93,13 +93,13 @@ TWT2 <- function(
 
     meandiff <- colMeans(coeff_perm[1:n1, , drop = FALSE], na.rm = TRUE) -
       colMeans(coeff_perm[(n1 + 1):n, , drop = FALSE], na.rm = TRUE)
-    sign.diff <- sign(meandiff)
-    sign.diff[which(sign.diff == -1)] <- 0
+    sign_diff <- sign(meandiff)
+    sign_diff[which(sign_diff == -1)] <- 0
     T_coeff[perm, ] <- switch(
       alternative,
       two.sided = (meandiff)^2,
-      greater = (meandiff * sign.diff)^2,
-      less = (meandiff * (sign.diff - 1))^2
+      greater = (meandiff * sign_diff)^2,
+      less = (meandiff * (sign_diff - 1))^2
     )
   }
 
@@ -116,34 +116,34 @@ TWT2 <- function(
   }
 
   thresholds <- c(0, sort(unique(pval)), 1)
-  adjusted.pval <- pval # we initialize the adjusted p-value as unadjusted one
-  pval.tmp <- rep(0, p) # inizialize p-value vector resulting from combined test
+  adjusted_pval <- pval # we initialize the adjusted p-value as unadjusted one
+  pval_tmp <- rep(0, p) # inizialize p-value vector resulting from combined test
   for (test in 1:length(thresholds)) {
     # test below threshold
-    points.1 <- which(pval <= thresholds[test])
-    T0_comb <- sum(T0[points.1], na.rm = TRUE) # combined test statistic
-    T_comb <- (rowSums(T_coeff[, points.1, drop = FALSE], na.rm = TRUE))
-    pval.test <- mean(T_comb >= T0_comb)
-    pval.tmp[points.1] <- pval.test
+    points_1 <- which(pval <= thresholds[test])
+    T0_comb <- sum(T0[points_1], na.rm = TRUE) # combined test statistic
+    T_comb <- (rowSums(T_coeff[, points_1, drop = FALSE], na.rm = TRUE))
+    pval_test <- mean(T_comb >= T0_comb)
+    pval_tmp[points_1] <- pval_test
     # compute maximum
-    adjusted.pval <- apply(rbind(adjusted.pval, pval.tmp), 2, max)
+    adjusted_pval <- apply(rbind(adjusted_pval, pval_tmp), 2, max)
 
     # test above threshold
-    points.2 <- which(pval > thresholds[test])
-    T0_comb <- sum(T0[points.2]) # combined test statistic
-    T_comb <- (rowSums(T_coeff[, points.2, drop = FALSE], na.rm = TRUE))
-    pval.test <- mean(T_comb >= T0_comb)
-    pval.tmp[points.2] <- pval.test
+    points_2 <- which(pval > thresholds[test])
+    T0_comb <- sum(T0[points_2]) # combined test statistic
+    T_comb <- (rowSums(T_coeff[, points_2, drop = FALSE], na.rm = TRUE))
+    pval_test <- mean(T_comb >= T0_comb)
+    pval_tmp[points_2] <- pval_test
     # compute maximum
-    adjusted.pval <- apply(rbind(adjusted.pval, pval.tmp), 2, max)
+    adjusted_pval <- apply(rbind(adjusted_pval, pval_tmp), 2, max)
   }
 
   out <- list(
     data = coeff,
     group_labels = etichetta_ord,
-    mu = mu.eval,
+    mu = mu_eval,
     unadjusted_pvalues = pval,
-    adjusted_pvalues = adjusted.pval
+    adjusted_pvalues = adjusted_pval
   )
   class(out) <- "ftwosample"
   out

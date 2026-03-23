@@ -38,13 +38,13 @@
 #' @export
 #' @examples
 #' # Performing the IWT for two populations
-#' IWT.result <- IWT2(NASAtemp$milan, NASAtemp$paris, B = 10L)
+#' IWT_result <- IWT2(NASAtemp$milan, NASAtemp$paris, B = 10L)
 #'
 #' # Plotting the results of the IWT
-#' IWTimage(IWT.result, abscissa_range = c(0, 12))
+#' IWTimage(IWT_result, abscissa_range = c(0, 12))
 #'
 #' # Selecting the significant components for the radius at 5\% level
-#' which(IWT.result$corrected.pval < 0.05)
+#' which(IWT_result$corrected_pval < 0.05)
 IWTimage <- function(
   IWT_result,
   alpha = 0.05,
@@ -217,7 +217,7 @@ IWTimage <- function(
     }
     fda::matplot(
       abscissa_pval,
-      t(IWT_result$data.eval),
+      t(IWT_result$data_eval),
       col = col_pop,
       type = 'l',
       main = 'Functional data',
@@ -252,7 +252,7 @@ IWTimage <- function(
     }
     fda::matplot(
       abscissa_pval,
-      t(IWT_result$data.eval),
+      t(IWT_result$data_eval),
       col = col_pop,
       type = 'l',
       add = TRUE
@@ -445,7 +445,7 @@ IWTimage <- function(
     col_pop <- factor(apply(IWT_result$design_matrix, 1, paste, collapse = ''))
     fda::matplot(
       abscissa_pval,
-      t(IWT_result$data.eval),
+      t(IWT_result$data_eval),
       col = col_pop,
       type = 'l',
       main = 'Functional data',
@@ -480,16 +480,16 @@ IWTimage <- function(
     }
     fda::matplot(
       abscissa_pval,
-      t(IWT_result$data.eval),
+      t(IWT_result$data_eval),
       col = col_pop,
       type = 'l',
       add = TRUE
     )
 
-    factor.names <- rownames(IWT_result$unadjusted_pval_factor)
-    all.names <- colnames(IWT_result$design_matrix)
+    factor_names <- rownames(IWT_result$unadjusted_pval_factor)
+    all_names <- colnames(IWT_result$design_matrix)
 
-    interaz <- grep(':', all.names)
+    interaz <- grep(':', all_names)
     for (var in 1:nvar) {
       graphics::par(
         mar = c(4.1, 4.1, 3, .2),
@@ -506,7 +506,7 @@ IWTimage <- function(
         t(matrice_quad_factor[p:1, ]),
         col = colori,
         ylab = 'Interval length',
-        main = paste('p-value heatmap, factor:', factor.names[var]),
+        main = paste('p-value heatmap, factor:', factor_names[var]),
         xlab = 'Abscissa',
         zlim = c(0, 1),
         asp = 1
@@ -607,14 +607,14 @@ IWTimage <- function(
       }
 
       # 4: functional data
-      var_name <- factor.names[var]
+      var_name <- factor_names[var]
       if (length(grep(':', var_name)) > 0) {
         # Plot interaction
         var12 <- strsplit(var_name, ':')
         var1 <- var12[[1]][1]
         var2 <- var12[[1]][2]
-        dummy_test1 <- grep(var1, all.names)
-        dummy_test2 <- grep(var2, all.names)
+        dummy_test1 <- grep(var1, all_names)
+        dummy_test2 <- grep(var2, all_names)
         dummy_test <- intersect(dummy_test1, dummy_test2)
         colors <- IWT_result$design_matrix[, dummy_test]
         if (length(dim(colors)) > 1) {
@@ -623,7 +623,7 @@ IWTimage <- function(
         colors <- as.factor(colors)
       } else {
         # Plot of a factor
-        dummy_test <- grep(var_name, all.names)
+        dummy_test <- grep(var_name, all_names)
         dummy_test <- setdiff(dummy_test, interaz)
         colors <- IWT_result$design_matrix[, dummy_test]
         if (length(dim(colors)) > 1) {
@@ -634,7 +634,7 @@ IWTimage <- function(
 
       fda::matplot(
         abscissa_pval,
-        t(IWT_result$data.eval),
+        t(IWT_result$data_eval),
         col = colors,
         type = 'l',
         main = 'Functional data',
@@ -669,7 +669,7 @@ IWTimage <- function(
       }
       fda::matplot(
         abscissa_pval,
-        t(IWT_result$data.eval),
+        t(IWT_result$data_eval),
         col = colors,
         type = 'l',
         add = TRUE

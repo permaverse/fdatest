@@ -30,21 +30,21 @@
 #'   - `adjusted_pval_part`: Adjusted p-values of the functional F-tests on
 #'   each factor of the analysis of variance (rows) and each basis coefficient
 #'   (columns).
-#'   - `data.eval`: Evaluation on a fine uniform grid of the functional data
+#'   - `data_eval`: Evaluation on a fine uniform grid of the functional data
 #'   obtained through the basis expansion.
-#'   - `coeff.regr.eval`: Evaluation on a fine uniform grid of the functional
+#'   - `coeff_regr_eval`: Evaluation on a fine uniform grid of the functional
 #'   regression coefficients.
-#'   - `fitted.eval`: Evaluation on a fine uniform grid of the fitted values of
+#'   - `fitted_eval`: Evaluation on a fine uniform grid of the fitted values of
 #'   the functional regression.
-#'   - `residuals.eval`: Evaluation on a fine uniform grid of the residuals of
+#'   - `residuals_eval`: Evaluation on a fine uniform grid of the residuals of
 #'   the functional regression.
-#'   - `R2.eval`: Evaluation on a fine uniform grid of the functional R-squared
+#'   - `R2_eval`: Evaluation on a fine uniform grid of the functional R-squared
 #'   of the regression.
 #'
 #'   Optionally, the list may contain the following components:
 #'
 #'   - `pval_matrix_F`: Matrix of dimensions \code{c(p,p)} of the p-values of
-#'   the intervalwise F-tests. The element \eqn{(i,j)} of matrix `pval.matrix`
+#'   the intervalwise F-tests. The element \eqn{(i,j)} of matrix `pval_matrix`
 #'   contains the p-value of the test of interval indexed by
 #'   \eqn{(j,j+1,...,j+(p-i))}; this component is present only if `correction`
 #'   is set to `"IWT"`.
@@ -95,9 +95,9 @@
 #' groups <- c(rep(0, 22), rep(1, 22))
 #'
 #' # Performing the TWT
-#' TWT.result <- TWTlm(temperature ~ groups, B = 100L)
+#' TWT_result <- TWTlm(temperature ~ groups, B = 100L)
 #' # Summary of the TWT results
-#' summary(TWT.result)
+#' summary(TWT_result)
 functional_lm_test <- function(
   formula,
   correction,
@@ -109,20 +109,20 @@ functional_lm_test <- function(
 ) {
   out <- switch(
     correction,
-    IWT = IWTaov(
+    IWT = IWTlm(
       formula = formula,
       dx = dx,
       B = B,
       method = method,
       recycle = recycle
     ),
-    TWT = TWTaov(
+    TWT = TWTlm(
       formula = formula,
       dx = dx,
       B = B,
       method = method
     ),
-    Global = Globalaov(
+    Global = Globallm(
       formula = formula,
       dx = dx,
       B = B,

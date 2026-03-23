@@ -65,7 +65,7 @@
 #' groups <- c(rep(0, 22), rep(1, 22))
 #'
 #' # Performing the TWT
-#' TWT.result <- functional_anova_test(
+#' TWT_result <- functional_anova_test(
 #'   temperature ~ groups,
 #'   correction = "TWT",
 #'   B = 5L
@@ -73,7 +73,7 @@
 #'
 #' # Plotting the results of the TWT
 #' plot(
-#'   TWT.result,
+#'   TWT_result,
 #'   xrange = c(0, 12),
 #'   main = 'TWT results for testing mean differences'
 #' )
@@ -111,7 +111,7 @@ autoplot.fanova <- function(
   dx <- abscissa_pval[2] - abscissa_pval[1]
 
   if (is.null(ylim)) {
-    ylim <- range(object$data.eval)
+    ylim <- range(object$data_eval)
   }
 
   # Helper: build a significance ribbon data frame
@@ -170,7 +170,7 @@ autoplot.fanova <- function(
   }
 
   # Build long-format data for functional data lines
-  data_long <- as.data.frame(t(object$data.eval))
+  data_long <- as.data.frame(t(object$data_eval))
   data_long$x <- abscissa_pval
   data_long <- stats::reshape(
     data_long,
@@ -249,9 +249,9 @@ autoplot.fanova <- function(
       colors <- as.factor(colors)
     }
 
-    # Map colors to curves (rows of data.eval = observations)
-    n_obs <- ncol(object$data.eval)
-    curve_names <- colnames(as.data.frame(t(object$data.eval)))
+    # Map colors to curves (rows of data_eval = observations)
+    n_obs <- ncol(object$data_eval)
+    curve_names <- colnames(as.data.frame(t(object$data_eval)))
     if (is.null(curve_names)) {
       curve_names <- paste0("V", seq_len(n_obs))
     }

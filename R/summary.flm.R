@@ -44,14 +44,14 @@
 #' groups <- c(rep(0, 22), rep(1, 22))
 #'
 #' # Performing the IWT
-#' IWT.result <- functional_lm_test(
+#' IWT_result <- functional_lm_test(
 #'   temperature ~ groups,
 #'   B = 2L,
 #'   correction = "IWT"
 #' )
 #'
 #' # Summary of the IWT results
-#' summary(IWT.result)
+#' summary(IWT_result)
 summary.flm <- function(object, ...) {
   printresult <- vector('list')
   printresult$call <- object$call
@@ -59,10 +59,10 @@ summary.flm <- function(object, ...) {
     data = apply(object$adjusted_pval_part, 1, min),
     ncol = 1
   )
-  var.names <- rownames(object$adjusted_pval_part)
-  rownames(printresult$ttest) <- var.names
+  var_names <- rownames(object$adjusted_pval_part)
+  rownames(printresult$ttest) <- var_names
   printresult$ttest <- as.data.frame(printresult$ttest)
-  signif <- rep('', length(var.names))
+  signif <- rep('', length(var_names))
   signif[which(printresult$ttest[, 1] < 0.001)] <- '***'
   signif[which(
     printresult$ttest[, 1] < 0.01 &
@@ -79,26 +79,26 @@ summary.flm <- function(object, ...) {
   printresult$ttest[, 2] <- signif
   colnames(printresult$ttest) <- c('Minimum p-value', '')
 
-  printresult$R2 <- as.matrix(range(object$R2.eval))
+  printresult$R2 <- as.matrix(range(object$R2_eval))
   colnames(printresult$R2) <- "Range of functional R-squared"
   rownames(printresult$R2) <- c("Min R-squared", "Max R-squared")
   printresult$ftest <- as.matrix(min(object$adjusted_pval_F))
   printresult$ftest <- as.data.frame(printresult$ftest)
-  signif.f <- ''
-  signif.f[which(printresult$ftest[, 1] < 0.001)] <- '***'
-  signif.f[which(
+  signif_f <- ''
+  signif_f[which(printresult$ftest[, 1] < 0.001)] <- '***'
+  signif_f[which(
     printresult$ftest[, 1] < 0.01 &
       printresult$ftest[, 1] >= 0.001
   )] <- '**'
-  signif.f[which(
+  signif_f[which(
     printresult$ftest[, 1] < 0.05 &
       printresult$ftest[, 1] >= 0.01
   )] <- '*'
-  signif.f[which(
+  signif_f[which(
     printresult$ftest[, 1] < 0.1 &
       printresult$ftest[, 1] >= 0.05
   )] <- '.'
-  printresult$ftest[, 2] <- signif.f
+  printresult$ftest[, 2] <- signif_f
   colnames(printresult$ftest) <- c("Minimum p-value", "")
   printresult
 }

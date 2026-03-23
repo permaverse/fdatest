@@ -19,20 +19,20 @@
 #' @export
 #' @examples
 #' # Performing the IWT for two populations
-#' IWT.result <- IWT2(NASAtemp$paris, NASAtemp$milan, B = 10L)
+#' IWT_result <- IWT2(NASAtemp$paris, NASAtemp$milan, B = 10L)
 #'
 #' # Plotting the results of the IWT
 #' plot(
-#'   IWT.result,
+#'   IWT_result,
 #'   xrange = c(0, 12),
 #'   title = 'IWT results for testing mean differences'
 #' )
 #'
 #' # Plotting the p-value heatmap
-#' IWTimage(IWT.result, abscissa_range = c(0, 12))
+#' IWTimage(IWT_result, abscissa_range = c(0, 12))
 #'
 #' # Selecting the significant components at 5% level
-#' which(IWT.result$adjusted_pvalues < 0.05)
+#' which(IWT_result$adjusted_pvalues < 0.05)
 IWT2 <- function(
   data1,
   data2,
@@ -50,47 +50,49 @@ IWT2 <- function(
   inputs <- twosamples2coeffs(data1, data2, mu, dx = dx)
   coeff1 <- inputs$coeff1
   coeff2 <- inputs$coeff2
-  mu.eval <- inputs$mu
+  mu_eval <- inputs$mu
 
   n1 <- dim(coeff1)[1]
   n2 <- dim(coeff2)[1]
   p <- dim(coeff1)[2]
   n <- n1 + n2
   etichetta_ord <- c(rep(1, n1), rep(2, n2))
-  coeff1 <- coeff1 - matrix(data = mu.eval, nrow = n1, ncol = p)
+  coeff1 <- coeff1 - matrix(data = mu_eval, nrow = n1, ncol = p)
 
   #splines coefficients:
   eval <- coeff <- rbind(coeff1, coeff2)
 
-  data.eval <- eval
-  data.eval[1:n1, ] <- data.eval[1:n1, ] +
+  data_eval <- eval
+  data_eval[1:n1, ] <- data_eval[1:n1, ] +
     matrix(
-      data = mu.eval,
+      data = mu_eval,
       nrow = n1,
       ncol = p
     )
 
-  if (verbose) cli::cli_h1("Point-wise tests")
+  if (verbose) {
+    cli::cli_h1("Point-wise tests")
+  }
 
   #univariate permutations
   meandiff <- colMeans(coeff[1:n1, , drop = FALSE], na.rm = TRUE) -
     colMeans(coeff[(n1 + 1):n, , drop = FALSE], na.rm = TRUE)
-  sign.diff <- sign(meandiff)
-  sign.diff[which(sign.diff == -1)] <- 0
+  sign_diff <- sign(meandiff)
+  sign_diff[which(sign_diff == -1)] <- 0
   T0 <- switch(
     alternative,
     two.sided = (meandiff)^2,
-    greater = (meandiff * sign.diff)^2,
-    less = (meandiff * (sign.diff - 1))^2
+    greater = (meandiff * sign_diff)^2,
+    less = (meandiff * (sign_diff - 1))^2
   )
 
   T_coeff <- matrix(ncol = p, nrow = B)
   for (perm in 1:B) {
     if (paired) {
-      if.perm <- stats::rbinom(n1, 1, 0.5)
+      if_perm <- stats::rbinom(n1, 1, 0.5)
       coeff_perm <- coeff
       for (couple in 1:n1) {
-        if (if.perm[couple] == 1) {
+        if (if_perm[couple] == 1) {
           coeff_perm[c(couple, n1 + couple), ] <- coeff[
             c(n1 + couple, couple),
           ]
@@ -102,13 +104,13 @@ IWT2 <- function(
     }
     meandiff <- colMeans(coeff_perm[1:n1, , drop = FALSE], na.rm = TRUE) -
       colMeans(coeff_perm[(n1 + 1):n, , drop = FALSE], na.rm = TRUE)
-    sign.diff <- sign(meandiff)
-    sign.diff[which(sign.diff == -1)] <- 0
+    sign_diff <- sign(meandiff)
+    sign_diff[which(sign_diff == -1)] <- 0
     T_coeff[perm, ] <- switch(
       alternative,
       two.sided = (meandiff)^2,
-      greater = (meandiff * sign.diff)^2,
-      less = (meandiff * (sign.diff - 1))^2
+      greater = (meandiff * sign_diff)^2,
+      less = (meandiff * (sign_diff - 1))^2
     )
   }
 
@@ -118,7 +120,9 @@ IWT2 <- function(
   }
 
   #combination
-  if (verbose) cli::cli_h1("Interval-wise tests")
+  if (verbose) {
+    cli::cli_h1("Interval-wise tests")
+  }
 
   #asymmetric combination matrix:
   matrice_pval_asymm <- matrix(nrow = p, ncol = p)
@@ -141,10 +145,11 @@ IWT2 <- function(
         matrice_pval_asymm[i, j] <- pval_temp
       }
 
-      if (verbose)
+      if (verbose) {
         cli::cli_h1(
           "Creating the p-value matrix: end of row {p - i + 1} out of {p}"
         )
+      }
     }
   } else {
     # without recycling
@@ -160,24 +165,27 @@ IWT2 <- function(
         matrice_pval_asymm[i, j] <- pval_temp
       }
 
-      if (verbose)
+      if (verbose) {
         cli::cli_h1(
           "Creating the p-value matrix: end of row {p - i + 1} out of {p}"
         )
+      }
     }
   }
 
-  corrected.pval.matrix <- pval_correct(matrice_pval_asymm)
-  corrected.pval <- corrected.pval.matrix[1, ]
+  corrected_pval_matrix <- pval_correct(matrice_pval_asymm)
+  corrected_pval <- corrected_pval_matrix[1, ]
 
-  if (verbose) cli::cli_h1("Interval-Wise Testing completed")
+  if (verbose) {
+    cli::cli_h1("Interval-Wise Testing completed")
+  }
 
   out <- list(
-    data = data.eval,
+    data = data_eval,
     group_labels = etichetta_ord,
-    mu = mu.eval,
+    mu = mu_eval,
     unadjusted_pvalues = pval,
-    adjusted_pvalues = corrected.pval,
+    adjusted_pvalues = corrected_pval,
     pvalue_matrix = matrice_pval_asymm
   )
   class(out) <- 'ftwosample'

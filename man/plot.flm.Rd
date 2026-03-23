@@ -90,20 +90,18 @@ effects at two levels of significance, \code{alpha1} and \code{alpha2}, using sh
 areas.
 }
 \examples{
-temperature <- rbind(NASAtemp$milan, NASAtemp$paris)
+temperature <- rbind(NASAtemp$milan[, 1:100], NASAtemp$paris[, 1:100])
 groups <- c(rep(0, 22), rep(1, 22))
 
 # Performing the IWT
-IWT.result <- IWTlm(temperature ~ groups, B = 2L)
+IWT_result <- IWTlm(temperature ~ groups, B = 2L)
 
 # Summary of the IWT results
-summary(IWT.result)
+summary(IWT_result)
 
 # Plot of the IWT results
-plot(IWT.result)
-
 plot(
-  IWT.result,
+  IWT_result,
   main = 'NASA data',
   plot_adjpval = TRUE,
   xlab = 'Day',

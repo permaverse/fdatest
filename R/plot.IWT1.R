@@ -54,16 +54,16 @@
 #' @export
 #' @examples
 #' # Performing the IWT for one population
-#' IWT.result <- IWT1(NASAtemp$paris, mu = 4, B = 10L)
+#' IWT_result <- IWT1(NASAtemp$paris, mu = 4, B = 10L)
 #'
 #' # Plotting the results of the IWT
-#' plot(IWT.result, xrange = c(0, 12), main = 'Paris temperatures')
+#' plot(IWT_result, xrange = c(0, 12), main = 'Paris temperatures')
 #'
 #' # Plotting the p-value heatmap
-#' IWTimage(IWT.result, abscissa_range = c(0, 12))
+#' IWTimage(IWT_result, abscissa_range = c(0, 12))
 #'
 #' # Selecting the significant components at 5% level
-#' which(IWT.result$adjusted_pval < 0.05)
+#' which(IWT_result$adjusted_pval < 0.05)
 plot.IWT1 <- function(
   x,
   xrange = c(0, 1),
@@ -86,14 +86,14 @@ plot.IWT1 <- function(
 
   grDevices::devAskNewPage(ask = TRUE)
   p <- length(object$unadjusted_pval)
-  n <- dim((object$data.eval))[1]
+  n <- dim((object$data_eval))[1]
   xmin <- xrange[1]
   xmax <- xrange[2]
   abscissa_pval <- seq(xmin, xmax, len = p)
   main_data <- paste(main, ': Functional Data')
   main_data <- sub("^ : +", "", main_data)
-  n_coeff <- dim(object$data.eval)[2]
-  data_eval <- object$data.eval
+  n_coeff <- dim(object$data_eval)[2]
+  data_eval <- object$data_eval
 
   if (is.null(ylim)) {
     ylim <- range(data_eval)

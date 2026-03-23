@@ -92,17 +92,17 @@ asymptotically.
 \examples{
 # Performing the fBH for two populations
 
-FDR.result <- FDR2(NASAtemp$paris, NASAtemp$milan)
+FDR_result <- FDR2(NASAtemp$paris, NASAtemp$milan)
 
 # Plotting the results of the fBH
 plot(
-  FDR.result,
+  FDR_result,
   xrange = c(0, 12),
   title = 'FDR results for testing mean differences'
 )
 
 # Selecting the significant components at 5\% level
-which(FDR.result$adjusted_pvalues < 0.05)
+which(FDR_result$adjusted_pvalues < 0.05)
 }
 \references{
 Lundtorp Olsen, N., Pini, A., & Vantini, S. (2021). False discovery rate for

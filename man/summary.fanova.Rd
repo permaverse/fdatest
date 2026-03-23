@@ -37,14 +37,14 @@ temperature <- rbind(NASAtemp$milan, NASAtemp$paris)
 groups <- c(rep(0, 22), rep(1, 22))
 
 # Performing the IWT
-IWT.result <- functional_anova_test(
+IWT_result <- functional_anova_test(
   temperature ~ groups,
   B = 10L,
   correction = "IWT"
 )
 
 # Summary of the IWT results
-summary(IWT.result)
+summary(IWT_result)
 }
 \references{
 Pini, A., & Vantini, S. (2017). Interval-wise testing for functional data.

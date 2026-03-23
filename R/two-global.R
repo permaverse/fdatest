@@ -19,17 +19,17 @@
 #' @export
 #' @examples
 #' # Performing the Global for two populations
-#' Global.result <- Global2(NASAtemp$paris, NASAtemp$milan)
+#' Global_result <- Global2(NASAtemp$paris, NASAtemp$milan)
 #'
 #' # Plotting the results of the Global
 #' plot(
-#'   Global.result,
+#'   Global_result,
 #'   xrange = c(0, 12),
 #'   title = 'Global results for testing mean differences'
 #' )
 #'
 #' # Selecting the significant components at 5% level
-#' which(Global.result$adjusted_pvalues < 0.05)
+#' which(Global_result$adjusted_pvalues < 0.05)
 Global2 <- function(
   data1,
   data2,
@@ -43,7 +43,7 @@ Global2 <- function(
   inputs <- twosamples2coeffs(data1, data2, mu, dx = dx)
   coeff1 <- inputs$coeff1
   coeff2 <- inputs$coeff2
-  mu.eval <- inputs$mu
+  mu_eval <- inputs$mu
 
   # Check the statistic
 
@@ -57,7 +57,7 @@ Global2 <- function(
   eval <- coeff <- rbind(coeff1, coeff2)
   p <- dim(coeff)[2]
 
-  data.eval <- eval
+  data_eval <- eval
 
   #univariate permutations
   meandiff2 <- (colMeans(coeff[1:n1, ]) - colMeans(coeff[(n1 + 1):n, ]))^2
@@ -75,10 +75,10 @@ Global2 <- function(
   T_coeff <- matrix(ncol = p, nrow = B)
   for (perm in 1:B) {
     if (paired) {
-      if.perm <- stats::rbinom(n1, 1, 0.5)
+      if_perm <- stats::rbinom(n1, 1, 0.5)
       coeff_perm <- coeff
       for (couple in 1:n1) {
-        if (if.perm[couple] == 1) {
+        if (if_perm[couple] == 1) {
           coeff_perm[c(couple, n1 + couple), ] <- coeff[
             c(n1 + couple, couple),
           ]
@@ -110,29 +110,29 @@ Global2 <- function(
   #combination
   all_combs <- rbind(rep(1, p))
   ntests <- 1
-  adjusted.pval <- numeric(p)
+  adjusted_pval <- numeric(p)
 
   if (statistic == 'Integral' || statistic == 'Integral_std') {
     T0_comb <- sum(T0[which(all_combs[1, ] == 1)])
     T_comb <- (rowSums(T_coeff[, which(all_combs[1, ] == 1), drop = FALSE]))
-    pval.temp <- mean(T_comb >= T0_comb)
+    pval_temp <- mean(T_comb >= T0_comb)
     indexes <- which(all_combs[1, ] == 1)
-    adjusted.pval[indexes] <- pval.temp
+    adjusted_pval[indexes] <- pval_temp
   } else if (statistic == 'Max' || statistic == 'Max_std') {
     T0_comb <- max(T0[which(all_combs[1, ] == 1)])
     T_comb <- (apply(T_coeff[, which(all_combs[1, ] == 1)], 1, max))
-    pval.temp <- mean(T_comb >= T0_comb)
+    pval_temp <- mean(T_comb >= T0_comb)
     indexes <- which(all_combs[1, ] == 1)
-    adjusted.pval[indexes] <- pval.temp
+    adjusted_pval[indexes] <- pval_temp
   }
 
   out <- list(
-    data = data.eval,
+    data = data_eval,
     group_labels = etichetta_ord,
-    mu = mu.eval,
+    mu = mu_eval,
     unadjusted_pvalues = pval,
-    adjusted_pvalues = adjusted.pval,
-    global_pvalue = adjusted.pval[1]
+    adjusted_pvalues = adjusted_pval,
+    global_pvalue = adjusted_pval[1]
   )
   class(out) <- 'ftwosample'
   out

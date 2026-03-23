@@ -37,13 +37,13 @@ data.
 }
 \examples{
 # Performing the IWT for two populations
-IWT.result <- IWT2(NASAtemp$milan, NASAtemp$paris, B = 10L)
+IWT_result <- IWT2(NASAtemp$milan, NASAtemp$paris, B = 10L)
 
 # Plotting the results of the IWT
-IWTimage(IWT.result, abscissa_range = c(0, 12))
+IWTimage(IWT_result, abscissa_range = c(0, 12))
 
 # Selecting the significant components for the radius at 5\\% level
-which(IWT.result$corrected.pval < 0.05)
+which(IWT_result$corrected_pval < 0.05)
 }
 \references{
 Pini, A., & Vantini, S. (2018). Interval-wise testing for functional data.

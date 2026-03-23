@@ -72,36 +72,36 @@ areas.
 }
 \examples{
 # Performing the TWT for two populations
-TWT.result <- functional_two_sample_test(
+TWT_result <- functional_two_sample_test(
   NASAtemp$paris, NASAtemp$milan,
   correction = "TWT", B = 10L
 )
 
 # Plotting the results of the TWT
 plot(
-  TWT.result,
+  TWT_result,
   xrange = c(0, 12),
   title = 'TWT results for testing mean differences'
 )
 
 # Selecting the significant components at 5\% level
-which(TWT.result$adjusted_pval < 0.05)
+which(TWT_result$adjusted_pval < 0.05)
 
 # Performing the IWT for two populations
-IWT.result <- functional_two_sample_test(
+IWT_result <- functional_two_sample_test(
   NASAtemp$paris, NASAtemp$milan,
   correction = "IWT", B = 10L
 )
 
 # Plotting the results of the IWT
 plot(
-  IWT.result,
+  IWT_result,
   xrange = c(0, 12),
   title = 'IWT results for testing mean differences'
 )
 
 # Selecting the significant components at 5\% level
-which(IWT.result$adjusted_pval < 0.05)
+which(IWT_result$adjusted_pval < 0.05)
 }
 \references{
 Pini, A., & Vantini, S. (2017). Interval-wise testing for functional data.

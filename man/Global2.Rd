@@ -97,17 +97,17 @@ p-value function controls the interval-wise error rate.
 }
 \examples{
 # Performing the Global for two populations
-Global.result <- Global2(NASAtemp$paris, NASAtemp$milan)
+Global_result <- Global2(NASAtemp$paris, NASAtemp$milan)
 
 # Plotting the results of the Global
 plot(
-  Global.result,
+  Global_result,
   xrange = c(0, 12),
   title = 'Global results for testing mean differences'
 )
 
 # Selecting the significant components at 5\% level
-which(Global.result$adjusted_pvalues < 0.05)
+which(Global_result$adjusted_pvalues < 0.05)
 }
 \references{
 A. Pini and S. Vantini (2017). The Interval Testing Procedure: Inference for

@@ -94,17 +94,17 @@ p-value function controls the family-wise error rate asymptotically.
 }
 \examples{
 # Performing the TWT for two populations
-TWT.result <- TWT2(NASAtemp$paris, NASAtemp$milan)
+TWT_result <- TWT2(NASAtemp$paris, NASAtemp$milan)
 
 # Plotting the results of the TWT
 plot(
-  TWT.result,
+  TWT_result,
   xrange = c(0, 12),
   title = 'TWT results for testing mean differences'
 )
 
 # Selecting the significant components at 5\% level
-which(TWT.result$adjusted_pvalues < 0.05)
+which(TWT_result$adjusted_pvalues < 0.05)
 }
 \references{
 Abramowicz, K., Pini, A., Schelin, L., Stamm, A., & Vantini, S. (2022).
