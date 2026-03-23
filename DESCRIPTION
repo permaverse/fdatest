@@ -1,8 +1,6 @@
 Package: fdatest
-Type: Package
 Title: Interval Wise Testing for Functional Data
-Version: 2.1.0
-Date: 2017-06-21
+Version: 2.1.1
 Authors@R: c( 
     person(given = "Alessia", 
            family = "Pini", 
@@ -17,26 +15,28 @@ Authors@R: c(
            family = "Vantini", 
            role = "aut", 
            email = "simone.vantini@polimi.it"))
-Description: Implementation of local inferential procedures for 
-    functional data in different frameworks (i.e., one or 
-    two-population frameworks, functional linear models). The 
-    current version of the package requires functional data 
-    evaluated on a uniform grid or fda objects, and provides the 
-    adjusted and unadjusted p-value functions based on 
-    nonparametric local tests. The package provides a plotting 
-    function creating a graphical output of the procedure: the 
-    p-value heat-map, the plot of the p-value functions, and the 
-    plot of the functional data.
+Description: Implementation of local inferential (domain-selection) procedures
+    for functional data in different frameworks (one- and two-sample tests,
+    ANOVA, linear models). The current version of the package requires
+    functional data evaluated on a common uniform grid or objects of class 'fd'
+    as produced by the 'fda' package and provides the adjusted and unadjusted
+    p-value functions based on nonparametric local tests. The package provides
+    tools for visualization: (i) the p-value heatmap, the plot of the p-value
+    functions and the plot of the functional data.
 License: GPL (>= 3)
 Encoding: UTF-8
 LazyData: true
 Imports: 
     cli,
     fda,
+    ggplot2,
     lifecycle,
+    patchwork,
     rlang
-RoxygenNote: 7.3.2
+RoxygenNote: 7.3.3
 Roxygen: list(markdown = TRUE)
 Depends: 
     R (>= 3.5.0)
-URL: https://permaverse.github.io/fdatest/
+URL: https://permaverse.github.io/fdatest/, 
+    https://github.com/permaverse/fdatest/
+BugReports: https://github.com/permaverse/fdatest/issues

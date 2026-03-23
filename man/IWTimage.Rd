@@ -13,7 +13,7 @@ IWTimage(
 )
 }
 \arguments{
-\item{IWT_result}{Results of the ITP, as created by \code{\link{IWT1}},
+\item{IWT_result}{Results of the IWT, as created by \code{\link{IWT1}},
 \code{\link{IWT2}}, \code{\link{IWTaov}}, and \code{\link{IWTlm}}.}
 
 \item{alpha}{Threshold for the interval-wise error rate used for the
@@ -36,14 +36,14 @@ heat-map, the plot of the corrected p-values, and the plot of the functional
 data.
 }
 \examples{
-# Performing the IWT for two populations 
-IWT.result <- IWT2(NASAtemp$milan, NASAtemp$paris, B = 10L)
+# Performing the IWT for two populations
+IWT_result <- IWT2(NASAtemp$milan, NASAtemp$paris, B = 10L)
 
 # Plotting the results of the IWT
-IWTimage(IWT.result, abscissa_range = c(0, 12))
+IWTimage(IWT_result, abscissa_range = c(0, 12))
 
 # Selecting the significant components for the radius at 5\\% level
-which(IWT.result$corrected.pval < 0.05)
+which(IWT_result$corrected_pval < 0.05)
 }
 \references{
 Pini, A., & Vantini, S. (2018). Interval-wise testing for functional data.
@@ -61,8 +61,7 @@ cruciate ligament. \emph{Scandinavian Journal of Statistics} 45(4),
 1036-1061.
 }
 \seealso{
-See \code{\link{plot.IWT1}}, \code{\link{plot.fdatest2}},
-\code{\link{plot.IWTlm}}, and \code{\link{plot.IWTaov}} for the plot method
-applied to the IWT results of one- and two-population tests, linear models,
-and ANOVA, respectively.
+See \code{\link[=plot.IWT1]{plot.IWT1()}}, \code{\link[=plot.ftwosample]{plot.ftwosample()}}, \code{\link[=plot.flm]{plot.flm()}} and
+\code{\link[=plot.fanova]{plot.fanova()}} for the plot method applied to the IWT results of one-
+and two-population tests, linear models, and ANOVA, respectively.
 }

@@ -6,3 +6,6 @@ inst/doc
 .DS_Store
 README.html
 docs
+
+/.quarto/
+**/*.quarto_ipynb

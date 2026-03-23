@@ -66,20 +66,17 @@ graphical output of the IWT for the test of the mean of one population:
 functional data and IWT-adjusted p-values are plotted.
 }
 \examples{
-# Importing the NASA temperatures data set
-data(NASAtemp)
-
 # Performing the IWT for one population
-IWT.result <- IWT1(NASAtemp$paris, mu = 4, B = 10L)
+IWT_result <- IWT1(NASAtemp$paris, mu = 4, B = 10L)
 
 # Plotting the results of the IWT
-plot(IWT.result, xrange = c(0, 12), main = 'Paris temperatures')
+plot(IWT_result, xrange = c(0, 12), main = 'Paris temperatures')
 
 # Plotting the p-value heatmap
-IWTimage(IWT.result, abscissa_range = c(0, 12))
+IWTimage(IWT_result, abscissa_range = c(0, 12))
 
 # Selecting the significant components at 5\% level
-which(IWT.result$adjusted_pval < 0.05)
+which(IWT_result$adjusted_pval < 0.05)
 }
 \references{
 Pini, A., & Vantini, S. (2017). Interval-wise testing for functional data.
@@ -97,8 +94,5 @@ cruciate ligament. \emph{Scandinavian Journal of Statistics} 45(4),
 1036-1061.
 }
 \seealso{
-\code{\link{IWTimage}} for the plot of p-values heatmaps. See also
-\code{\link{IWT2}} to perform the ITP to test differences between two
-populations. See \code{\link{ITP1bspline}} for one-population test based on
-B-spline basis representation.
+\code{\link{IWTimage}} for the plot of p-values heatmaps.
 }

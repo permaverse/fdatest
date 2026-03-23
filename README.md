@@ -8,6 +8,10 @@
 [![R-CMD-check](https://github.com/permaverse/fdatest/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/permaverse/fdatest/actions/workflows/R-CMD-check.yaml)
 [![Codecov test
 coverage](https://codecov.io/gh/permaverse/fdatest/graph/badge.svg)](https://app.codecov.io/gh/permaverse/fdatest)
+[![CRAN
+status](https://www.r-pkg.org/badges/version/fdatest)](https://CRAN.R-project.org/package=fdatest)
+[![test-coverage](https://github.com/permaverse/fdatest/actions/workflows/test-coverage.yaml/badge.svg)](https://github.com/permaverse/fdatest/actions/workflows/test-coverage.yaml)
+[![pkgdown](https://github.com/permaverse/fdatest/actions/workflows/pkgdown.yaml/badge.svg)](https://github.com/permaverse/fdatest/actions/workflows/pkgdown.yaml)
 <!-- badges: end -->
 
 The goal of fdatest is to implement various statistical methods for
@@ -35,7 +39,17 @@ pak::pak("permaverse/fdatest")
 
 ## Example
 
-This is a basic example which shows you how to solve a common problem:
+The package provides several methods for domain selection, including:
+
+- **FDR2**: False Discovery Rate for two populations.
+- **Global2**: Global testing for two populations.
+- **IWT2**: Interval-Wise Testing for two populations.
+- **PCT2**: Partition Closed Testing for two populations.
+- **TWT2**: Threshold Wise Testing for two populations.
+
+You can use these methods to test for significant differences between
+two populations of functional data. Here is an example using the `TWT2`
+method on the NASA temperatures data set:
 
 ``` r
 library(fdatest)
@@ -44,14 +58,13 @@ library(fdatest)
 withr::with_seed(1234, {
   out <- TWT2(NASAtemp$paris, NASAtemp$milan)
 })
-#> [1] "Threshold-wise tests"
 
 # Plotting the results of the TWT
 plot(
-  out, 
-  xrange = c(0, 12), 
+  out,
+  xrange = c(0, 12),
   main = 'TWT results for testing mean differences'
 )
 ```
 
-<img src="man/figures/README-example-1.png" width="100%" /><img src="man/figures/README-example-2.png" width="100%" />
+<img src="man/figures/README-example-1.png" alt="" width="100%" />
