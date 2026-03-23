@@ -119,7 +119,7 @@ methods:
 }
 }
 \examples{
-temperature <- rbind(NASAtemp$milan, NASAtemp$paris)
+temperature <- rbind(NASAtemp$milan[, 1:100], NASAtemp$paris[, 1:100])
 groups <- c(rep(0, 22), rep(1, 22))
 
 # Performing the TWT for two populations

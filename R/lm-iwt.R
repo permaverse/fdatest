@@ -100,7 +100,8 @@ IWTlm <- function(
   } else {
     method <- 'responses'
     T0_glob <- numeric(p)
-    T0_part <- t(as.matrix(T0_part))
+    # Ensure T0_part is (nvar+1) x p = 1 x p for intercept-only
+    T0_part <- matrix(T0_part, nrow = 1L, ncol = p)
   }
   # Compute residuals
   if (method == 'residuals') {
@@ -115,10 +116,12 @@ IWTlm <- function(
     var_names2 <- var_names
     coeffnames <- paste('coeff[,', as.character(1:p), ']', sep = '')
     formula_temp <- coeff ~ design_matrix
-    mf_temp <- cbind(
-      stats::model.frame(formula_temp)[-((p + 1):(p + nvar + 1))],
-      as.data.frame(design_matrix[, -1])
-    )
+    mf_temp_raw <- stats::model.frame(formula_temp)[-((p + 1):(p + nvar + 1))]
+    mf_temp_cov <- as.data.frame(design_matrix[, -1, drop = FALSE])
+    # Use the original variable names (from design_matrix) so formula strings
+    # like 'coeff[,1] ~ groups -1' can resolve against the data frame.
+    colnames(mf_temp_cov) <- var_names[-1]
+    mf_temp <- cbind(mf_temp_raw, mf_temp_cov)
     if (length(grep('factor', formula_const)) > 0) {
       index_factor <- grep('factor', var_names)
       replace_names <- paste('group', (1:length(index_factor)), sep = '')
@@ -140,10 +143,12 @@ IWTlm <- function(
         formula_temp <- '1'
       }
       formula_temp2 <- coeff ~ design_matrix_names2
-      mf_temp2 <- cbind(
-        stats::model.frame(formula_temp2)[-((p + 1):(p + nvar + 1))],
-        as.data.frame(design_matrix_names2[, -1])
-      )
+      mf_temp2_raw <- stats::model.frame(formula_temp2)[
+        -((p + 1):(p + nvar + 1))
+      ]
+      mf_temp2_cov <- as.data.frame(design_matrix_names2[, -1, drop = FALSE])
+      colnames(mf_temp2_cov) <- var_names2[-1]
+      mf_temp2 <- cbind(mf_temp2_raw, mf_temp2_cov)
       formula_coeff_temp <- paste(coeffnames, '~', formula_temp)
       formula_coeff_part[[ii]] <- sapply(formula_coeff_temp, stats::as.formula)
       regr0_part[[ii]] <- lapply(

@@ -74,5 +74,10 @@ ITPlmbspline <- function(
     what = "ITPlmbspline()",
     with = "IWTlm()"
   )
-  # --- IGNORE ---
+
+  IWTlm(
+    formula = formula,
+    B = B,
+    method = method
+  )
 }

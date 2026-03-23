@@ -174,9 +174,13 @@ formula2design_matrix <- function(formula, coeff) {
   # extracting the part after ~ on formula. this will not work if the formula is
   # longer than 500 char
   formula_const <- deparse(formula[[3]], width.cutoff = 500L)
+  # Parent the evaluation env to the original formula's env so that covariates
+  # defined in the caller (e.g. `groups`) can be found by model.matrix().
+  env <- new.env(parent = environment(formula))
+  env$coeff <- coeff
   formula_discrete <- stats::as.formula(
     paste('coeff ~', formula_const),
-    env = environment()
+    env = env
   )
   stats::model.matrix(formula_discrete)
 }

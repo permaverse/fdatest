@@ -33,6 +33,9 @@ Imports:
     lifecycle,
     patchwork,
     rlang
+Suggests:
+    tinysnapshot,
+    tinytest
 RoxygenNote: 7.3.3
 Roxygen: list(markdown = TRUE)
 Depends: 
