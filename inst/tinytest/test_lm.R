@@ -26,8 +26,8 @@ expect_equal(dim(res_iwt_r$pval_matrix_F), c(p, p))
 # partial t-tests
 expect_equal(ncol(res_iwt_r$unadjusted_pval_part), p)
 expect_equal(ncol(res_iwt_r$adjusted_pval_part), p)
-expect_equal(dim(res_iwt_r$pval_matrix_part), c(2L, p, p)) # intercept + groups
-# data / fitted / residuals / R2
+expect_equal(dim(res_iwt_r$pval_matrix_part), c(2L, p, p)) # intercept and groups
+# data, fitted, residuals, R2
 expect_equal(dim(res_iwt_r$data_eval), dim(temperature))
 expect_equal(dim(res_iwt_r$fitted_eval), dim(temperature))
 expect_equal(dim(res_iwt_r$residuals_eval), dim(temperature))
@@ -88,7 +88,7 @@ res_g_r <- Globallm(
 expect_inherits(res_g_r, "flm")
 expect_equal(length(res_g_r$adjusted_pval_F), p)
 expect_true(!is.null(res_g_r$Global_pval_F))
-expect_true(res_g_r$Global_pval_F >= 0 & res_g_r$Global_pval_F <= 1)
+expect_true(res_g_r$Global_pval_F >= 0 && res_g_r$Global_pval_F <= 1)
 expect_true(!is.null(res_g_r$Global_pval_part))
 
 # ===========================================================================

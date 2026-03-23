@@ -79,13 +79,11 @@ autoplot.flm <- function(
   }
 
   p <- length(object$unadjusted_pval_F)
-  J <- p
   n <- dim(object$data_eval)[1]
   xmin <- xrange[1]
   xmax <- xrange[2]
   abscissa_pval <- seq(xmin, xmax, len = p)
-  abscissa_smooth <- seq(xmin, xmax, len = J)
-  half_step <- (abscissa_pval[2] - abscissa_pval[1]) / 2
+  abscissa_smooth <- seq(xmin, xmax, len = p)
 
   # Helper: build significance rectangles data frame
   make_sig_df <- function(pvals, alpha1, alpha2, abscissa) {
@@ -122,7 +120,7 @@ autoplot.flm <- function(
   plots <- list()
 
   # --- Panel 1: Functional Data and F-test ---
-  main_F <- if (!is.null(title)) {
+  main_f <- if (!is.null(title)) {
     paste(title, ": Functional Data and F-test")
   } else {
     "Functional Data and F-test"
@@ -131,16 +129,16 @@ autoplot.flm <- function(
   data_long <- data.frame(
     x = rep(abscissa_smooth, each = n),
     y = as.vector(t(object$data_eval)),
-    id = rep(seq_len(n), times = J)
+    id = rep(seq_len(n), times = p)
   )
 
-  p_F <- ggplot2::ggplot()
+  p_f <- ggplot2::ggplot()
 
-  sig_df_F <- make_sig_df(object$adjusted_pval_F, alpha1, alpha2, abscissa_pval)
-  if (!is.null(sig_df_F)) {
-    p_F <- p_F +
+  sig_df_f <- make_sig_df(object$adjusted_pval_F, alpha1, alpha2, abscissa_pval)
+  if (!is.null(sig_df_f)) {
+    p_f <- p_f +
       ggplot2::geom_rect(
-        data = sig_df_F,
+        data = sig_df_f,
         ggplot2::aes(
           xmin = .data$xmin,
           xmax = .data$xmax,
@@ -160,21 +158,21 @@ autoplot.flm <- function(
       )
   }
 
-  p_F <- p_F +
+  p_f <- p_f +
     ggplot2::geom_line(
       data = data_long,
       ggplot2::aes(x = .data$x, y = .data$y, group = .data$id),
       color = col[1],
       linewidth = linewidth
     ) +
-    ggplot2::labs(title = main_F, x = NULL, y = ylabel) +
+    ggplot2::labs(title = main_f, x = NULL, y = ylabel) +
     ggplot2::theme_bw()
 
   if (!is.null(ylim)) {
-    p_F <- p_F + ggplot2::coord_cartesian(ylim = ylim)
+    p_f <- p_f + ggplot2::coord_cartesian(ylim = ylim)
   }
 
-  plots[[length(plots) + 1]] <- p_F
+  plots[[length(plots) + 1]] <- p_f
 
   # --- Panels for each variable: regression coefficient + t-test ---
   n_vars <- dim(object$adjusted_pval_part)[1]
@@ -243,26 +241,26 @@ autoplot.flm <- function(
   # --- Adjusted p-value plots ---
   if (plot_adjpval) {
     # F-test p-values
-    main_pF <- if (!is.null(title)) {
+    main_pf <- if (!is.null(title)) {
       paste(title, ": Adjusted p-values - F-test")
     } else {
       "Adjusted p-values - F-test"
     }
 
-    pval_F_df <- data.frame(x = abscissa_pval, y = object$adjusted_pval_F)
+    pval_f_df <- data.frame(x = abscissa_pval, y = object$adjusted_pval_F)
 
-    p_pF <- ggplot2::ggplot()
+    p_pf <- ggplot2::ggplot()
 
-    sig_df_pF <- make_sig_df(
+    sig_df_pf <- make_sig_df(
       object$adjusted_pval_F,
       alpha1,
       alpha2,
       abscissa_pval
     )
-    if (!is.null(sig_df_pF)) {
-      p_pF <- p_pF +
+    if (!is.null(sig_df_pf)) {
+      p_pf <- p_pf +
         ggplot2::geom_rect(
-          data = sig_df_pF,
+          data = sig_df_pf,
           ggplot2::aes(
             xmin = .data$xmin,
             xmax = .data$xmax,
@@ -282,22 +280,22 @@ autoplot.flm <- function(
         )
     }
 
-    p_pF <- p_pF +
+    p_pf <- p_pf +
       ggplot2::geom_hline(
         yintercept = seq(0, 1, by = 0.1),
         color = "lightgray",
         linetype = "dotted"
       ) +
       ggplot2::geom_line(
-        data = pval_F_df,
+        data = pval_f_df,
         ggplot2::aes(x = .data$x, y = .data$y),
         linewidth = linewidth
       ) +
       ggplot2::scale_y_continuous(limits = c(0, 1)) +
-      ggplot2::labs(title = main_pF, x = NULL, y = "p-value") +
+      ggplot2::labs(title = main_pf, x = NULL, y = "p-value") +
       ggplot2::theme_bw()
 
-    plots[[length(plots) + 1]] <- p_pF
+    plots[[length(plots) + 1]] <- p_pf
 
     # t-test p-values per variable
     for (var in seq_len(n_vars)) {

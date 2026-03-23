@@ -102,30 +102,30 @@ functional_lm_test <- function(
   formula,
   correction,
   dx = NULL,
-  B = 1000L,
+  B = 1000L, # nolint: object_name_linter.
   method = c("residuals", "responses"),
   recycle = TRUE,
   stat = c("Integral", "Max")
 ) {
   out <- switch(
     correction,
-    IWT = IWTlm(
+    IWT = iwt_lm(
       formula = formula,
       dx = dx,
-      B = B,
+      n_perm = B,
       method = method,
       recycle = recycle
     ),
-    TWT = TWTlm(
+    TWT = twt_lm(
       formula = formula,
       dx = dx,
-      B = B,
+      n_perm = B,
       method = method
     ),
-    Global = Globallm(
+    Global = global_lm(
       formula = formula,
       dx = dx,
-      B = B,
+      n_perm = B,
       method = method,
       stat = stat
     )

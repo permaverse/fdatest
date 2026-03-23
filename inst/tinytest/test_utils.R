@@ -6,20 +6,20 @@ d1 <- NASAtemp$milan[1:4, 1:8]
 d2 <- NASAtemp$paris[1:4, 1:8]
 
 # ---------------------------------------------------------------------------
-# AVAILABLE_* constant helpers
+# available_* constant helpers
 # ---------------------------------------------------------------------------
 expect_identical(
-  fdatest:::AVAILABLE_ALTERNATIVES(),
+  fdatest:::available_alternatives(),
   c("two.sided", "less", "greater")
 )
 
 expect_identical(
-  fdatest:::AVAILABLE_METHODS(),
+  fdatest:::available_methods(),
   c("IWT", "TWT", "PCT", "Global", "FDR")
 )
 
 expect_identical(
-  fdatest:::AVAILABLE_STATISTICS(),
+  fdatest:::available_statistics(),
   c("Integral", "Max", "Integral_std", "Max_std")
 )
 
@@ -41,7 +41,7 @@ expect_true(is.numeric(aov_stats))
 expect_true(length(aov_stats) == 1L) # one factor
 
 # ---------------------------------------------------------------------------
-# extract_residuals / extract_fitted
+# extract_residuals, extract_fitted
 # ---------------------------------------------------------------------------
 expect_equal(fdatest:::extract_residuals(fit_lm), stats::residuals(fit_lm))
 expect_equal(fdatest:::extract_fitted(fit_lm), stats::fitted(fit_lm))
@@ -114,5 +114,5 @@ expect_error(fdatest:::formula2coeff(not_matrix ~ groups8))
 dm <- fdatest:::formula2design_matrix(temperature ~ groups8, coeff)
 expect_true(is.matrix(dm))
 expect_equal(nrow(dm), nrow(temperature))
-expect_equal(ncol(dm), 2L) # intercept + groups8
+expect_equal(ncol(dm), 2L) # intercept and groups8
 expect_true("(Intercept)" %in% colnames(dm))

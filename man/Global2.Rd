@@ -2,6 +2,7 @@
 % Please edit documentation in R/two-global.R
 \name{Global2}
 \alias{Global2}
+\alias{global2}
 \title{Two population Global Testing procedure}
 \usage{
 Global2(
@@ -10,6 +11,16 @@ Global2(
   mu = 0,
   dx = NULL,
   B = 1000L,
+  paired = FALSE,
+  statistic = c("Integral", "Max", "Integral_std", "Max_std")
+)
+
+global2(
+  data1,
+  data2,
+  mu = 0,
+  dx = NULL,
+  n_perm = 1000L,
   paired = FALSE,
   statistic = c("Integral", "Max", "Integral_std", "Max_std")
 )
@@ -57,6 +68,9 @@ values are:
 }
 
 Defaults to \code{"Integral"}.}
+
+\item{n_perm}{An integer value specifying the number of permutations for the
+permutation tests. Defaults to \code{1000L}.}
 }
 \value{
 An object of class \code{ftwosample} containing the following components:

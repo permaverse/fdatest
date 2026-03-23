@@ -1,8 +1,8 @@
 # Tests for plot and autoplot methods:
-# R/plot-ftwosample.R  (autoplot.ftwosample / plot.ftwosample)
-# R/plot-fanova.R      (autoplot.fanova    / plot.fanova)
-# R/plot-flm.R         (autoplot.flm       / plot.flm)
-# R/plot.IWT1.R        (plot.IWT1)
+# plot-ftwosample.R: autoplot.ftwosample, plot.ftwosample
+# plot-fanova.R:     autoplot.fanova, plot.fanova
+# plot-flm.R:        autoplot.flm, plot.flm
+# plot.IWT1.R:       plot.IWT1
 library(fdatest)
 library(ggplot2)
 library(tinysnapshot)
@@ -38,7 +38,7 @@ set.seed(42)
 res_twtlm <- TWTlm(temperature ~ groups, B = 5L)
 
 # ===========================================================================
-# autoplot.ftwosample + plot.ftwosample
+# autoplot.ftwosample, plot.ftwosample
 # ===========================================================================
 # autoplot returns a ggplot / patchwork object
 p_fts <- autoplot(res_iwt2)
@@ -69,7 +69,7 @@ p_fts_custom <- autoplot(
 expect_true(inherits(p_fts_custom, "gg") || inherits(p_fts_custom, "patchwork"))
 
 # ===========================================================================
-# autoplot.fanova + plot.fanova
+# autoplot.fanova, plot.fanova
 # ===========================================================================
 p_fa <- autoplot(res_fanova)
 expect_true(inherits(p_fa, "gg") || inherits(p_fa, "patchwork"))
@@ -107,13 +107,13 @@ p_fa_custom <- autoplot(
 expect_true(inherits(p_fa_custom, "gg") || inherits(p_fa_custom, "patchwork"))
 
 # ===========================================================================
-# autoplot.flm + plot.flm
+# autoplot.flm, plot.flm
 # ===========================================================================
 p_flm <- autoplot(res_flm)
 expect_true(inherits(p_flm, "gg") || inherits(p_flm, "patchwork"))
 expect_snapshot_plot(p_flm, "autoplot_flm_default")
 
-# plot_adjpval = TRUE
+# plot_adjpval TRUE
 p_flm_adj <- autoplot(res_flm, plot_adjpval = TRUE)
 expect_true(inherits(p_flm_adj, "gg") || inherits(p_flm_adj, "patchwork"))
 expect_snapshot_plot(p_flm_adj, "autoplot_flm_adjpval")
@@ -150,7 +150,7 @@ expect_true(inherits(p_flm_custom, "gg") || inherits(p_flm_custom, "patchwork"))
 # ===========================================================================
 tmp_pdf <- tempfile(fileext = ".pdf")
 grDevices::pdf(tmp_pdf)
-plot(res_iwt1, xrange = c(0, 1)) # default: mu = 0 (scalar)
+plot(res_iwt1, xrange = c(0, 1)) # default: mu is zero
 grDevices::dev.off()
 expect_true(file.exists(tmp_pdf))
 

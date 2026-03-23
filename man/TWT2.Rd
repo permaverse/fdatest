@@ -2,6 +2,7 @@
 % Please edit documentation in R/two-twt.R
 \name{TWT2}
 \alias{TWT2}
+\alias{twt2}
 \title{Two population Threshold Wise Testing procedure}
 \usage{
 TWT2(
@@ -10,6 +11,17 @@ TWT2(
   mu = 0,
   dx = NULL,
   B = 1000L,
+  paired = FALSE,
+  alternative = c("two.sided", "less", "greater"),
+  verbose = FALSE
+)
+
+twt2(
+  data1,
+  data2,
+  mu = 0,
+  dx = NULL,
+  n_perm = 1000L,
   paired = FALSE,
   alternative = c("two.sided", "less", "greater"),
   verbose = FALSE
@@ -54,6 +66,9 @@ Choices are \code{"two.sided"}, \code{"less"} or \code{"greater"}. Defaults to
 
 \item{verbose}{A boolean value specifying whether to print the progress of
 the computation. Defaults to \code{FALSE}.}
+
+\item{n_perm}{An integer value specifying the number of permutations for the
+permutation tests. Defaults to \code{1000L}.}
 }
 \value{
 An object of class \code{ftwosample} containing the following components:

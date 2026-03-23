@@ -120,7 +120,7 @@ autoplot.ftwosample <- function(
     ),
     y = as.vector(t(object$data)),
     group = as.factor(rep(object$group_labels, each = ncol(object$data))),
-    id = as.factor(rep(1:nrow(object$data), each = ncol(object$data)))
+    id = as.factor(rep(seq_len(nrow(object$data)), each = ncol(object$data)))
   )
 
   # Add significance regions
@@ -153,6 +153,23 @@ autoplot.ftwosample <- function(
     )
   }
 
+  sig_layer <- if (nrow(sig_regions) > 0) {
+    ggplot2::geom_rect(
+      data = sig_regions,
+      ggplot2::aes(
+        xmin = .data$xmin,
+        xmax = .data$xmax,
+        ymin = -Inf,
+        ymax = Inf,
+        fill = .data$alpha_level
+      ),
+      inherit.aes = FALSE,
+      alpha = 0.3
+    )
+  } else {
+    NULL
+  }
+
   # Functional data plot
   p1 <- ggplot2::ggplot(
     data_long,
@@ -163,22 +180,7 @@ autoplot.ftwosample <- function(
       color = .data$group
     )
   ) +
-    {
-      if (nrow(sig_regions) > 0) {
-        ggplot2::geom_rect(
-          data = sig_regions,
-          ggplot2::aes(
-            xmin = .data$xmin,
-            xmax = .data$xmax,
-            ymin = -Inf,
-            ymax = Inf,
-            fill = .data$alpha_level
-          ),
-          inherit.aes = FALSE,
-          alpha = 0.3
-        )
-      }
-    } +
+    sig_layer +
     ggplot2::geom_line(linewidth = linewidth) +
     ggplot2::scale_color_viridis_d(name = "Group") +
     ggplot2::scale_fill_manual(
@@ -199,22 +201,7 @@ autoplot.ftwosample <- function(
   )
 
   p2 <- ggplot2::ggplot(pval_data, ggplot2::aes(x = .data$x, y = .data$pval)) +
-    {
-      if (nrow(sig_regions) > 0) {
-        ggplot2::geom_rect(
-          data = sig_regions,
-          ggplot2::aes(
-            xmin = .data$xmin,
-            xmax = .data$xmax,
-            ymin = -Inf,
-            ymax = Inf,
-            fill = .data$alpha_level
-          ),
-          inherit.aes = FALSE,
-          alpha = 0.3
-        )
-      }
-    } +
+    sig_layer +
     ggplot2::geom_hline(
       yintercept = seq(0, 1, 0.1),
       color = "lightgray",

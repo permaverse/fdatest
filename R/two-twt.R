@@ -30,12 +30,38 @@
 #'
 #' # Selecting the significant components at 5% level
 #' which(TWT_result$adjusted_pvalues < 0.05)
-TWT2 <- function(
+TWT2 <- function( # nolint: object_name_linter.
   data1,
   data2,
   mu = 0,
   dx = NULL,
-  B = 1000L,
+  B = 1000L, # nolint: object_name_linter.
+  paired = FALSE,
+  alternative = c("two.sided", "less", "greater"),
+  verbose = FALSE
+) {
+  twt2(
+    data1 = data1,
+    data2 = data2,
+    mu = mu,
+    dx = dx,
+    n_perm = B,
+    paired = paired,
+    alternative = alternative,
+    verbose = verbose
+  )
+}
+
+#' @param n_perm An integer value specifying the number of permutations for the
+#'   permutation tests. Defaults to `1000L`.
+#' @rdname TWT2
+#' @export
+twt2 <- function(
+  data1,
+  data2,
+  mu = 0,
+  dx = NULL,
+  n_perm = 1000L,
   paired = FALSE,
   alternative = c("two.sided", "less", "greater"),
   verbose = FALSE
@@ -53,88 +79,32 @@ TWT2 <- function(
   data_eval <- rbind(coeff1, coeff2)
   p <- dim(data_eval)[2]
   coeff1 <- coeff1 - matrix(data = mu_eval, nrow = n1, ncol = p)
-
   coeff <- rbind(coeff1, coeff2)
   etichetta_ord <- c(rep(1, n1), rep(2, n2))
 
-  # First part:
-  # univariate permutation test for each point
-  # this is the computation that needs to be done for each voxel
-  meandiff <- colMeans(coeff[1:n1, , drop = FALSE], na.rm = TRUE) -
-    colMeans(coeff[(n1 + 1):n, , drop = FALSE], na.rm = TRUE)
-  sign_diff <- sign(meandiff)
-  sign_diff[which(sign_diff == -1)] <- 0
-  T0 <- switch(
-    alternative,
-    two.sided = (meandiff)^2,
-    greater = (meandiff * sign_diff)^2,
-    less = (meandiff * (sign_diff - 1))^2
-  )
+  perm_res <- twosample_alt_permtest(coeff, n1, n_perm, alternative, paired)
+  t0 <- perm_res$t0
+  t_coeff <- perm_res$t_coeff
+  pval <- perm_res$pval
 
-  T_coeff <- matrix(ncol = p, nrow = B)
-  for (perm in 1:B) {
-    # loop on random permutations
-    if (paired) {
-      # paired test (for brain data we will not need it)
-      if_perm <- stats::rbinom(n1, 1, 0.5)
-      coeff_perm <- coeff
-      for (couple in 1:n1) {
-        if (if_perm[couple] == 1) {
-          coeff_perm[c(couple, n1 + couple), ] <- coeff[
-            c(n1 + couple, couple),
-          ]
-        }
-      }
-    } else {
-      # unpaired test
-      permutazioni <- sample(n)
-      coeff_perm <- coeff[permutazioni, ]
-    }
-
-    meandiff <- colMeans(coeff_perm[1:n1, , drop = FALSE], na.rm = TRUE) -
-      colMeans(coeff_perm[(n1 + 1):n, , drop = FALSE], na.rm = TRUE)
-    sign_diff <- sign(meandiff)
-    sign_diff[which(sign_diff == -1)] <- 0
-    T_coeff[perm, ] <- switch(
-      alternative,
-      two.sided = (meandiff)^2,
-      greater = (meandiff * sign_diff)^2,
-      less = (meandiff * (sign_diff - 1))^2
-    )
-  }
-
-  # p-value computation
-  pval <- numeric(p)
-  for (i in 1:p) {
-    pval[i] <- sum(T_coeff[, i] >= T0[i]) / B
-  }
-
-  # Second part:
-  # combination into subsets
   if (verbose) {
     cli::cli_h1("Threshold-wise tests")
   }
 
   thresholds <- c(0, sort(unique(pval)), 1)
-  adjusted_pval <- pval # we initialize the adjusted p-value as unadjusted one
-  pval_tmp <- rep(0, p) # inizialize p-value vector resulting from combined test
-  for (test in 1:length(thresholds)) {
-    # test below threshold
+  adjusted_pval <- pval
+  pval_tmp <- rep(0, p)
+  for (test in seq_along(thresholds)) {
     points_1 <- which(pval <= thresholds[test])
-    T0_comb <- sum(T0[points_1], na.rm = TRUE) # combined test statistic
-    T_comb <- (rowSums(T_coeff[, points_1, drop = FALSE], na.rm = TRUE))
-    pval_test <- mean(T_comb >= T0_comb)
-    pval_tmp[points_1] <- pval_test
-    # compute maximum
+    t0_comb <- sum(t0[points_1], na.rm = TRUE)
+    t_comb <- rowSums(t_coeff[, points_1, drop = FALSE], na.rm = TRUE)
+    pval_tmp[points_1] <- mean(t_comb >= t0_comb)
     adjusted_pval <- apply(rbind(adjusted_pval, pval_tmp), 2, max)
 
-    # test above threshold
     points_2 <- which(pval > thresholds[test])
-    T0_comb <- sum(T0[points_2]) # combined test statistic
-    T_comb <- (rowSums(T_coeff[, points_2, drop = FALSE], na.rm = TRUE))
-    pval_test <- mean(T_comb >= T0_comb)
-    pval_tmp[points_2] <- pval_test
-    # compute maximum
+    t0_comb <- sum(t0[points_2])
+    t_comb <- rowSums(t_coeff[, points_2, drop = FALSE], na.rm = TRUE)
+    pval_tmp[points_2] <- mean(t_comb >= t0_comb)
     adjusted_pval <- apply(rbind(adjusted_pval, pval_tmp), 2, max)
   }
 

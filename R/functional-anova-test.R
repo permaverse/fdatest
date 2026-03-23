@@ -163,30 +163,30 @@ functional_anova_test <- function(
   formula,
   correction,
   dx = NULL,
-  B = 1000L,
+  B = 1000L, # nolint: object_name_linter.
   method = c("residuals", "responses"),
   recycle = TRUE,
   stat = c("Integral", "Max")
 ) {
   out <- switch(
     correction,
-    IWT = IWTaov(
+    IWT = iwt_aov(
       formula = formula,
       dx = dx,
-      B = B,
+      n_perm = B,
       method = method,
       recycle = recycle
     ),
-    TWT = TWTaov(
+    TWT = twt_aov(
       formula = formula,
       dx = dx,
-      B = B,
+      n_perm = B,
       method = method
     ),
-    Global = Globalaov(
+    Global = global_aov(
       formula = formula,
       dx = dx,
-      B = B,
+      n_perm = B,
       method = method,
       stat = stat
     )

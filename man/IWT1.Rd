@@ -4,13 +4,16 @@
 \alias{ITP1bspline}
 \alias{ITP1fourier}
 \alias{IWT1}
+\alias{iwt1}
 \title{One population Interval Wise Testing procedure}
 \usage{
 ITP1bspline(data, mu = 0, B = 1000, order = 2, nknots = dim(data)[2])
 
 ITP1fourier(data, mu = 0, B = 1000, maxfrequency = floor(dim(data)[2]/2))
 
-IWT1(data, mu = 0, B = 1000, dx = NULL, recycle = TRUE)
+IWT1(data, mu = 0, B = 1000L, dx = NULL, recycle = TRUE)
+
+iwt1(data, mu = 0, n_perm = 1000L, dx = NULL, recycle = TRUE)
 }
 \arguments{
 \item{data}{Either pointwise evaluations of the functional data set on a
@@ -48,6 +51,9 @@ Defaults to \code{NULL}.}
 \item{recycle}{Flag used to decide whether the recycled version of the IWT
 should be used (see Pini and Vantini, 2017 for details). Defaults to
 \code{TRUE}.}
+
+\item{n_perm}{An integer value specifying the number of permutations for the
+permutation tests. Defaults to \code{1000L}.}
 }
 \value{
 An object of class \code{\link{IWT1}}, which is a list containing at

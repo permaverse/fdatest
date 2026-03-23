@@ -28,12 +28,36 @@
 #'
 #' # Selecting the significant components at 5% level
 #' which(FDR_result$adjusted_pvalues < 0.05)
-FDR2 <- function(
+FDR2 <- function( # nolint: object_name_linter.
   data1,
   data2,
   mu = 0,
   dx = NULL,
-  B = 1000L,
+  B = 1000L, # nolint: object_name_linter.
+  paired = FALSE,
+  alternative = c("two.sided", "less", "greater")
+) {
+  fdr2(
+    data1 = data1,
+    data2 = data2,
+    mu = mu,
+    dx = dx,
+    n_perm = B,
+    paired = paired,
+    alternative = alternative
+  )
+}
+
+#' @param n_perm An integer value specifying the number of permutations for the
+#'   permutation tests. Defaults to `1000L`.
+#' @rdname FDR2
+#' @export
+fdr2 <- function(
+  data1,
+  data2,
+  mu = 0,
+  dx = NULL,
+  n_perm = 1000L,
   paired = FALSE,
   alternative = c("two.sided", "less", "greater")
 ) {
@@ -46,64 +70,15 @@ FDR2 <- function(
 
   n1 <- dim(coeff1)[1]
   n2 <- dim(coeff2)[1]
-  J <- dim(coeff1)[2]
   n <- n1 + n2
   etichetta_ord <- c(rep(1, n1), rep(2, n2))
+  coeff <- rbind(coeff1, coeff2)
+  data_eval <- coeff
 
-  eval <- coeff <- rbind(coeff1, coeff2)
-  p <- dim(coeff)[2]
+  perm_res <- twosample_alt_permtest(coeff, n1, n_perm, alternative, paired)
+  pval <- perm_res$pval
 
-  data_eval <- eval
-
-  #univariate permutations
-
-  meandiff <- colMeans(coeff[1:n1, , drop = FALSE], na.rm = TRUE) -
-    colMeans(coeff[(n1 + 1):n, , drop = FALSE], na.rm = TRUE)
-  sign_diff <- sign(meandiff)
-  sign_diff[which(sign_diff == -1)] <- 0
-  T0 <- switch(
-    alternative,
-    two.sided = (meandiff)^2,
-    greater = (meandiff * sign_diff)^2,
-    less = (meandiff * (sign_diff - 1))^2
-  )
-
-  T_coeff <- matrix(ncol = p, nrow = B)
-  for (perm in 1:B) {
-    if (paired) {
-      if_perm <- stats::rbinom(n1, 1, 0.5)
-      coeff_perm <- coeff
-      for (couple in 1:n1) {
-        if (if_perm[couple] == 1) {
-          coeff_perm[c(couple, n1 + couple), ] <- coeff[
-            c(n1 + couple, couple),
-          ]
-        }
-      }
-    } else {
-      permutazioni <- sample(n)
-      coeff_perm <- coeff[permutazioni, ]
-    }
-
-    meandiff <- colMeans(coeff_perm[1:n1, , drop = FALSE], na.rm = TRUE) -
-      colMeans(coeff_perm[(n1 + 1):n, , drop = FALSE], na.rm = TRUE)
-    sign_diff <- sign(meandiff)
-    sign_diff[which(sign_diff == -1)] <- 0
-    T_coeff[perm, ] <- switch(
-      alternative,
-      two.sided = (meandiff)^2,
-      greater = (meandiff * sign_diff)^2,
-      less = (meandiff * (sign_diff - 1))^2
-    )
-  }
-
-  pval <- numeric(p)
-  for (i in 1:p) {
-    pval[i] <- sum(T_coeff[, i] >= T0[i]) / B
-  }
-
-  #combination
-  adjusted_pval <- stats::p.adjust(pval, method = 'BH')
+  adjusted_pval <- stats::p.adjust(pval, method = "BH")
 
   out <- list(
     data = data_eval,
@@ -112,6 +87,6 @@ FDR2 <- function(
     unadjusted_pvalues = pval,
     adjusted_pvalues = adjusted_pval
   )
-  class(out) <- 'ftwosample'
+  class(out) <- "ftwosample"
   out
 }

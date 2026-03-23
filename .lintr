@@ -1,0 +1,16 @@
+linters: linters_with_defaults(
+    line_length_linter(100),
+    object_usage_linter = NULL
+  )
+exclusions: list(
+    "R/IWTimage.R",
+    "R/ITPimage.R",
+    "R/ITPaovbspline.R",
+    "R/ITPlmbspline.R",
+    "R/ITP1bspline.R",
+    "R/ITP1fourier.R",
+    "R/ITP2bspline.R",
+    "R/ITP2fourier.R",
+    "R/ITP2pafourier.R",
+    "R/data.R"
+  )

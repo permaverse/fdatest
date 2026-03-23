@@ -2,12 +2,21 @@
 % Please edit documentation in R/aov-iwt.R
 \name{IWTaov}
 \alias{IWTaov}
+\alias{iwt_aov}
 \title{Interval Wise Testing procedure for testing functional analysis of variance}
 \usage{
 IWTaov(
   formula,
   dx = NULL,
   B = 1000L,
+  method = c("residuals", "responses"),
+  recycle = TRUE
+)
+
+iwt_aov(
+  formula,
+  dx = NULL,
+  n_perm = 1000L,
   method = c("residuals", "responses"),
   recycle = TRUE
 )
@@ -39,6 +48,9 @@ responses, according to the Manly scheme. Defaults to \code{"residuals"}.}
 \item{recycle}{A boolean value specifying whether the recycled version of the
 interval-wise testing procedure should be used. See Pini and Vantini (2017)
 for details. Defaults to \code{TRUE}.}
+
+\item{n_perm}{An integer value specifying the number of permutations for the
+permutation tests. Defaults to \code{1000L}.}
 }
 \value{
 An object of class \code{fanova} containing the following components:
