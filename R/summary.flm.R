@@ -1,30 +1,27 @@
 #' Summarizing Functional Linear Model Fits
 #'
-#' \code{summary} method for class "\code{IWTlm}". Function returning a summary
-#' of the results of IWT for the test on a functional linear model: minimum
-#' IWT-adjusted p-values of the F-tests on the whole model and of t-tests on all
-#' covariates' effects are reported.
+#' `summary` method for class `flm`. Function returning a summary
+#' of the results of IWT for the test on a functional analysis of variance:
+#' minimum IWT-adjusted p-values of the F-tests on the whole model and on each
+#' factor are reported.
 #'
-#' @param object  An object of class "\code{IWTlm}", usually, a result of a call
-#'   to \code{\link{IWTlm}}.
+#' @param object  An object of class `flm`, usually, a result of a
+#'   call to [`functional_lm_test()`].
 #' @param ... Further arguments passed to or from other methods.
 #'
-#' @return No value returned. The function \code{summary.IWTlm} computes and
-#'   returns a list of summary statistics of the fitted functional analysis of
-#'   variance given in \code{object}, using the component "\code{call}" from its
-#'   arguments, plus:
+#' @return No value returned. The function [`summary.fanova()`] computes and
+#'   returns a list of summary statistics of the fitted functional linear model
+#'   given in `object`, using the component `call` from its arguments, plus:
 #'
-#'   - `ttest`: A \code{L+1 x 1} matrix with columns for the functional
+#'   - `ttest`: A \eqn{(L+1) \times 1} matrix with columns for the functional
 #'   regression coefficients, and corresponding (two-sided) IWT-adjusted minimum
-#'   p-values of t-tests (i.e., the minimum p-value over all \code{p} basis
+#'   p-values of t-tests (i.e., the minimum p-value over all \eqn{p} basis
 #'   components used to describe functional data).
 #'   - `R2`: Range of the functional R-squared.
 #'   - `ftest`: IWT-adjusted minimum p-value of functional F-test.
 #'
-#' @seealso \code{\link{IWTimage}} for the plot of p-values heatmaps.
-#'   \code{\link{plot.IWTlm}} for the plot of regression results. See also
-#'   \code{\link{IWT1}}, \code{\link{IWT2}} to perform the IWT to test on the
-#'   mean of one population and test of differences between two populations.
+#' @seealso [`IWTimage()`] for the plot of p-values heatmaps and [`plot.fanova()`]
+#'   for the plot of analysis of variance results.
 #'
 #' @references
 #' Pini, A., & Vantini, S. (2017). Interval-wise testing for functional data.
@@ -47,25 +44,15 @@
 #' groups <- c(rep(0, 22), rep(1, 22))
 #'
 #' # Performing the IWT
-#' IWT.result <- IWTlm(temperature ~ groups, B = 2L)
+#' IWT.result <- functional_lm_test(
+#'   temperature ~ groups,
+#'   B = 2L,
+#'   correction = "IWT"
+#' )
 #'
 #' # Summary of the IWT results
 #' summary(IWT.result)
-#'
-#' # Plot of the IWT results
-#' layout(1)
-#' plot(IWT.result)
-#'
-#' # All graphics on the same device
-#' layout(matrix(1:4, nrow = 2, byrow = FALSE))
-#' plot(
-#'   IWT.result,
-#'   main = 'NASA data',
-#'   plot_adjpval = TRUE,
-#'   xlab = 'Day',
-#'   xrange = c(1, 365)
-#' )
-summary.IWTlm <- function(object, ...) {
+summary.flm <- function(object, ...) {
   printresult <- vector('list')
   printresult$call <- object$call
   printresult$ttest <- matrix(
@@ -115,7 +102,3 @@ summary.IWTlm <- function(object, ...) {
   colnames(printresult$ftest) <- c("Minimum p-value", "")
   printresult
 }
-
-#' @rdname summary.IWTlm
-#' @export
-summary.TWTlm <- summary.IWTlm

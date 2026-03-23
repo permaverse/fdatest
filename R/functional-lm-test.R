@@ -13,38 +13,9 @@
 #'   - partition closed testing (controlling the FWER on a partition)
 #'   - functional Benjamini Hochberg (controlling the FDR)
 #'
-#' @param formula An object of class [`stats::formula`] (or one that can be
-#'   coerced to that class) specifying the model to be fitted in a symbolic
-#'   fashion. The output variable (left-hand side) of the formula can be either
-#'   a matrix of dimension \eqn{n \times J} containing the pointwise evaluations
-#'   of \eqn{n} functions on the **same** grid of \eqn{J} points, or an object
-#'   of class [`fda::fd`].
-#' @param correction A string specifying the method used to calculate the adjusted
-#'   p-value function. Choices are either `"Global"` for global testing, `"IWT"`
-#'   for interval-wise testing or `"TWT"` for threshold-wise testing.
-#' @param dx A numeric value specifying the discretization step of the grid used
-#'   to evaluate functional data when it is provided as objects of class
-#'   [`fda::fd`]. Defaults to `NULL`, in which case a default value of `0.01` is
-#'   used which corresponds to a grid of size `100L`. Unused if functional data
-#'   is provided in the form of matrices.
-#' @param B An integer value specifying the number of iterations of the MC
-#'   algorithm to evaluate the p-value of the permutation tests. Defaults to
-#'   `1000L`.
-#' @param method A string specifying the method used to calculate the p-value of
-#'   permutation tests. Choices are either `"residuals"` which performs
-#'   permutation of residuals under the reduced model according to the Freedman
-#'   and Lane scheme or `"responses"`, which performs permutation of the
-#'   responses, according to the Manly scheme. Defaults to `"residuals"`.
-#' @param recycle A boolean value specifying whether the recycled version of the
-#'   interval-wise testing procedure should be used. See Pini and Vantini (2017)
-#'   for details. Defaults to `TRUE`.
-#' @param stat A string specifying the test statistic used for the global test.
-#'   Choices are either `"Integral"`, in which case the statistic is defined as
-#'   the integral of the F-test statistic over the domain, or `"Max"`, in which
-#'   case the statistic is defined as the maximum of the F-test statistic over
-#'   the domain. Defaults to  `"Integral"`.
+#' @inheritParams functional_anova_test
 #'
-#' @returns An object of class `fanova` containing the following components:
+#' @returns An object of class `flm` containing the following components:
 #'
 #'   - `call`: The matched call.
 #'   - `design_matrix`: The design matrix of the functional-on-scalar linear
@@ -53,10 +24,10 @@
 #'   function of the functional F-test.
 #'   - `adjusted_pval_F`: Evaluation on a grid of the adjusted p-value function
 #'   of the functional F-test.
-#'   - `unadjusted_pval_factors`: Evaluation on a grid of the unadjusted p-value
+#'   - `unadjusted_pval_part`: Evaluation on a grid of the unadjusted p-value
 #'   function of the functional F-tests on each factor of the analysis of
 #'   variance (rows).
-#'   - `adjusted_pval_factors`: Adjusted p-values of the functional F-tests on
+#'   - `adjusted_pval_part`: Adjusted p-values of the functional F-tests on
 #'   each factor of the analysis of variance (rows) and each basis coefficient
 #'   (columns).
 #'   - `data.eval`: Evaluation on a fine uniform grid of the functional data
@@ -77,23 +48,19 @@
 #'   contains the p-value of the test of interval indexed by
 #'   \eqn{(j,j+1,...,j+(p-i))}; this component is present only if `correction`
 #'   is set to `"IWT"`.
-#'   - `pval_matrix_factors`: Array of dimensions `c(L+1,p,p)` of the p-values
+#'   - `pval_matrix_part`: Array of dimensions `c(L+1,p,p)` of the p-values
 #'   of the multivariate F-tests on factors. The element \eqn{(l,i,j)} of array
-#'   `pval.matrix` contains the p-value of the joint NPC test on factor `l` of
+#'   `pval_matrix_part` contains the p-value of the joint NPC test on factor `l` of
 #'   the components \eqn{(j,j+1,...,j+(p-i))}; this component is present only if
 #'   `correction` is set to `"IWT"`.
-#'   - `heatmap.matrix.F`: Heatmap matrix of p-values of functional F-test (used
-#'   only for plots); this component is present only if `correction` is set to `"IWT"`.
-#'   - `heatmap.matrix.factors`: Heatmap matrix of p-values of functional
-#'   F-tests on each factor of the analysis of variance (used only for plots); this
-#'   component is present only if `correction` is set to `"IWT"`.
 #'   - `Global_pval_F`: Global p-value of the overall test F; this component is
 #'   present only if `correction` is set to `"Global"`.
-#'   - `Global_pval_factors`: Global p-value of test F involving each factor
+#'   - `Global_pval_part`: Global p-value of test F involving each factor
 #'   separately; this component is present only if `correction` is set to `"Global"`.
 #'
-#' @seealso See also [`plot.fanova()`] for plotting the results and [`summary.fanova()`]
-#'  for summarizing the results of the functional analysis of variance.
+#' @seealso See also [`plot.flm()`] for plotting the results and
+#'  [`summary.flm()`] for summarizing the results of the functional analysis
+#'  of variance.
 #'
 #' @references
 #' Abramowicz, K., Pini, A., Schelin, L., Stamm, A., & Vantini, S. (2022).
@@ -123,43 +90,15 @@
 #'
 #' @export
 #' @examples
+#' # Defining the covariates
 #' temperature <- rbind(NASAtemp$milan, NASAtemp$paris)
 #' groups <- c(rep(0, 22), rep(1, 22))
 #'
-#' # Performing the TWT for two populations
-#' TWT.result <- functional_anova_test(
-#'   temperature ~ groups,
-#'   correction = "TWT",
-#'   B = 10L
-#' )
-#'
-#' # Plotting the results of the TWT
-#' plot(
-#'   TWT.result,
-#'   xrange = c(0, 12),
-#'   main = 'TWT results for testing mean differences'
-#' )
-#'
-#' # Selecting the significant components at 5% level
-#' which(TWT.result$adjusted_pval < 0.05)
-#'
-#' # Performing the IWT for two populations
-#' IWT.result <- functional_anova_test(
-#'   temperature ~ groups,
-#'   correction = "IWT",
-#'   B = 10L
-#' )
-#'
-#' # Plotting the results of the IWT
-#' plot(
-#'   IWT.result,
-#'   xrange = c(0, 12),
-#'   main = 'IWT results for testing mean differences'
-#' )
-#'
-#' # Selecting the significant components at 5% level
-#' which(IWT.result$adjusted_pval < 0.05)
-functional_anova_test <- function(
+#' # Performing the TWT
+#' TWT.result <- TWTlm(temperature ~ groups, B = 100L)
+#' # Summary of the TWT results
+#' summary(TWT.result)
+functional_lm_test <- function(
   formula,
   correction,
   dx = NULL,

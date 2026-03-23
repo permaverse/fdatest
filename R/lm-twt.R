@@ -6,31 +6,7 @@
 #' Threshold-wise testing procedure (TWT) for testing the significance of the
 #' effects of scalar covariates on a functional population.
 #'
-#' @inheritParams TWTaov
-#'
-#' @returns An object of class `TWTlm`. The function \code{summary} is used to
-#'   obtain and print a summary of the results. An object of class
-#'   "\code{TWTlm}" is a list containing at least the following components:
-#'
-#'   - `call`: Call of the function.
-#'   - `design_matrix`: Design matrix of the linear model.
-#'   - `unadjusted_pval_F`: Unadjusted p-value function of the F test.
-#'   - `adjusted_pval_F`: Adjusted p-value function of the F test.
-#'   - `unadjusted_pval_part`: Unadjusted p-value functions of the functional
-#'   t-tests on each covariate, separately (rows) on each domain point
-#'   (columns).
-#'   - `adjusted_pval_part`: Adjusted p-values of the functional t-tests on each
-#'   covariate (rows) on each domain point (columns).
-#'   - `data.eval`: Evaluation of functional data.
-#'   - `coeff.regr.eval`: Evaluation of the regression coefficients.
-#'   - `fitted.eval`: Evaluation of the fitted values.
-#'   - `residuals.eval`: Evaluation of the residuals.
-#'   - `R2.eval`: Evaluation of the functional R-squared.
-#'
-#' @seealso See \code{\link{summary.TWTlm}} for summaries and
-#'   \code{\link{plot.TWTlm}} for plotting the results. See also
-#'   \code{\link{TWTaov}} to fit and test a functional analysis of variance
-#'   applying the TWT, and  \code{\link{TWT2}} for two-population test.
+#' @inherit functional_lm_test params return seealso
 #'
 #' @references
 #' Abramowicz, K., Pini, A., Schelin, L., Stamm, A., & Vantini, S. (2022).
@@ -56,7 +32,6 @@
 #' summary(TWT.result)
 #'
 #' # Plot of the TWT results
-#' layout(1)
 #' plot(
 #'   TWT.result,
 #'   main = 'NASA data',
@@ -65,8 +40,6 @@
 #'   xrange = c(1, 365)
 #' )
 #'
-#' # All graphics on the same device
-#' layout(matrix(1:6, nrow = 3, byrow = FALSE))
 #' plot(
 #'   TWT.result,
 #'   main = 'NASA data',
@@ -402,6 +375,6 @@ TWTlm <- function(
     residuals.eval = residuals.t,
     R2.eval = R2.t
   )
-  class(out) <- "TWTlm"
+  class(out) <- "flm"
   out
 }

@@ -5,35 +5,7 @@
 #' testing procedure for testing the significance of the effects of scalar
 #' covariates on a functional population.
 #'
-#' @inheritParams Globalaov
-#'
-#' @returns An object of class `IWTlm`. The function \code{summary} is used to
-#'   obtain and print a summary of the results. This object is a list containing
-#'   the following components:
-#'
-#'   - `call`: Call of the function.
-#'   - `design_matrix`: Design matrix of the linear model.
-#'   - `unadjusted_pval_F`: Unadjusted p-value function of the F test.
-#'   - `adjusted_pval_F`: Adjusted p-value function of the F test.
-#'   - `unadjusted_pval_part`: Unadjusted p-value functions of the functional
-#'   t-tests on each covariate, separately (rows) on each domain point
-#'   (columns).
-#'   - `adjusted_pval_part`: Adjusted p-values of the functional t-tests on each
-#'   covariate (rows) on each domain point (columns).
-#'   - `Global_pval_F`: Global p-value of the overall test F.
-#'   - `Global_pval_part`: Global p-value of t-test involving each covariate
-#'   separately.
-#'   - `data.eval`: Evaluation of functional data.
-#'   - `coeff.regr.eval`: Evaluation of the regression coefficients.
-#'   - `fitted.eval`: Evaluation of the fitted values.
-#'   - `residuals.eval`: Evaluation of the residuals.
-#'   - `R2.eval`: Evaluation of the functional R-suared.
-#'
-#' @seealso See \code{\link{summary.IWTlm}} for summaries and
-#'   \code{\link{plot.IWTlm}} for plotting the results. See also \code{\link{IWTaov}}
-#'   to fit and test a functional analysis of variance applying the IWT, and
-#'   \code{\link{IWT1}}, \code{\link{IWT2}} for one-population and
-#'   two-population tests.
+#' @inherit functional_lm_test params return seealso
 #'
 #' @references
 #' Abramowicz, K., Pini, A., Schelin, L., Stamm, A., & Vantini, S. (2022).
@@ -59,7 +31,6 @@
 #' summary(Global.result)
 #'
 #' # Plot of the IWT results
-#' layout(1)
 #' plot(
 #'   Global.result,
 #'   main = 'NASA data',
@@ -68,8 +39,6 @@
 #'   xrange = c(1, 365)
 #' )
 #'
-#' # All graphics on the same device
-#' layout(matrix(1:6, nrow = 3, byrow = FALSE))
 #' plot(
 #'   Global.result,
 #'   main = 'NASA data',
@@ -386,6 +355,6 @@ Globallm <- function(
     residuals.eval = residuals.t,
     R2.eval = R2.t
   )
-  class(out) <- 'IWTlm'
+  class(out) <- 'flm'
   out
 }

@@ -6,40 +6,7 @@
 #' interval-wise testing procedure (IWT) for testing the significance of the
 #' effects of scalar covariates on a functional population.
 #'
-#' @inheritParams IWTaov
-#'
-#' @returns \code{IWTlm} returns an object of \code{\link{class}} "\code{IWTlm}".
-#'   The function \code{summary} is used to obtain and print a summary of the
-#'   results. An object of class "\code{IWTlm}" is a list containing at least
-#'   the following components:
-#'
-#'   - `call`: Call of the function.
-#'   - `design_matrix`: Design matrix of the linear model.
-#'   - `unadjusted_pval_F`: Unadjusted p-value function of the F test.
-#'   - `pval_matrix_F`: Matrix of dimensions `c(p,p)` of the p-values of the
-#'   interval-wise F-tests. The element \eqn{(i,j)} of matrix `pval_matrix_F`
-#'   contains the p-value of the test on interval \eqn{(j,j+1,...,j+(p-i))}.
-#'   - `adjusted_pval_F`: Adjusted p-value function of the F test.
-#'   - `unadjusted_pval_part`: Unadjusted p-value functions of the functional
-#'   t-tests on each covariate, separately (rows) on each domain point
-#'   (columns).
-#'   - `pval_matrix_part`: Array of dimensions `c(L+1,p,p)` of the p-values of
-#'   the interval-wise t-tests on covariates. The element \eqn{(l,i,j)} of array
-#'   `pval_matrix_part` contains the p-value of the test of covariate `l` on
-#'   interval \eqn{(j,j+1,...,j+(p-i))}.
-#'   - `adjusted_pval_part`: Adjusted p-values of the functional t-tests on each
-#'   covariate (rows) on each domain point (columns).
-#'   - `data.eval`: Evaluation of functional data.
-#'   - `coeff.regr.eval`: Evaluation of the regression coefficients.
-#'   - `fitted.eval`: Evaluation of the fitted values.
-#'   - `residuals.eval`: Evaluation of the residuals.
-#'   - `R2.eval`: Evaluation of the functional R-suared.
-#'
-#' @seealso See \code{\link{summary.IWTlm}} for summaries and
-#'   \code{\link{plot.IWTlm}} for plotting the results. See also \code{\link{IWTaov}}
-#'   to fit and test a functional analysis of variance applying the IWT, and
-#'   \code{\link{IWT1}}, \code{\link{IWT2}} for one-population and
-#'   two-population tests.
+#' @inherit functional_lm_test params return seealso
 #'
 #' @references
 #' A. Pini and S. Vantini (2017). The Interval Testing Procedure: Inference for
@@ -76,7 +43,6 @@
 #' summary(IWT.result)
 #'
 #' # Plot of the IWT results
-#' graphics::layout(1)
 #' plot(
 #'   IWT.result,
 #'   main = 'NASA data',
@@ -85,8 +51,6 @@
 #'   xrange = c(1, 365)
 #' )
 #'
-#' # All graphics on the same device
-#' graphics::layout(matrix(1:6, nrow = 3, byrow = FALSE))
 #' plot(
 #'   IWT.result,
 #'   main = 'NASA data',
@@ -437,6 +401,6 @@ IWTlm <- function(
     residuals.eval = residuals.t,
     R2.eval = R2.t
   )
-  class(out) <- "IWTlm"
+  class(out) <- "flm"
   out
 }

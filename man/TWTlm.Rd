@@ -32,24 +32,49 @@ and Lane scheme or \code{"responses"}, which performs permutation of the
 responses, according to the Manly scheme. Defaults to \code{"residuals"}.}
 }
 \value{
-An object of class \code{TWTlm}. The function \code{summary} is used to
-obtain and print a summary of the results. An object of class
-"\code{TWTlm}" is a list containing at least the following components:
+An object of class \code{flm} containing the following components:
 \itemize{
-\item \code{call}: Call of the function.
-\item \code{design_matrix}: Design matrix of the linear model.
-\item \code{unadjusted_pval_F}: Unadjusted p-value function of the F test.
-\item \code{adjusted_pval_F}: Adjusted p-value function of the F test.
-\item \code{unadjusted_pval_part}: Unadjusted p-value functions of the functional
-t-tests on each covariate, separately (rows) on each domain point
+\item \code{call}: The matched call.
+\item \code{design_matrix}: The design matrix of the functional-on-scalar linear
+model.
+\item \code{unadjusted_pval_F}: Evaluation on a grid of the unadjusted p-value
+function of the functional F-test.
+\item \code{adjusted_pval_F}: Evaluation on a grid of the adjusted p-value function
+of the functional F-test.
+\item \code{unadjusted_pval_part}: Evaluation on a grid of the unadjusted p-value
+function of the functional F-tests on each factor of the analysis of
+variance (rows).
+\item \code{adjusted_pval_part}: Adjusted p-values of the functional F-tests on
+each factor of the analysis of variance (rows) and each basis coefficient
 (columns).
-\item \code{adjusted_pval_part}: Adjusted p-values of the functional t-tests on each
-covariate (rows) on each domain point (columns).
-\item \code{data.eval}: Evaluation of functional data.
-\item \code{coeff.regr.eval}: Evaluation of the regression coefficients.
-\item \code{fitted.eval}: Evaluation of the fitted values.
-\item \code{residuals.eval}: Evaluation of the residuals.
-\item \code{R2.eval}: Evaluation of the functional R-squared.
+\item \code{data.eval}: Evaluation on a fine uniform grid of the functional data
+obtained through the basis expansion.
+\item \code{coeff.regr.eval}: Evaluation on a fine uniform grid of the functional
+regression coefficients.
+\item \code{fitted.eval}: Evaluation on a fine uniform grid of the fitted values of
+the functional regression.
+\item \code{residuals.eval}: Evaluation on a fine uniform grid of the residuals of
+the functional regression.
+\item \code{R2.eval}: Evaluation on a fine uniform grid of the functional R-squared
+of the regression.
+}
+
+Optionally, the list may contain the following components:
+\itemize{
+\item \code{pval_matrix_F}: Matrix of dimensions \code{c(p,p)} of the p-values of
+the intervalwise F-tests. The element \eqn{(i,j)} of matrix \code{pval.matrix}
+contains the p-value of the test of interval indexed by
+\eqn{(j,j+1,...,j+(p-i))}; this component is present only if \code{correction}
+is set to \code{"IWT"}.
+\item \code{pval_matrix_part}: Array of dimensions \code{c(L+1,p,p)} of the p-values
+of the multivariate F-tests on factors. The element \eqn{(l,i,j)} of array
+\code{pval_matrix_part} contains the p-value of the joint NPC test on factor \code{l} of
+the components \eqn{(j,j+1,...,j+(p-i))}; this component is present only if
+\code{correction} is set to \code{"IWT"}.
+\item \code{Global_pval_F}: Global p-value of the overall test F; this component is
+present only if \code{correction} is set to \code{"Global"}.
+\item \code{Global_pval_part}: Global p-value of test F involving each factor
+separately; this component is present only if \code{correction} is set to \code{"Global"}.
 }
 }
 \description{
@@ -69,7 +94,6 @@ TWT.result <- TWTlm(temperature ~ groups, B = 100L)
 summary(TWT.result)
 
 # Plot of the TWT results
-layout(1)
 plot(
   TWT.result,
   main = 'NASA data',
@@ -78,8 +102,6 @@ plot(
   xrange = c(1, 365)
 )
 
-# All graphics on the same device
-layout(matrix(1:6, nrow = 3, byrow = FALSE))
 plot(
   TWT.result,
   main = 'NASA data',
@@ -101,8 +123,7 @@ B. F. J. Manly (2006). Randomization, \emph{Bootstrap and Monte Carlo Methods
 in Biology}. Vol. 70. CRC Press.
 }
 \seealso{
-See \code{\link{summary.TWTlm}} for summaries and
-\code{\link{plot.TWTlm}} for plotting the results. See also
-\code{\link{TWTaov}} to fit and test a functional analysis of variance
-applying the TWT, and  \code{\link{TWT2}} for two-population test.
+See also \code{\link[=plot.flm]{plot.flm()}} for plotting the results and
+\code{\link[=summary.flm]{summary.flm()}} for summarizing the results of the functional analysis
+of variance.
 }
