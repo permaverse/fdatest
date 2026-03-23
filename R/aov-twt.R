@@ -55,12 +55,17 @@ TWTaov <- function(
   cl <- match.call()
   coeff <- formula2coeff(formula, dx = dx)
 
+  # Create an environment for formula evaluation:
+  # - 'coeff' is local; caller's variables (e.g. grouping factor) are in environment(formula)
+  formula_env <- new.env(parent = environment(formula))
+  formula_env$coeff <- coeff
+
   dummynames_all <- colnames(attr(stats::terms(formula), "factors"))
   formula_const <- deparse(formula[[3]], width.cutoff = 500L) #extracting the part after ~ on formula. this will not work if the formula is longer than 500 char
 
   formula_discrete <- stats::as.formula(
     paste('coeff ~', formula_const),
-    env = environment()
+    env = formula_env
   )
   design_matrix <- stats::model.matrix(formula_discrete)
   mf <- stats::model.frame(formula_discrete)
@@ -76,7 +81,7 @@ TWTaov <- function(
   #univariate permutations
   coeffnames <- paste('coeff[,', as.character(1:p), ']', sep = '')
   formula_coeff <- paste(coeffnames, '~', formula_const)
-  formula_coeff <- sapply(formula_coeff, stats::as.formula, env = environment())
+  formula_coeff <- sapply(formula_coeff, stats::as.formula, env = formula_env)
 
   aovcoeff1 <- stats::aov(formula_coeff[[1]], data = mf)
   var_names <- rownames(summary(aovcoeff1)[[1]])
@@ -191,7 +196,7 @@ TWTaov <- function(
       formula_coeff_part[[ii]] <- sapply(
         formula_coeff_temp,
         stats::as.formula,
-        env = environment()
+        env = formula_env
       )
       regr0_part[[ii]] <- lapply(formula_coeff_part[[ii]], stats::lm)
 

@@ -124,21 +124,29 @@ autoplot.ftwosample <- function(
   )
 
   # Add significance regions
+  sig_idx1 <- which(object$adjusted_pvalues < alpha1)
   sig_regions <- data.frame(
-    xmin = abscissa_pval[which(object$adjusted_pvalues < alpha1)] -
-      (abscissa_pval[2] - abscissa_pval[1]) / 2,
-    xmax = abscissa_pval[which(object$adjusted_pvalues < alpha1)] +
-      (abscissa_pval[2] - abscissa_pval[1]) / 2,
-    alpha_level = "alpha1"
+    xmin = if (length(sig_idx1) > 0) {
+      abscissa_pval[sig_idx1] - (abscissa_pval[2] - abscissa_pval[1]) / 2
+    } else {
+      numeric(0)
+    },
+    xmax = if (length(sig_idx1) > 0) {
+      abscissa_pval[sig_idx1] + (abscissa_pval[2] - abscissa_pval[1]) / 2
+    } else {
+      numeric(0)
+    },
+    alpha_level = if (length(sig_idx1) > 0) "alpha1" else character(0)
   )
 
-  if (length(which(object$adjusted_pvalues < alpha2)) > 0) {
+  sig_idx2 <- which(object$adjusted_pvalues < alpha2)
+  if (length(sig_idx2) > 0) {
     sig_regions <- rbind(
       sig_regions,
       data.frame(
-        xmin = abscissa_pval[which(object$adjusted_pvalues < alpha2)] -
+        xmin = abscissa_pval[sig_idx2] -
           (abscissa_pval[2] - abscissa_pval[1]) / 2,
-        xmax = abscissa_pval[which(object$adjusted_pvalues < alpha2)] +
+        xmax = abscissa_pval[sig_idx2] +
           (abscissa_pval[2] - abscissa_pval[1]) / 2,
         alpha_level = "alpha2"
       )
