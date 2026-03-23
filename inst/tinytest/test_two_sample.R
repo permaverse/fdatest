@@ -1,7 +1,7 @@
 # Tests for two-sample tests:
-# R/two-iwt.R, R/two-twt.R, R/two-fdr.R, R/two-pct.R, R/two-global.R,
-# R/functional-two-sample-test.R
-# R/ITP2bspline.R, R/ITP2fourier.R, R/ITP2pafourier.R
+# two-iwt.R, two-twt.R, two-fdr.R, two-pct.R, two-global.R
+# functional-two-sample-test.R
+# ITP2bspline.R, ITP2fourier.R, ITP2pafourier.R
 library(fdatest)
 
 data("NASAtemp", package = "fdatest")
@@ -31,7 +31,7 @@ set.seed(42)
 res_iwt_v <- IWT2(data1 = d1, data2 = d2, mu = 0, B = 5L, verbose = TRUE)
 expect_inherits(res_iwt_v, "ftwosample")
 
-# recycle = FALSE
+# recycle disabled
 set.seed(42)
 res_iwt_nr <- IWT2(
   data1 = d1,
@@ -44,7 +44,7 @@ res_iwt_nr <- IWT2(
 expect_inherits(res_iwt_nr, "ftwosample")
 expect_true(is.na(res_iwt_nr$pvalue_matrix[1, p])) # upper-right is NA
 
-# paired = TRUE
+# paired samples
 set.seed(42)
 res_iwt_p <- IWT2(
   data1 = d1,
@@ -72,7 +72,7 @@ for (stat in c("Integral", "Max", "Integral_std", "Max_std")) {
     info = paste("Global2 global_pvalue for", stat)
   )
   expect_true(
-    res_g$global_pvalue >= 0 & res_g$global_pvalue <= 1,
+    res_g$global_pvalue >= 0 && res_g$global_pvalue <= 1,
     info = paste("Global2 pvalue range for", stat)
   )
 }

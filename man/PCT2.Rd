@@ -2,6 +2,7 @@
 % Please edit documentation in R/two-pct.R
 \name{PCT2}
 \alias{PCT2}
+\alias{pct2}
 \title{Two population Partition Closed Testing procedure}
 \usage{
 PCT2(
@@ -11,6 +12,17 @@ PCT2(
   mu = 0,
   dx = NULL,
   B = 1000L,
+  paired = FALSE,
+  alternative = c("two.sided", "less", "greater")
+)
+
+pct2(
+  data1,
+  data2,
+  partition,
+  mu = 0,
+  dx = NULL,
+  n_perm = 1000L,
   paired = FALSE,
   alternative = c("two.sided", "less", "greater")
 )
@@ -56,6 +68,9 @@ performed. Defaults to \code{FALSE}.}
 \item{alternative}{A string specifying the type of alternative hypothesis.
 Choices are \code{"two.sided"}, \code{"less"} or \code{"greater"}. Defaults to
 \code{"two.sided"}.}
+
+\item{n_perm}{An integer value specifying the number of permutations for the
+permutation tests. Defaults to \code{1000L}.}
 }
 \value{
 An object of class \code{ftwosample} containing the following components:

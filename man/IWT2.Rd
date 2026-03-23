@@ -6,6 +6,7 @@
 \alias{ITP2fourier}
 \alias{ITP2pafourier}
 \alias{IWT2}
+\alias{iwt2}
 \title{Two population Interval Wise Testing procedure}
 \usage{
 ITP2bspline(
@@ -42,6 +43,18 @@ IWT2(
   mu = 0,
   dx = NULL,
   B = 1000L,
+  paired = FALSE,
+  alternative = c("two.sided", "less", "greater"),
+  verbose = FALSE,
+  recycle = TRUE
+)
+
+iwt2(
+  data1,
+  data2,
+  mu = 0,
+  dx = NULL,
+  n_perm = 1000L,
   paired = FALSE,
   alternative = c("two.sided", "less", "greater"),
   verbose = FALSE,
@@ -100,6 +113,9 @@ the computation. Defaults to \code{FALSE}.}
 \item{recycle}{A boolean value specifying whether the recycled version of the
 interval-wise testing procedure should be used. See Pini and Vantini (2017)
 for details. Defaults to \code{TRUE}.}
+
+\item{n_perm}{An integer value specifying the number of permutations for the
+permutation tests. Defaults to \code{1000L}.}
 }
 \value{
 An object of class \code{ftwosample} containing the following components:

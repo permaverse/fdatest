@@ -137,7 +137,7 @@ functional_two_sample_test <- function(
   correction,
   mu = 0,
   dx = NULL,
-  B = 1000L,
+  B = 1000L, # nolint: object_name_linter.
   paired = FALSE,
   alternative = c("two.sided", "less", "greater"),
   statistic = c("Integral", "Max", "Integral_std", "Max_std"),
@@ -154,52 +154,52 @@ functional_two_sample_test <- function(
 
   out <- switch(
     correction,
-    IWT = IWT2(
+    IWT = iwt2(
       data1 = data1,
       data2 = data2,
       mu = mu,
       dx = dx,
-      B = B,
+      n_perm = B,
       paired = paired,
       alternative = alternative,
       verbose = verbose,
       recycle = recycle
     ),
-    TWT = TWT2(
+    TWT = twt2(
       data1 = data1,
       data2 = data2,
       mu = mu,
       dx = dx,
-      B = B,
+      n_perm = B,
       paired = paired,
       alternative = alternative,
       verbose = verbose
     ),
-    PCT = PCT2(
+    PCT = pct2(
       data1 = data1,
       data2 = data2,
       partition = partition,
       mu = mu,
       dx = dx,
-      B = B,
+      n_perm = B,
       paired = paired,
       alternative = alternative
     ),
-    Global = Global2(
+    Global = global2(
       data1 = data1,
       data2 = data2,
       mu = mu,
       dx = dx,
-      B = B,
+      n_perm = B,
       paired = paired,
       statistic = statistic
     ),
-    FDR = FDR2(
+    FDR = fdr2(
       data1 = data1,
       data2 = data2,
       mu = mu,
       dx = dx,
-      B = B,
+      n_perm = B,
       paired = paired,
       alternative = alternative
     )

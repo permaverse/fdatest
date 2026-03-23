@@ -33,9 +33,9 @@ expect_equal(ncol(s_aov$ftest), 2L) # min p-value + signif stars column
 # The 5 levels: *** <0.001, ** <0.01, * <0.05, . <0.1, (space) >=0.1
 # ===========================================================================
 
-make_fanova <- function(p_factors, p_F) {
+make_fanova <- function(p_factors, p_f) {
   # Minimal fanova mock to exercise summary.fanova
-  n_pts <- length(p_F)
+  n_pts <- length(p_f)
   obj <- list(
     call = quote(IWTaov(temperature ~ groups, B = 5L)),
     unadjusted_pval_factors = matrix(
@@ -50,8 +50,8 @@ make_fanova <- function(p_factors, p_F) {
       ncol = n_pts,
       dimnames = list("groups", NULL)
     ),
-    unadjusted_pval_F = p_F,
-    adjusted_pval_F = p_F,
+    unadjusted_pval_F = p_f,
+    adjusted_pval_F = p_f,
     R2_eval = seq(0.2, 0.8, length.out = n_pts)
   )
   class(obj) <- "fanova"
@@ -63,7 +63,7 @@ p_vals <- c(0.0001, 0.005, 0.03, 0.07, 0.5)
 
 for (i in seq_along(codes)) {
   pv <- rep(p_vals[i], 4L)
-  mock <- make_fanova(p_factors = pv, p_F = pv)
+  mock <- make_fanova(p_factors = pv, p_f = pv)
   s_mock <- summary(mock)
   expect_true(
     s_mock$ftest[["Minimum p-value"]] <= p_vals[i] + 1e-9,
@@ -101,8 +101,8 @@ expect_true(is.data.frame(s_lm$ftest))
 # summary.flm — significance code levels via mock objects
 # ===========================================================================
 
-make_flm <- function(p_part, p_F) {
-  n_pts <- length(p_F)
+make_flm <- function(p_part, p_f) {
+  n_pts <- length(p_f)
   obj <- list(
     call = quote(IWTlm(temperature ~ groups, B = 5L)),
     unadjusted_pval_part = matrix(
@@ -123,8 +123,8 @@ make_flm <- function(p_part, p_F) {
         NULL
       )
     ),
-    unadjusted_pval_F = p_F,
-    adjusted_pval_F = p_F,
+    unadjusted_pval_F = p_f,
+    adjusted_pval_F = p_f,
     R2_eval = seq(0.2, 0.8, length.out = n_pts)
   )
   class(obj) <- "flm"
@@ -133,7 +133,7 @@ make_flm <- function(p_part, p_F) {
 
 for (i in seq_along(codes)) {
   pv <- rep(p_vals[i], 4L)
-  mock <- make_flm(p_part = pv, p_F = pv)
+  mock <- make_flm(p_part = pv, p_f = pv)
   s_mock <- summary(mock)
   expect_true(
     s_mock$ftest[["Minimum p-value"]] <= p_vals[i] + 1e-9,

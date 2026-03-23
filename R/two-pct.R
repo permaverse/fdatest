@@ -40,13 +40,39 @@
 #'
 #' # Selecting the significant components at 5% level
 #' which(PCT_result$adjusted_pvalues < 0.05)
-PCT2 <- function(
+PCT2 <- function( # nolint: object_name_linter.
   data1,
   data2,
   partition,
   mu = 0,
   dx = NULL,
-  B = 1000L,
+  B = 1000L, # nolint: object_name_linter.
+  paired = FALSE,
+  alternative = c("two.sided", "less", "greater")
+) {
+  pct2(
+    data1 = data1,
+    data2 = data2,
+    partition = partition,
+    mu = mu,
+    dx = dx,
+    n_perm = B,
+    paired = paired,
+    alternative = alternative
+  )
+}
+
+#' @param n_perm An integer value specifying the number of permutations for the
+#'   permutation tests. Defaults to `1000L`.
+#' @rdname PCT2
+#' @export
+pct2 <- function(
+  data1,
+  data2,
+  partition,
+  mu = 0,
+  dx = NULL,
+  n_perm = 1000L,
   paired = FALSE,
   alternative = c("two.sided", "less", "greater")
 ) {
@@ -59,104 +85,47 @@ PCT2 <- function(
 
   n1 <- dim(coeff1)[1]
   n2 <- dim(coeff2)[1]
-  J <- dim(coeff1)[2]
   n <- n1 + n2
   etichetta_ord <- c(rep(1, n1), rep(2, n2))
-
-  #splines coefficients:
-  eval <- coeff <- rbind(coeff1, coeff2)
+  coeff <- rbind(coeff1, coeff2)
   p <- dim(coeff)[2]
+  data_eval <- coeff
 
-  data_eval <- eval
+  perm_res <- twosample_alt_permtest(coeff, n1, n_perm, alternative, paired)
+  t0 <- perm_res$t0
+  t_coeff <- perm_res$t_coeff
+  pval <- perm_res$pval
 
-  #univariate permutations
-  meandiff <- colMeans(coeff[1:n1, , drop = FALSE], na.rm = TRUE) -
-    colMeans(coeff[(n1 + 1):n, , drop = FALSE], na.rm = TRUE)
-  sign_diff <- sign(meandiff)
-  sign_diff[which(sign_diff == -1)] <- 0
-  T0 <- switch(
-    alternative,
-    two.sided = (meandiff)^2,
-    greater = (meandiff * sign_diff)^2,
-    less = (meandiff * (sign_diff - 1))^2
-  )
-
-  T_coeff <- matrix(ncol = p, nrow = B)
-  for (perm in 1:B) {
-    if (paired) {
-      if_perm <- stats::rbinom(n1, 1, 0.5)
-      coeff_perm <- coeff
-      for (couple in 1:n1) {
-        if (if_perm[couple] == 1) {
-          coeff_perm[c(couple, n1 + couple), ] <- coeff[
-            c(n1 + couple, couple),
-          ]
-        }
-      }
-    } else {
-      permutazioni <- sample(n)
-      coeff_perm <- coeff[permutazioni, ]
-    }
-
-    meandiff <- colMeans(coeff_perm[1:n1, , drop = FALSE], na.rm = TRUE) -
-      colMeans(coeff_perm[(n1 + 1):n, , drop = FALSE], na.rm = TRUE)
-    sign_diff <- sign(meandiff)
-    sign_diff[which(sign_diff == -1)] <- 0
-    T_coeff[perm, ] <- switch(
-      alternative,
-      two.sided = (meandiff)^2,
-      greater = (meandiff * sign_diff)^2,
-      less = (meandiff * (sign_diff - 1))^2
-    )
-  }
-
-  pval <- numeric(p)
-  for (i in 1:p) {
-    pval[i] <- sum(T_coeff[, i] >= T0[i]) / B
-  }
-
-  #combination
   partition <- factor(partition)
   nintervals <- length(levels(partition))
-  ntests <- 2^nintervals - 1
+  ntests <- 2^nintervals - 1L
   all_combs <- matrix(nrow = ntests, ncol = p)
   labels <- levels(partition)
-  tt <- 1
-  for (nint in 1:nintervals) {
+  tt <- 1L
+  for (nint in seq_len(nintervals)) {
     combinations <- utils::combn(labels, nint)
     n_comb <- dim(combinations)[2]
-    for (comb in 1:n_comb) {
+    for (comb in seq_len(n_comb)) {
       index <- rep(0, p)
-      for (ii in 1:dim(combinations)[1]) {
+      for (ii in seq_len(dim(combinations)[1])) {
         index <- index + as.numeric(partition == combinations[ii, comb])
       }
       all_combs[tt, ] <- index
-      tt <- tt + 1
+      tt <- tt + 1L
     }
   }
 
-  #interval-wise tests
   adjusted_pval <- numeric(p)
-  responsible_test <- matrix(nrow = p, ncol = p)
-  for (test in 1:ntests) {
-    T0_comb <- sum(T0[which(all_combs[test, ] == 1)])
-    T_comb <- (rowSums(T_coeff[, which(all_combs[test, ] == 1), drop = FALSE]))
-    pval_temp <- mean(T_comb >= T0_comb)
-    indexes <- which(all_combs[test, ] == 1)
-    max <- apply(rbind(adjusted_pval[indexes], pval_temp), 2, which.max)
-    adjusted_pval[indexes] <- apply(
-      rbind(adjusted_pval[indexes], pval_temp),
+  for (test in seq_len(ntests)) {
+    active <- which(all_combs[test, ] == 1)
+    t0_comb <- sum(t0[active])
+    t_comb <- rowSums(t_coeff[, active, drop = FALSE])
+    pval_temp <- mean(t_comb >= t0_comb)
+    adjusted_pval[active] <- apply(
+      rbind(adjusted_pval[active], pval_temp),
       2,
       max
     )
-    if (2 %in% max) {
-      responsible_test[indexes[which(max == 2)], ] <- matrix(
-        data = all_combs[test, ],
-        nrow = sum((max == 2)),
-        ncol = p,
-        byrow = TRUE
-      )
-    }
   }
 
   out <- list(

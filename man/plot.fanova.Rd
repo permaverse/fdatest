@@ -37,7 +37,7 @@
 }
 \arguments{
 \item{object, x}{An object of class \code{fanova}, usually a result of a call
-to \code{\link[=functional_anova_test]{functional_anova_test()}}, \code{\link[=IWTaov]{IWTaov()}}, \code{\link[=TWTaov]{TWTaov()}} or \code{\link[=Globalaov]{Globalaov()}}.}
+to \code{\link[=functional_anova_test]{functional_anova_test()}}, \code{\link[=iwt_aov]{iwt_aov()}}, \code{\link[=twt_aov]{twt_aov()}} or \code{\link[=global_aov]{global_aov()}}.}
 
 \item{xrange}{A length-2 numeric vector specifying the range of the x-axis
 for the plots. Defaults to \code{c(0, 1)}. This should match the domain of the

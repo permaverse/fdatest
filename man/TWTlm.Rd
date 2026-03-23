@@ -2,10 +2,18 @@
 % Please edit documentation in R/lm-twt.R
 \name{TWTlm}
 \alias{TWTlm}
+\alias{twt_lm}
 \title{Threshold-wise testing procedure for testing functional-on-scalar linear
 models}
 \usage{
 TWTlm(formula, dx = NULL, B = 1000L, method = c("residuals", "responses"))
+
+twt_lm(
+  formula,
+  dx = NULL,
+  n_perm = 1000L,
+  method = c("residuals", "responses")
+)
 }
 \arguments{
 \item{formula}{An object of class \code{\link[stats:formula]{stats::formula}} (or one that can be
@@ -30,6 +38,9 @@ permutation tests. Choices are either \code{"residuals"} which performs
 permutation of residuals under the reduced model according to the Freedman
 and Lane scheme or \code{"responses"}, which performs permutation of the
 responses, according to the Manly scheme. Defaults to \code{"residuals"}.}
+
+\item{n_perm}{An integer value specifying the number of permutations for the
+permutation tests. Defaults to \code{1000L}.}
 }
 \value{
 An object of class \code{flm} containing the following components:

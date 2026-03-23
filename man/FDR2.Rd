@@ -2,6 +2,7 @@
 % Please edit documentation in R/two-fdr.R
 \name{FDR2}
 \alias{FDR2}
+\alias{fdr2}
 \title{Two population functional Benjamini-Hochberg procedure}
 \usage{
 FDR2(
@@ -10,6 +11,16 @@ FDR2(
   mu = 0,
   dx = NULL,
   B = 1000L,
+  paired = FALSE,
+  alternative = c("two.sided", "less", "greater")
+)
+
+fdr2(
+  data1,
+  data2,
+  mu = 0,
+  dx = NULL,
+  n_perm = 1000L,
   paired = FALSE,
   alternative = c("two.sided", "less", "greater")
 )
@@ -50,6 +61,9 @@ performed. Defaults to \code{FALSE}.}
 \item{alternative}{A string specifying the type of alternative hypothesis.
 Choices are \code{"two.sided"}, \code{"less"} or \code{"greater"}. Defaults to
 \code{"two.sided"}.}
+
+\item{n_perm}{An integer value specifying the number of permutations for the
+permutation tests. Defaults to \code{1000L}.}
 }
 \value{
 An object of class \code{ftwosample} containing the following components:

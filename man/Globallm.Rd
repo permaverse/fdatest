@@ -2,12 +2,21 @@
 % Please edit documentation in R/lm-global.R
 \name{Globallm}
 \alias{Globallm}
+\alias{global_lm}
 \title{Global testing procedure for testing functional-on-scalar linear models}
 \usage{
 Globallm(
   formula,
   dx = NULL,
   B = 1000L,
+  method = c("residuals", "responses"),
+  stat = c("Integral", "Max")
+)
+
+global_lm(
+  formula,
+  dx = NULL,
+  n_perm = 1000L,
   method = c("residuals", "responses"),
   stat = c("Integral", "Max")
 )
@@ -41,6 +50,9 @@ Choices are either \code{"Integral"}, in which case the statistic is defined as
 the integral of the F-test statistic over the domain, or \code{"Max"}, in which
 case the statistic is defined as the maximum of the F-test statistic over
 the domain. Defaults to  \code{"Integral"}.}
+
+\item{n_perm}{An integer value specifying the number of permutations for the
+permutation tests. Defaults to \code{1000L}.}
 }
 \value{
 An object of class \code{flm} containing the following components:

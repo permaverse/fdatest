@@ -8,7 +8,7 @@
 #' areas.
 #'
 #' @param object,x An object of class `fanova`, usually a result of a call
-#'   to [`functional_anova_test()`], [`IWTaov()`], [`TWTaov()`] or [`Globalaov()`].
+#'   to [`functional_anova_test()`], [`iwt_aov()`], [`twt_aov()`] or [`global_aov()`].
 #' @param xrange A length-2 numeric vector specifying the range of the x-axis
 #'   for the plots. Defaults to `c(0, 1)`. This should match the domain of the
 #'   functional data.
@@ -185,7 +185,7 @@ autoplot.fanova <- function(
 
   # --- F-test functional data plot ---
   if (nvar > 1) {
-    sig_df_F <- make_sig_df(
+    sig_df_f <- make_sig_df(
       object$adjusted_pval_F,
       abscissa_pval,
       alpha1,
@@ -201,7 +201,7 @@ autoplot.fanova <- function(
       data_long,
       ggplot2::aes(x = .data$x, y = .data$y, group = .data$curve)
     )
-    p_f <- add_sig_ribbons(p_f, sig_df_F, ylim)
+    p_f <- add_sig_ribbons(p_f, sig_df_f, ylim)
     p_f <- p_f +
       ggplot2::geom_line(
         color = if (is.numeric(col)) "black" else col,
@@ -293,25 +293,25 @@ autoplot.fanova <- function(
   # --- Adjusted p-value plots ---
   if (plot_adjpval) {
     # F-test p-value plot
-    pval_df_F <- data.frame(x = abscissa_pval, pval = object$adjusted_pval_F)
+    pval_df_f <- data.frame(x = abscissa_pval, pval = object$adjusted_pval_F)
     main_p <- if (!is.null(title)) {
       paste0(title, ": Adjusted p-values - F-test")
     } else {
       "Adjusted p-values - F-test"
     }
-    sig_df_F_p <- make_sig_df(
+    sig_df_f_p <- make_sig_df(
       object$adjusted_pval_F,
       abscissa_pval,
       alpha1,
       alpha2
     )
 
-    p_pval_F <- ggplot2::ggplot(
-      pval_df_F,
+    p_pval_f <- ggplot2::ggplot(
+      pval_df_f,
       ggplot2::aes(x = .data$x, y = .data$pval)
     )
-    p_pval_F <- add_sig_ribbons(p_pval_F, sig_df_F_p, c(0, 1))
-    p_pval_F <- p_pval_F +
+    p_pval_f <- add_sig_ribbons(p_pval_f, sig_df_f_p, c(0, 1))
+    p_pval_f <- p_pval_f +
       ggplot2::geom_hline(
         yintercept = seq(0, 1, by = 0.1),
         color = "lightgray",
@@ -323,7 +323,7 @@ autoplot.fanova <- function(
       ggplot2::theme_bw() +
       ggplot2::theme(legend.position = "bottom")
 
-    plots <- c(plots, list(p_pval_F))
+    plots <- c(plots, list(p_pval_f))
 
     # Per-factor p-value plots
     for (var in seq_len(nvar)) {

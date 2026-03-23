@@ -66,8 +66,26 @@
 #'
 #' # Selecting the significant components at 5% level
 #' which(IWT_result$adjusted_pval < 0.05)
-IWT1 <- function(data, mu = 0, B = 1000, dx = NULL, recycle = TRUE) {
-  # data preprocessing
+IWT1 <- function( # nolint: object_name_linter.
+  data, # nolint: indentation_linter.
+  mu = 0,
+  B = 1000L, # nolint: object_name_linter.
+  dx = NULL,
+  recycle = TRUE) {
+  iwt1(data = data, mu = mu, n_perm = B, dx = dx, recycle = recycle)
+}
+
+#' @param n_perm An integer value specifying the number of permutations for the
+#'   permutation tests. Defaults to `1000L`.
+#' @rdname IWT1
+#' @export
+iwt1 <- function(
+  data,
+  mu = 0,
+  n_perm = 1000L,
+  dx = NULL,
+  recycle = TRUE
+) {
   inputs <- onesample2coeffs(data, mu, dx = dx)
   coeff <- inputs$coeff
   mu_eval <- inputs$mu
@@ -75,67 +93,52 @@ IWT1 <- function(data, mu = 0, B = 1000, dx = NULL, recycle = TRUE) {
   n <- dim(coeff)[1]
   p <- dim(coeff)[2]
   data_eval <- coeff <- coeff -
-    matrix(
-      data = mu_eval,
-      nrow = n,
-      ncol = p,
-      byrow = TRUE
-    )
+    matrix(data = mu_eval, nrow = n, ncol = p, byrow = TRUE)
 
-  #univariate permutations
   cli::cli_h1("Point-wise tests")
 
-  T0 <- abs(colMeans(coeff))^2 #sample mean
-  T_coeff <- matrix(ncol = p, nrow = B)
-  for (perm in 1:B) {
+  t0 <- abs(colMeans(coeff))^2
+  t_coeff <- matrix(ncol = p, nrow = n_perm)
+  for (perm in seq_len(n_perm)) {
     signs <- stats::rbinom(n, 1, 0.5) * 2 - 1
     coeff_perm <- coeff * signs
-    T_coeff[perm, ] <- abs(colMeans(coeff_perm))^2
-  }
-  pval <- numeric(p)
-  for (i in 1:p) {
-    pval[i] <- sum(T_coeff[, i] >= T0[i]) / B
+    t_coeff[perm, ] <- abs(colMeans(coeff_perm))^2
   }
 
-  #combination
+  pval <- numeric(p)
+  for (i in seq_len(p)) {
+    pval[i] <- sum(t_coeff[, i] >= t0[i]) / n_perm
+  }
+
   cli::cli_h1("Interval-wise tests")
 
-  #asymmetric combination matrix:
   matrice_pval_asymm <- matrix(nrow = p, ncol = p)
-  matrice_pval_asymm[p, ] <- pval[1:p]
-  T0_2x <- c(T0, T0)
-  T_coeff_2x <- cbind(T_coeff, T_coeff)
+  matrice_pval_asymm[p, ] <- pval[seq_len(p)]
+  t0_2x <- c(t0, t0)
+  t_coeff_2x <- cbind(t_coeff, t_coeff)
 
-  maxrow <- 1
-
+  maxrow <- 1L
   if (recycle) {
-    for (i in (p - 1):maxrow) {
-      # rows
-      for (j in 1:p) {
-        # columns
+    for (i in (p - 1L):maxrow) {
+      for (j in seq_len(p)) {
         inf <- j
         sup <- (p - i) + j
-        T0_temp <- sum(T0_2x[inf:sup])
-        T_temp <- rowSums(T_coeff_2x[, inf:sup])
-        pval_temp <- sum(T_temp >= T0_temp) / B
-        matrice_pval_asymm[i, j] <- pval_temp
+        t0_temp <- sum(t0_2x[inf:sup])
+        t_temp <- rowSums(t_coeff_2x[, inf:sup, drop = FALSE])
+        matrice_pval_asymm[i, j] <- sum(t_temp >= t0_temp) / n_perm
       }
       cli::cli_h1(
-        "creating the p-value matrix: end of row {p - i + 1} out of {p}"
+        "Creating the p-value matrix: end of row {p - i + 1} out of {p}"
       )
     }
   } else {
-    # without recycling
-    for (i in (p - 1):maxrow) {
-      # rows
-      for (j in 1:i) {
-        # columns
+    for (i in (p - 1L):maxrow) {
+      for (j in seq_len(i)) {
         inf <- j
         sup <- (p - i) + j
-        T0_temp <- sum(T0_2x[inf:sup])
-        T_temp <- rowSums(T_coeff_2x[, inf:sup])
-        pval_temp <- sum(T_temp >= T0_temp) / B
-        matrice_pval_asymm[i, j] <- pval_temp
+        t0_temp <- sum(t0_2x[inf:sup])
+        t_temp <- rowSums(t_coeff_2x[, inf:sup, drop = FALSE])
+        matrice_pval_asymm[i, j] <- sum(t_temp >= t0_temp) / n_perm
       }
       cli::cli_h1(
         "Creating the p-value matrix: end of row {p - i + 1} out of {p}"
@@ -149,13 +152,13 @@ IWT1 <- function(data, mu = 0, B = 1000, dx = NULL, recycle = TRUE) {
   cli::cli_h1("Interval-Wise Testing completed")
 
   out <- list(
-    test = '1pop',
+    test = "1pop",
     mu = mu_eval,
     adjusted_pval = corrected_pval,
     unadjusted_pval = pval,
     pval_matrix = matrice_pval_asymm,
     data_eval = data_eval
   )
-  class(out) <- 'IWT1'
+  class(out) <- "IWT1"
   out
 }
