@@ -117,47 +117,55 @@ iwt_aov <- function(
     t_2x_part[, ii, ] <- cbind(t_part[, ii, ], t_part[, ii, ])
   }
 
-  maxrow <- 1L
-  if (recycle) {
-    for (i in (p - 1L):maxrow) {
-      for (j in seq_len(p)) {
-        inf <- j
-        sup <- (p - i) + j
-        t0_temp <- sum(t0_2x_glob[inf:sup])
-        t_temp <- rowSums(t_2x_glob[, inf:sup, drop = FALSE])
-        pval_temp <- sum(t_temp >= t0_temp) / n_perm
-        matrice_pval_asymm_glob[i, j] <- pval_temp
-        for (ii in seq_len(nvar)) {
-          t0_temp <- sum(t0_2x_part[ii, inf:sup])
-          t_temp <- rowSums(t_2x_part[, ii, inf:sup, drop = FALSE])
-          pval_temp <- sum(t_temp >= t0_temp) / n_perm
-          matrice_pval_asymm_part[ii, i, j] <- pval_temp
-        }
+  row_indices <- (p - 1L):1L
+
+  compute_row_aov <- function(i) {
+    js <- if (recycle) seq_len(p) else seq_len(i)
+    glob_vals <- numeric(length(js))
+    part_vals <- matrix(nrow = nvar, ncol = length(js))
+    for (k in seq_along(js)) {
+      j <- js[k]
+      inf <- j
+      sup <- (p - i) + j
+      t0_temp <- sum(t0_2x_glob[inf:sup])
+      t_temp <- rowSums(t_2x_glob[, inf:sup, drop = FALSE])
+      glob_vals[k] <- sum(t_temp >= t0_temp) / n_perm
+      for (ii in seq_len(nvar)) {
+        t0_temp <- sum(t0_2x_part[ii, inf:sup])
+        t_temp <- rowSums(t_2x_part[, ii, inf:sup, drop = FALSE])
+        part_vals[ii, k] <- sum(t_temp >= t0_temp) / n_perm
       }
-      cli::cli_h1(
-        "Creating the p-value matrix: end of row {p - i + 1} out of {p}"
-      )
     }
-  } else {
-    for (i in (p - 1L):maxrow) {
-      for (j in seq_len(i)) {
-        inf <- j
-        sup <- (p - i) + j
-        t0_temp <- sum(t0_2x_glob[inf:sup])
-        t_temp <- rowSums(t_2x_glob[, inf:sup, drop = FALSE])
-        pval_temp <- sum(t_temp >= t0_temp) / n_perm
-        matrice_pval_asymm_glob[i, j] <- pval_temp
-        for (ii in seq_len(nvar)) {
-          t0_temp <- sum(t0_2x_part[ii, inf:sup])
-          t_temp <- rowSums(t_2x_part[, ii, inf:sup, drop = FALSE])
-          pval_temp <- sum(t_temp >= t0_temp) / n_perm
-          matrice_pval_asymm_part[ii, i, j] <- pval_temp
-        }
-      }
-      cli::cli_h1(
-        "Creating the p-value matrix: end of row {p - i + 1} out of {p}"
-      )
+    list(glob = glob_vals, part = part_vals)
+  }
+
+  row_tasks <- mirai::mirai_map(
+    row_indices,
+    \(.i) compute_row_aov(.i),
+    .args = list(
+      compute_row_aov = compute_row_aov,
+      t0_2x_glob = t0_2x_glob,
+      t_2x_glob = t_2x_glob,
+      t0_2x_part = t0_2x_part,
+      t_2x_part = t_2x_part,
+      n_perm = n_perm,
+      p = p,
+      nvar = nvar,
+      recycle = recycle
+    )
+  )
+  row_results <- row_tasks[]
+
+  for (k in seq_along(row_indices)) {
+    i <- row_indices[k]
+    js <- if (recycle) seq_len(p) else seq_len(i)
+    matrice_pval_asymm_glob[i, js] <- row_results[[k]]$glob
+    for (ii in seq_len(nvar)) {
+      matrice_pval_asymm_part[ii, i, js] <- row_results[[k]]$part[ii, ]
     }
+    cli::cli_h1(
+      "Creating the p-value matrix: end of row {p - i + 1} out of {p}"
+    )
   }
 
   corrected_pval_matrix_glob <- pval_correct(matrice_pval_asymm_glob)

@@ -100,17 +100,23 @@ iwt1 <- function(
   cli::cli_h1("Point-wise tests")
 
   t0 <- abs(colMeans(coeff))^2
-  t_coeff <- matrix(ncol = p, nrow = n_perm)
-  for (perm in seq_len(n_perm)) {
-    signs <- stats::rbinom(n, 1, 0.5) * 2 - 1
-    coeff_perm <- coeff * signs
-    t_coeff[perm, ] <- abs(colMeans(coeff_perm))^2
-  }
 
-  pval <- numeric(p)
-  for (i in seq_len(p)) {
-    pval[i] <- sum(t_coeff[, i] >= t0[i]) / n_perm
-  }
+  # Run permutations in parallel via mirai_map().
+  # Each task produces one numeric vector of length p.
+  perm_tasks <- mirai::mirai_map(
+    seq_len(n_perm),
+    \(.x) {
+      signs <- stats::rbinom(n, 1, 0.5) * 2 - 1
+      abs(colMeans(coeff * signs))^2
+    },
+    .args = list(coeff = coeff, n = n)
+  )
+  t_coeff <- do.call(rbind, perm_tasks[])
+
+  pval <- colSums(
+    t_coeff >= matrix(t0, nrow = n_perm, ncol = p, byrow = TRUE)
+  ) /
+    n_perm
 
   cli::cli_h1("Interval-wise tests")
 
