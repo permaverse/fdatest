@@ -33,29 +33,30 @@
 #'
 #' # Selecting the significant components at 5% level
 #' which(IWT_result$adjusted_pvalues < 0.05)
-IWT2 <- function( # nolint: object_name_linter.
-  data1,
-  data2,
-  mu = 0,
-  dx = NULL,
-  B = 1000L, # nolint: object_name_linter.
-  paired = FALSE,
-  alternative = c("two.sided", "less", "greater"),
-  verbose = FALSE,
-  recycle = TRUE
-) {
-  iwt2(
-    data1 = data1,
-    data2 = data2,
-    mu = mu,
-    dx = dx,
-    n_perm = B,
-    paired = paired,
-    alternative = alternative,
-    verbose = verbose,
-    recycle = recycle
-  )
-}
+IWT2 <- # nolint: object_name_linter.
+  function(
+    data1,
+    data2,
+    mu = 0,
+    dx = NULL,
+    B = 1000L, # nolint: object_name_linter.
+    paired = FALSE,
+    alternative = c("two.sided", "less", "greater"),
+    verbose = FALSE,
+    recycle = TRUE
+  ) {
+    iwt2(
+      data1 = data1,
+      data2 = data2,
+      mu = mu,
+      dx = dx,
+      n_perm = B,
+      paired = paired,
+      alternative = alternative,
+      verbose = verbose,
+      recycle = recycle
+    )
+  }
 
 #' @param n_perm An integer value specifying the number of permutations for the
 #'   permutation tests. Defaults to `1000L`.

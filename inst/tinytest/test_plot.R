@@ -38,16 +38,16 @@ set.seed(42)
 res_twtlm <- TWTlm(temperature ~ groups, B = 5L)
 
 # Two-factor design: exercises if(nvar > 1) F-test panel and per-factor loop
-grpA <- c(0L, 0L, 1L, 1L, 0L, 0L, 1L, 1L)
-grpB <- c(0L, 1L, 0L, 1L, 0L, 1L, 0L, 1L)
+grp_a <- c(0L, 0L, 1L, 1L, 0L, 0L, 1L, 1L)
+grp_b <- c(0L, 1L, 0L, 1L, 0L, 1L, 0L, 1L)
 set.seed(42)
-res_fanova2 <- IWTaov(temperature ~ grpA + grpB, B = 5L)
+res_fanova2 <- IWTaov(temperature ~ grp_a + grp_b, B = 5L)
 set.seed(42)
-res_twtaov2 <- TWTaov(temperature ~ grpA + grpB, B = 5L)
+res_twtaov2 <- TWTaov(temperature ~ grp_a + grp_b, B = 5L)
 set.seed(42)
-res_flm2 <- IWTlm(temperature ~ grpA + grpB, B = 5L)
+res_flm2 <- IWTlm(temperature ~ grp_a + grp_b, B = 5L)
 set.seed(42)
-res_twtlm2 <- TWTlm(temperature ~ grpA + grpB, B = 5L)
+res_twtlm2 <- TWTlm(temperature ~ grp_a + grp_b, B = 5L)
 
 # ===========================================================================
 # autoplot.ftwosample, plot.ftwosample
@@ -151,7 +151,7 @@ expect_true(inherits(p_fa_2f_adj, "gg") || inherits(p_fa_2f_adj, "patchwork"))
 groups3 <- factor(c(1L, 2L, 3L, 1L, 2L, 3L, 1L, 2L))
 set.seed(42)
 res_fanova_3l <- IWTaov(
-  temperature ~ groups3 * grpB,
+  temperature ~ groups3 * grp_b,
   B = 5L,
   method = "responses"
 )
@@ -237,7 +237,7 @@ p_flm_custom <- autoplot(
 )
 expect_true(inherits(p_flm_custom, "gg") || inherits(p_flm_custom, "patchwork"))
 
-# Two-predictor LM — exercises longer per-variable loop (intercept + grpA + grpB)
+# Two-predictor LM — exercises longer per-variable loop (intercept + grp_a + grp_b)
 p_flm_2v <- autoplot(res_flm2)
 expect_true(inherits(p_flm_2v, "gg") || inherits(p_flm_2v, "patchwork"))
 

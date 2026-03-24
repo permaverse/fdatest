@@ -66,14 +66,16 @@
 #'
 #' # Selecting the significant components at 5% level
 #' which(IWT_result$adjusted_pval < 0.05)
-IWT1 <- function( # nolint: object_name_linter.
-  data, # nolint: indentation_linter.
-  mu = 0,
-  B = 1000L, # nolint: object_name_linter.
-  dx = NULL,
-  recycle = TRUE) {
-  iwt1(data = data, mu = mu, n_perm = B, dx = dx, recycle = recycle)
-}
+IWT1 <- # nolint: object_name_linter.
+  function(
+    data,
+    mu = 0,
+    B = 1000L, # nolint: object_name_linter.
+    dx = NULL,
+    recycle = TRUE
+  ) {
+    iwt1(data = data, mu = mu, n_perm = B, dx = dx, recycle = recycle)
+  }
 
 #' @param n_perm An integer value specifying the number of permutations for the
 #'   permutation tests. Defaults to `1000L`.

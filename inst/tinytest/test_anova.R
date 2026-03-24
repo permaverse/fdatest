@@ -131,12 +131,12 @@ expect_equal(res_ft_g$correction, "Global")
 # IWTaov — nvar > 1, factor() in formula, method = "residuals"
 # Exercises lines 317–319 of aov_permtest (factor renaming block)
 # ===========================================================================
-grpA <- c(0L, 0L, 1L, 1L, 0L, 0L, 1L, 1L)
-grpB <- c(0L, 1L, 0L, 1L, 0L, 1L, 0L, 1L)
+grp_a <- c(0L, 0L, 1L, 1L, 0L, 0L, 1L, 1L)
+grp_b <- c(0L, 1L, 0L, 1L, 0L, 1L, 0L, 1L)
 
 set.seed(42)
 res_iwt_rf <- IWTaov(
-  temperature ~ grpA + factor(grpB),
+  temperature ~ grp_a + factor(grp_b),
   B = 5L,
   method = "residuals"
 )
@@ -149,7 +149,7 @@ expect_equal(length(res_iwt_rf$adjusted_pval_F), p)
 # ===========================================================================
 set.seed(42)
 res_iwt_ia <- IWTaov(
-  temperature ~ grpA * grpB,
+  temperature ~ grp_a * grp_b,
   B = 5L,
   method = "residuals"
 )
