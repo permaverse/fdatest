@@ -128,6 +128,44 @@ expect_inherits(res_ft_g, "fanova")
 expect_equal(res_ft_g$correction, "Global")
 
 # ===========================================================================
+# IWTaov — nvar > 1, factor() in formula, method = "residuals"
+# Exercises lines 317–319 of aov_permtest (factor renaming block)
+# ===========================================================================
+grpA <- c(0L, 0L, 1L, 1L, 0L, 0L, 1L, 1L)
+grpB <- c(0L, 1L, 0L, 1L, 0L, 1L, 0L, 1L)
+
+set.seed(42)
+res_iwt_rf <- IWTaov(
+  temperature ~ grpA + factor(grpB),
+  B = 5L,
+  method = "residuals"
+)
+expect_inherits(res_iwt_rf, "fanova")
+expect_equal(length(res_iwt_rf$adjusted_pval_F), p)
+
+# ===========================================================================
+# IWTaov — nvar > 1, interaction term, method = "residuals"
+# Exercises lines 331–337 of aov_permtest (the ":" interaction sub-branch)
+# ===========================================================================
+set.seed(42)
+res_iwt_ia <- IWTaov(
+  temperature ~ grpA * grpB,
+  B = 5L,
+  method = "residuals"
+)
+expect_inherits(res_iwt_ia, "fanova")
+expect_equal(length(res_iwt_ia$adjusted_pval_F), p)
+
+# ===========================================================================
+# IWTaov — intercept-only (nvar = 0)
+# Exercises lines 309–310 (nvar == 0 t0_glob branch) and
+# lines 374–376 (sign-permutation branch in the permutation loop)
+# ===========================================================================
+set.seed(42)
+res_iwt_int0 <- suppressWarnings(IWTaov(temperature ~ 1, B = 5L))
+expect_inherits(res_iwt_int0, "fanova")
+
+# ===========================================================================
 # Deprecated wrapper: ITPaovbspline
 # ===========================================================================
 set.seed(42)
