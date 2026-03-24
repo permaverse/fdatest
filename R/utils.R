@@ -507,6 +507,17 @@ lm_permtest <- function(formula, dx, n_perm, method) {
     formula_coeff_part <- vector("list", nvar + 1)
     regr0_part <- vector("list", nvar + 1)
 
+    # Build mf_temp2 once: response columns + renamed predictor columns.
+    # Using renamed column names (var_names2) avoids re-evaluating factor()
+    # expressions against a data frame that lacks the original variable.
+    formula_temp2 <- coeff ~ design_matrix_names2
+    mf_temp2_raw <- stats::model.frame(formula_temp2)[
+      -((p + 1):(p + nvar + 1))
+    ]
+    mf_temp2_cov <- as.data.frame(design_matrix_names2[, -1, drop = FALSE])
+    colnames(mf_temp2_cov) <- var_names2[-1]
+    mf_temp2 <- cbind(mf_temp2_raw, mf_temp2_cov)
+
     for (ii in seq(2L, nvar + 1L)) {
       var_ii <- var_names2[ii]
       variables_reduced <- var_names2[-c(1L, which(var_names2 == var_ii))]
@@ -515,13 +526,6 @@ lm_permtest <- function(formula, dx, n_perm, method) {
       } else {
         "1"
       }
-      formula_temp2 <- coeff ~ design_matrix_names2
-      mf_temp2_raw <- stats::model.frame(formula_temp2)[
-        -((p + 1):(p + nvar + 1))
-      ]
-      mf_temp2_cov <- as.data.frame(design_matrix_names2[, -1, drop = FALSE])
-      colnames(mf_temp2_cov) <- var_names2[-1]
-      mf_temp2 <- cbind(mf_temp2_raw, mf_temp2_cov)
 
       formula_coeff_temp <- paste(coeffnames, "~", formula_temp_str)
       formula_coeff_part[[ii]] <- sapply(
@@ -542,13 +546,15 @@ lm_permtest <- function(formula, dx, n_perm, method) {
     }
 
     ii <- 1L # intercept
-    formula_temp_str <- paste0(formula_const, " -1")
+    # Use renamed predictor column names so that factor() expressions in the
+    # original formula are not re-evaluated against design-matrix columns.
+    formula_temp_str <- paste0(paste(var_names2[-1], collapse = " + "), " - 1")
     formula_coeff_temp <- paste(coeffnames, "~", formula_temp_str)
     formula_coeff_part[[ii]] <- sapply(formula_coeff_temp, stats::as.formula)
     regr0_part[[ii]] <- lapply(
       formula_coeff_part[[ii]],
       stats::lm,
-      data = mf_temp
+      data = mf_temp2
     )
     residui[ii, , ] <- simplify2array(
       lapply(regr0_part[[ii]], extract_residuals)
