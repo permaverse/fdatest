@@ -144,3 +144,119 @@ with_null_device({
   suppressWarnings(ITPimage(res_iwt1, abscissa_range = c(0, 1)))
 })
 expect_true(TRUE)
+
+# ===========================================================================
+# IWTimage — fake "IWTaov" with two main factors + interaction
+#
+# The IWTaov branch loops over each factor and, when the factor name
+# contains ':', enters the interaction sub-branch to colour curves by the
+# interaction group (using grep + intersect on design-matrix column names).
+# We use a 2x2 factorial design (grpA x grpB) so the third term is
+# "grpA:grpB", which exercises that branch.
+# ===========================================================================
+nvar_ia <- 3L
+n_obs   <- nrow(d1) + nrow(d2)   # 8 observations
+
+grp_a  <- c(0L, 0L, 0L, 0L, 1L, 1L, 1L, 1L)
+grp_b  <- c(0L, 0L, 1L, 1L, 0L, 0L, 1L, 1L)
+dm_ia  <- cbind(
+  `(Intercept)` = rep(1L, n_obs),
+  grpA           = grp_a,
+  grpB           = grp_b,
+  `grpA:grpB`   = grp_a * grp_b
+)
+
+fake_iwt_aov_ia <- list(
+  adjusted_pval_F = rep(0.3, p),
+  unadjusted_pval_F = rep(0.4, p),
+  pval_matrix_F = matrix(0.3, nrow = p, ncol = p),
+  adjusted_pval_factor = matrix(
+    0.3,
+    nrow = nvar_ia,
+    ncol = p,
+    dimnames = list(c("grpA", "grpB", "grpA:grpB"), NULL)
+  ),
+  unadjusted_pval_factor = matrix(
+    0.4,
+    nrow = nvar_ia,
+    ncol = p,
+    dimnames = list(c("grpA", "grpB", "grpA:grpB"), NULL)
+  ),
+  pval_matrix_factor = array(0.3, dim = c(nvar_ia, p, p)),
+  data_eval = rbind(d1, d2),
+  design_matrix = dm_ia
+)
+class(fake_iwt_aov_ia) <- "IWTaov"
+
+# Default plot: all p-values above alpha (no significance rect)
+with_null_device({
+  IWTimage(fake_iwt_aov_ia, abscissa_range = c(0, 1))
+})
+expect_true(TRUE)
+
+# plot_unadjusted = TRUE exercises the unadjusted lines in the interaction loop
+with_null_device({
+  IWTimage(fake_iwt_aov_ia, abscissa_range = c(0, 1), plot_unadjusted = TRUE)
+})
+expect_true(TRUE)
+
+# p-values < alpha: exercises the rect-drawing loop inside the interaction panel
+fake_iwt_aov_ia_low <- fake_iwt_aov_ia
+fake_iwt_aov_ia_low$adjusted_pval_F <- rep(0.01, p)
+fake_iwt_aov_ia_low$adjusted_pval_factor <- matrix(
+  0.01,
+  nrow = nvar_ia,
+  ncol = p,
+  dimnames = list(c("grpA", "grpB", "grpA:grpB"), NULL)
+)
+with_null_device({
+  IWTimage(fake_iwt_aov_ia_low, alpha = 0.05, abscissa_range = c(0, 1))
+})
+expect_true(TRUE)
+
+# ===========================================================================
+# IWTimage — interaction where grep yields multiple design-matrix columns
+#
+# When intersect(grep(var1, colnames), grep(var2, colnames)) returns more
+# than one index, design_matrix[, dummy_test] is a matrix and IWTimage
+# calls apply(colors, 1, paste, collapse='') to build a colour key.
+# We engineer column names "g1:g2a" and "g1:g2b" so that both "g1" and
+# "g2" appear in two columns, making the intersection length-2.
+# ===========================================================================
+nvar_mc <- 3L
+dm_mc   <- cbind(
+  `(Intercept)` = rep(1L, n_obs),
+  g1             = c(0L, 0L, 0L, 0L, 1L, 1L, 1L, 1L),
+  g2             = c(0L, 0L, 1L, 1L, 0L, 0L, 1L, 1L),
+  `g1:g2a`      = c(0L, 0L, 0L, 0L, 0L, 0L, 1L, 1L),
+  `g1:g2b`      = c(0L, 1L, 0L, 1L, 0L, 1L, 0L, 1L)
+)
+
+fake_iwt_aov_mc <- list(
+  adjusted_pval_F = rep(0.3, p),
+  unadjusted_pval_F = rep(0.4, p),
+  pval_matrix_F = matrix(0.3, nrow = p, ncol = p),
+  adjusted_pval_factor = matrix(
+    0.3,
+    nrow = nvar_mc,
+    ncol = p,
+    dimnames = list(c("g1", "g2", "g1:g2"), NULL)
+  ),
+  unadjusted_pval_factor = matrix(
+    0.4,
+    nrow = nvar_mc,
+    ncol = p,
+    dimnames = list(c("g1", "g2", "g1:g2"), NULL)
+  ),
+  pval_matrix_factor = array(0.3, dim = c(nvar_mc, p, p)),
+  data_eval = rbind(d1, d2),
+  design_matrix = dm_mc
+)
+class(fake_iwt_aov_mc) <- "IWTaov"
+
+# grep("g1", colnames) = {g1, g1:g2a, g1:g2b}; grep("g2", colnames) = {g2, g1:g2a, g1:g2b}
+# intersect = {g1:g2a, g1:g2b} → 2 columns → matrix → apply(paste) branch
+with_null_device({
+  IWTimage(fake_iwt_aov_mc, abscissa_range = c(0, 1))
+})
+expect_true(TRUE)

@@ -37,6 +37,18 @@ res_twtaov <- TWTaov(temperature ~ groups, B = 5L)
 set.seed(42)
 res_twtlm <- TWTlm(temperature ~ groups, B = 5L)
 
+# Two-factor design: exercises if(nvar > 1) F-test panel and per-factor loop
+grpA <- c(0L, 0L, 1L, 1L, 0L, 0L, 1L, 1L)
+grpB <- c(0L, 1L, 0L, 1L, 0L, 1L, 0L, 1L)
+set.seed(42)
+res_fanova2 <- IWTaov(temperature ~ grpA + grpB, B = 5L)
+set.seed(42)
+res_twtaov2 <- TWTaov(temperature ~ grpA + grpB, B = 5L)
+set.seed(42)
+res_flm2 <- IWTlm(temperature ~ grpA + grpB, B = 5L)
+set.seed(42)
+res_twtlm2 <- TWTlm(temperature ~ grpA + grpB, B = 5L)
+
 # ===========================================================================
 # autoplot.ftwosample, plot.ftwosample
 # ===========================================================================
@@ -67,6 +79,24 @@ p_fts_custom <- autoplot(
   linewidth = 0.5
 )
 expect_true(inherits(p_fts_custom, "gg") || inherits(p_fts_custom, "patchwork"))
+
+# Swapped alpha (alpha1 < alpha2 triggers internal swap)
+p_fts_swap <- autoplot(res_iwt2, alpha1 = 0.01, alpha2 = 0.05)
+expect_true(inherits(p_fts_swap, "gg") || inherits(p_fts_swap, "patchwork"))
+
+# alpha1 > all p-values triggers significance ribbon drawing (geom_rect path)
+p_fts_sig <- autoplot(res_iwt2, alpha1 = 1.1, alpha2 = 0.9)
+expect_true(inherits(p_fts_sig, "gg") || inherits(p_fts_sig, "patchwork"))
+
+# alpha1 / alpha2 of length > 1 must error
+expect_error(
+  autoplot(res_iwt2, alpha1 = c(0.05, 0.1), alpha2 = 0.01),
+  "single numeric value"
+)
+expect_error(
+  autoplot(res_iwt2, alpha1 = 0.05, alpha2 = c(0.01, 0.02)),
+  "single numeric value"
+)
 
 # ===========================================================================
 # autoplot.fanova, plot.fanova
@@ -105,6 +135,37 @@ p_fa_custom <- autoplot(
   col = c("red", "blue")
 )
 expect_true(inherits(p_fa_custom, "gg") || inherits(p_fa_custom, "patchwork"))
+
+# Two-factor ANOVA — exercises if(nvar > 1) F-test panel + per-factor loop
+p_fa_2f <- autoplot(res_fanova2)
+expect_true(inherits(p_fa_2f, "gg") || inherits(p_fa_2f, "patchwork"))
+
+p_fa_2f_adj <- autoplot(res_fanova2, plot_adjpval = TRUE)
+expect_true(inherits(p_fa_2f_adj, "gg") || inherits(p_fa_2f_adj, "patchwork"))
+
+p_fa_twt_2f <- autoplot(res_twtaov2)
+expect_true(inherits(p_fa_twt_2f, "gg") || inherits(p_fa_twt_2f, "patchwork"))
+
+p_fa_twt_2f_adj <- autoplot(res_twtaov2, plot_adjpval = TRUE)
+expect_true(inherits(p_fa_twt_2f_adj, "gg") || inherits(p_fa_twt_2f_adj, "patchwork"))
+
+# Swapped alpha (alpha1 < alpha2 triggers internal swap)
+p_fa_swap <- autoplot(res_fanova, alpha1 = 0.01, alpha2 = 0.05)
+expect_true(inherits(p_fa_swap, "gg") || inherits(p_fa_swap, "patchwork"))
+
+# alpha1 > all p-values triggers significance ribbon drawing (geom_rect path)
+p_fa_sig <- autoplot(res_fanova, alpha1 = 1.1, alpha2 = 0.9)
+expect_true(inherits(p_fa_sig, "gg") || inherits(p_fa_sig, "patchwork"))
+
+# alpha1 / alpha2 of length > 1 must error
+expect_error(
+  autoplot(res_fanova, alpha1 = c(0.05, 0.1), alpha2 = 0.01),
+  "single numeric value"
+)
+expect_error(
+  autoplot(res_fanova, alpha1 = 0.05, alpha2 = c(0.01, 0.02)),
+  "single numeric value"
+)
 
 # ===========================================================================
 # autoplot.flm, plot.flm
@@ -145,6 +206,37 @@ p_flm_custom <- autoplot(
 )
 expect_true(inherits(p_flm_custom, "gg") || inherits(p_flm_custom, "patchwork"))
 
+# Two-predictor LM — exercises longer per-variable loop (intercept + grpA + grpB)
+p_flm_2v <- autoplot(res_flm2)
+expect_true(inherits(p_flm_2v, "gg") || inherits(p_flm_2v, "patchwork"))
+
+p_flm_2v_adj <- autoplot(res_flm2, plot_adjpval = TRUE)
+expect_true(inherits(p_flm_2v_adj, "gg") || inherits(p_flm_2v_adj, "patchwork"))
+
+p_flm_twt_2v <- autoplot(res_twtlm2)
+expect_true(inherits(p_flm_twt_2v, "gg") || inherits(p_flm_twt_2v, "patchwork"))
+
+p_flm_twt_2v_adj <- autoplot(res_twtlm2, plot_adjpval = TRUE)
+expect_true(inherits(p_flm_twt_2v_adj, "gg") || inherits(p_flm_twt_2v_adj, "patchwork"))
+
+# Swapped alpha (alpha1 < alpha2 triggers internal swap)
+p_flm_swap <- autoplot(res_flm, alpha1 = 0.01, alpha2 = 0.05)
+expect_true(inherits(p_flm_swap, "gg") || inherits(p_flm_swap, "patchwork"))
+
+# alpha1 > all p-values triggers significance ribbon drawing (geom_rect path)
+p_flm_sig <- autoplot(res_flm, alpha1 = 1.1, alpha2 = 0.9)
+expect_true(inherits(p_flm_sig, "gg") || inherits(p_flm_sig, "patchwork"))
+
+# alpha1 / alpha2 of length > 1 must error
+expect_error(
+  autoplot(res_flm, alpha1 = c(0.05, 0.1), alpha2 = 0.01),
+  "single numeric value"
+)
+expect_error(
+  autoplot(res_flm, alpha1 = 0.05, alpha2 = c(0.01, 0.02)),
+  "single numeric value"
+)
+
 # ===========================================================================
 # plot.IWT1 — base graphics; redirect to null device to avoid interactive prompt
 # ===========================================================================
@@ -153,6 +245,26 @@ grDevices::pdf(tmp_pdf)
 plot(res_iwt1, xrange = c(0, 1)) # default: mu is zero
 grDevices::dev.off()
 expect_true(file.exists(tmp_pdf))
+
+# Swapped alpha (alpha1 < alpha2 triggers internal swap)
+grDevices::pdf(tempfile(fileext = ".pdf"))
+plot(res_iwt1, xrange = c(0, 1), alpha1 = 0.01, alpha2 = 0.05)
+grDevices::dev.off()
+
+# alpha1 > all p-values triggers difference1/difference2 rectangle drawing
+grDevices::pdf(tempfile(fileext = ".pdf"))
+plot(res_iwt1, xrange = c(0, 1), alpha1 = 1.1, alpha2 = 0.9)
+grDevices::dev.off()
+
+# alpha1 / alpha2 of length > 1 must error
+expect_error(
+  plot(res_iwt1, xrange = c(0, 1), alpha1 = c(0.05, 0.1), alpha2 = 0.01),
+  "single numeric value"
+)
+expect_error(
+  plot(res_iwt1, xrange = c(0, 1), alpha1 = 0.05, alpha2 = c(0.01, 0.02)),
+  "single numeric value"
+)
 
 # Clean up
 unlink(tmp_pdf)

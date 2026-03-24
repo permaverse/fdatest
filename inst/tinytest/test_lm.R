@@ -34,6 +34,31 @@ expect_equal(dim(res_iwt_r$residuals_eval), dim(temperature))
 expect_equal(length(res_iwt_r$R2_eval), p)
 
 # ===========================================================================
+# IWTlm — method = "residuals", nvar > 1 (multi-predictor)
+# Exercises the paste(variables_reduced, ...) reduced-formula branch
+# ===========================================================================
+grpA <- c(0L, 0L, 1L, 1L, 0L, 0L, 1L, 1L)
+grpB <- c(0L, 1L, 0L, 1L, 0L, 1L, 0L, 1L)
+
+set.seed(42)
+res_iwt_r2 <- IWTlm(temperature ~ grpA + grpB, B = 5L, method = "residuals")
+expect_inherits(res_iwt_r2, "flm")
+expect_equal(length(res_iwt_r2$adjusted_pval_F), p)
+# pval_matrix_part has one slice per predictor + intercept
+expect_equal(dim(res_iwt_r2$pval_matrix_part), c(3L, p, p))
+
+# IWTlm — method = "residuals", factor() in formula
+# (exercises column-renaming branch; intercept formula uses renamed columns)
+set.seed(42)
+res_iwt_rf <- IWTlm(
+  temperature ~ factor(groups),
+  B = 5L,
+  method = "residuals"
+)
+expect_inherits(res_iwt_rf, "flm")
+expect_equal(length(res_iwt_rf$adjusted_pval_F), p)
+
+# ===========================================================================
 # IWTlm — method = "responses"
 # ===========================================================================
 set.seed(42)
@@ -68,6 +93,22 @@ expect_equal(ncol(res_twt_r$adjusted_pval_part), p)
 # No pval_matrix fields in TWT
 expect_null(res_twt_r$pval_matrix_F)
 
+# TWTlm — method = "residuals", nvar > 1
+set.seed(42)
+res_twt_r2 <- TWTlm(temperature ~ grpA + grpB, B = 5L, method = "residuals")
+expect_inherits(res_twt_r2, "flm")
+expect_equal(length(res_twt_r2$adjusted_pval_F), p)
+
+# TWTlm — method = "residuals", factor() in formula
+set.seed(42)
+res_twt_rf <- TWTlm(
+  temperature ~ factor(groups),
+  B = 5L,
+  method = "residuals"
+)
+expect_inherits(res_twt_rf, "flm")
+expect_equal(length(res_twt_rf$adjusted_pval_F), p)
+
 # ===========================================================================
 # TWTlm — method = "responses"
 # ===========================================================================
@@ -90,6 +131,27 @@ expect_equal(length(res_g_r$adjusted_pval_F), p)
 expect_true(!is.null(res_g_r$Global_pval_F))
 expect_true(res_g_r$Global_pval_F >= 0 && res_g_r$Global_pval_F <= 1)
 expect_true(!is.null(res_g_r$Global_pval_part))
+
+# Globallm — method = "residuals", nvar > 1
+set.seed(42)
+res_g_r2 <- Globallm(
+  temperature ~ grpA + grpB,
+  B = 5L,
+  stat = "Integral",
+  method = "residuals"
+)
+expect_inherits(res_g_r2, "flm")
+expect_equal(length(res_g_r2$adjusted_pval_F), p)
+
+# Globallm — method = "residuals", factor() in formula
+set.seed(42)
+res_g_rf <- Globallm(
+  temperature ~ factor(groups),
+  B = 5L,
+  method = "residuals"
+)
+expect_inherits(res_g_rf, "flm")
+expect_equal(length(res_g_rf$adjusted_pval_F), p)
 
 # ===========================================================================
 # Globallm — stat = "Max"

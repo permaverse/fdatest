@@ -101,6 +101,9 @@ autoplot.ftwosample <- function(
   linewidth = 0.5,
   ...
 ) {
+  if (length(alpha1) != 1L || length(alpha2) != 1L) {
+    cli::cli_abort("{.arg alpha1} and {.arg alpha2} must each be a single numeric value.")
+  }
   if (alpha1 < alpha2) {
     temp <- alpha1
     alpha1 <- alpha2
