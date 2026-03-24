@@ -44,6 +44,18 @@ res_iwt_nr <- IWT2(
 expect_inherits(res_iwt_nr, "ftwosample")
 expect_true(is.na(res_iwt_nr$pvalue_matrix[1, p])) # upper-right is NA
 
+# recycle = FALSE + verbose = TRUE (exercises the cli progress line in the else branch)
+set.seed(42)
+res_iwt_nr_v <- IWT2(
+  data1 = d1,
+  data2 = d2,
+  mu = 0,
+  B = 5L,
+  recycle = FALSE,
+  verbose = TRUE
+)
+expect_inherits(res_iwt_nr_v, "ftwosample")
+
 # paired samples
 set.seed(42)
 res_iwt_p <- IWT2(

@@ -75,9 +75,6 @@ onesample2coeffs <- function(data, mu, dx = NULL) {
         values of {.arg data}."
       )
     }
-    if (is.null(dx)) {
-      dx <- (rangeval_mu[2] - rangeval_mu[1]) * 0.01
-    }
     abscissa <- seq(rangeval_mu[1], rangeval_mu[2], by = dx)
     mu_eval <- t(fda::eval.fd(fdobj = mu, evalarg = abscissa))
   } else if (is.vector(mu)) {
@@ -126,9 +123,6 @@ twosamples2coeffs <- function(data1, data2, mu, dx = NULL) {
         "The range of values of {.arg mu} must be the same as the range of
         values of {.arg data1}."
       )
-    }
-    if (is.null(dx)) {
-      dx <- (rangeval_mu[2] - rangeval_mu[1]) * 0.01
     }
     abscissa <- seq(rangeval_mu[1], rangeval_mu[2], by = dx)
     mu_eval <- t(fda::eval.fd(fdobj = mu, evalarg = abscissa))
@@ -341,7 +335,7 @@ aov_permtest <- function(formula, dx, n_perm, method) {
         dummynames_reduced <- dummynames_all[-dummy_test]
       }
 
-      formula_temp <- if (nvar > 1) {
+      formula_temp <- if (length(dummynames_reduced) > 0) {
         paste(dummynames_reduced, collapse = " + ")
       } else {
         "1"
