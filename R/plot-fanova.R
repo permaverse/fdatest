@@ -253,11 +253,7 @@ autoplot.fanova <- function(
     }
 
     # Map colors to curves (rows of data_eval = observations)
-    n_obs <- ncol(object$data_eval)
     curve_names <- colnames(as.data.frame(t(object$data_eval)))
-    if (is.null(curve_names)) {
-      curve_names <- paste0("V", seq_len(n_obs))
-    }
     color_map <- data.frame(curve = curve_names, group = colors)
     data_long_var <- merge(data_long, color_map, by = "curve", sort = FALSE)
 

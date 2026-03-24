@@ -260,3 +260,47 @@ with_null_device({
   IWTimage(fake_iwt_aov_mc, abscissa_range = c(0, 1))
 })
 expect_true(TRUE)
+
+# ===========================================================================
+# IWTimage — non-interaction factor that matches multiple design-matrix columns
+#
+# When grep(var_name, all_names) matches more than one non-interaction column,
+# design_matrix[, dummy_test] is a matrix and IWTimage calls
+# apply(colors, 1, paste, collapse='').  We use factor name "grp" with two
+# columns "grpA" and "grpB" in the design matrix (neither containing ':').
+# ===========================================================================
+nvar_mf <- 1L
+dm_mf <- cbind(
+  `(Intercept)` = rep(1L, n_obs),
+  grpA           = c(0L, 0L, 0L, 0L, 1L, 1L, 1L, 1L),
+  grpB           = c(0L, 0L, 1L, 1L, 0L, 0L, 1L, 1L)
+)
+
+fake_iwt_aov_mf <- list(
+  adjusted_pval_F = rep(0.3, p),
+  unadjusted_pval_F = rep(0.4, p),
+  pval_matrix_F = matrix(0.3, nrow = p, ncol = p),
+  adjusted_pval_factor = matrix(
+    0.3,
+    nrow = nvar_mf,
+    ncol = p,
+    dimnames = list("grp", NULL)
+  ),
+  unadjusted_pval_factor = matrix(
+    0.4,
+    nrow = nvar_mf,
+    ncol = p,
+    dimnames = list("grp", NULL)
+  ),
+  pval_matrix_factor = array(0.3, dim = c(nvar_mf, p, p)),
+  data_eval = rbind(d1, d2),
+  design_matrix = dm_mf
+)
+class(fake_iwt_aov_mf) <- "IWTaov"
+
+# grep("grp", c("(Intercept)", "grpA", "grpB")) → {grpA, grpB} → matrix →
+# apply(colors, 1, paste, collapse='') (line 630) is exercised
+with_null_device({
+  IWTimage(fake_iwt_aov_mf, abscissa_range = c(0, 1))
+})
+expect_true(TRUE)

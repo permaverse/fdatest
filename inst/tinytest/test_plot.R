@@ -143,6 +143,27 @@ expect_true(inherits(p_fa_2f, "gg") || inherits(p_fa_2f, "patchwork"))
 p_fa_2f_adj <- autoplot(res_fanova2, plot_adjpval = TRUE)
 expect_true(inherits(p_fa_2f_adj, "gg") || inherits(p_fa_2f_adj, "patchwork"))
 
+# 3-level factor x binary interaction ANOVA — exercises:
+#   * nvar > 1 + !is.null(title): paste0(title, ": Functional Data...") (line 198)
+#   * interaction branch of per-factor loop (lines 234–244)
+#   * multi-column intersect in interaction: apply(colors,...) (line 242)
+#   * multi-column non-interaction factor: apply(colors,...) (line 250)
+groups3 <- factor(c(1L, 2L, 3L, 1L, 2L, 3L, 1L, 2L))
+set.seed(42)
+res_fanova_3l <- IWTaov(
+  temperature ~ groups3 * grpB,
+  B = 5L,
+  method = "responses"
+)
+# title branch (line 198) + interaction/multi-column branches (234–244, 250)
+p_fa_3l <- autoplot(res_fanova_3l, title = "3L")
+expect_true(inherits(p_fa_3l, "gg") || inherits(p_fa_3l, "patchwork"))
+
+# plot_adjpval = TRUE + title: covers paste0(title, ": Adjusted p-values - F-test") (line 301)
+# and paste(title, ": Adjusted p-values - factor", ...) (line 335)
+p_fa_3l_adj <- autoplot(res_fanova_3l, plot_adjpval = TRUE, title = "3L")
+expect_true(inherits(p_fa_3l_adj, "gg") || inherits(p_fa_3l_adj, "patchwork"))
+
 p_fa_twt_2f <- autoplot(res_twtaov2)
 expect_true(inherits(p_fa_twt_2f, "gg") || inherits(p_fa_twt_2f, "patchwork"))
 
@@ -178,6 +199,16 @@ expect_snapshot_plot(p_flm, "autoplot_flm_default")
 p_flm_adj <- autoplot(res_flm, plot_adjpval = TRUE)
 expect_true(inherits(p_flm_adj, "gg") || inherits(p_flm_adj, "patchwork"))
 expect_snapshot_plot(p_flm_adj, "autoplot_flm_adjpval")
+
+# plot_adjpval = TRUE + title + ylim: covers title branches inside adjpval
+# panels (lines 248, 307) and the coord_cartesian(ylim) branch (line 175)
+p_flm_adj_t <- autoplot(
+  res_flm,
+  plot_adjpval = TRUE,
+  title = "LM",
+  ylim = c(-5, 5)
+)
+expect_true(inherits(p_flm_adj_t, "gg") || inherits(p_flm_adj_t, "patchwork"))
 
 # plot.flm alias
 p_flm2 <- plot(res_flm)
@@ -245,6 +276,13 @@ grDevices::pdf(tmp_pdf)
 plot(res_iwt1, xrange = c(0, 1)) # default: mu is zero
 grDevices::dev.off()
 expect_true(file.exists(tmp_pdf))
+
+# vector mu — exercises the else branch (lines 184-185) of the mu length check
+set.seed(42)
+res_iwt1_vmu <- IWT1(d1, mu = colMeans(d1), B = 5L)
+grDevices::pdf(tempfile(fileext = ".pdf"))
+plot(res_iwt1_vmu, xrange = c(0, 1))
+grDevices::dev.off()
 
 # Swapped alpha (alpha1 < alpha2 triggers internal swap)
 grDevices::pdf(tempfile(fileext = ".pdf"))
