@@ -119,7 +119,17 @@ iwt_aov <- function(
 
   row_indices <- (p - 1L):1L
 
-  compute_row_aov <- function(i) {
+  compute_row_aov <- function(
+    i,
+    t0_2x_glob,
+    t_2x_glob,
+    t0_2x_part,
+    t_2x_part,
+    n_perm,
+    p,
+    nvar,
+    recycle
+  ) {
     js <- if (recycle) seq_len(p) else seq_len(i)
     glob_vals <- numeric(length(js))
     part_vals <- matrix(nrow = nvar, ncol = length(js))
@@ -139,22 +149,35 @@ iwt_aov <- function(
     list(glob = glob_vals, part = part_vals)
   }
 
-  row_tasks <- mirai::mirai_map(
-    row_indices,
-    \(.i) compute_row_aov(.i),
-    .args = list(
-      compute_row_aov = compute_row_aov,
-      t0_2x_glob = t0_2x_glob,
-      t_2x_glob = t_2x_glob,
-      t0_2x_part = t0_2x_part,
-      t_2x_part = t_2x_part,
-      n_perm = n_perm,
-      p = p,
-      nvar = nvar,
-      recycle = recycle
-    )
+  perm_args <- list(
+    t0_2x_glob = t0_2x_glob,
+    t_2x_glob = t_2x_glob,
+    t0_2x_part = t0_2x_part,
+    t_2x_part = t_2x_part,
+    n_perm = n_perm,
+    p = p,
+    nvar = nvar,
+    recycle = recycle
   )
-  row_results <- row_tasks[]
+
+  if (mirai::daemons_set()) {
+    row_tasks <- mirai::mirai_map(
+      row_indices,
+      function(.i) {
+        rlang::inject(compute_row_aov(.i, !!!perm_args))
+      },
+      compute_row_aov = compute_row_aov,
+      perm_args = perm_args
+    )
+    row_results <- row_tasks[.progress]
+  } else {
+    row_results <- lapply(
+      row_indices,
+      function(.i) {
+        rlang::inject(compute_row_aov(.i, !!!perm_args))
+      }
+    )
+  }
 
   for (k in seq_along(row_indices)) {
     i <- row_indices[k]

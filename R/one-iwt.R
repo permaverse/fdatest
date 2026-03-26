@@ -103,15 +103,23 @@ iwt1 <- function(
 
   # Run permutations in parallel via mirai_map().
   # Each task produces one numeric vector of length p.
-  perm_tasks <- mirai::mirai_map(
-    seq_len(n_perm),
-    \(.x) {
+  if (mirai::daemons_set()) {
+    perm_tasks <- mirai::mirai_map(
+      seq_len(n_perm),
+      \(.x) {
+        signs <- stats::rbinom(n, 1, 0.5) * 2 - 1
+        abs(colMeans(coeff * signs))^2
+      },
+      .args = list(coeff = coeff, n = n)
+    )
+    t_coeff <- do.call(rbind, perm_tasks[])
+  } else {
+    t_coeff <- matrix(nrow = n_perm, ncol = p)
+    for (i in seq_len(n_perm)) {
       signs <- stats::rbinom(n, 1, 0.5) * 2 - 1
-      abs(colMeans(coeff * signs))^2
-    },
-    .args = list(coeff = coeff, n = n)
-  )
-  t_coeff <- do.call(rbind, perm_tasks[])
+      t_coeff[i, ] <- abs(colMeans(coeff * signs))^2
+    }
+  }
 
   pval <- colSums(
     t_coeff >= matrix(t0, nrow = n_perm, ncol = p, byrow = TRUE)

@@ -134,10 +134,8 @@ iwt_lm <- function(
     list(glob = glob_vals, part = part_vals)
   }
 
-  row_tasks <- mirai::mirai_map(
-    row_indices,
-    \(.i) compute_row_lm(.i),
-    .args = list(
+  if (mirai::daemons_set()) {
+    perm_args <- list(
       compute_row_lm = compute_row_lm,
       t0_2x_glob = t0_2x_glob,
       t_2x_glob = t_2x_glob,
@@ -148,8 +146,15 @@ iwt_lm <- function(
       nvar = nvar,
       recycle = recycle
     )
-  )
-  row_results <- row_tasks[]
+    row_tasks <- mirai::mirai_map(
+      row_indices,
+      \(.i) compute_row_lm(.i),
+      .args = perm_args
+    )
+    row_results <- row_tasks[]
+  } else {
+    row_results <- lapply(row_indices, compute_row_lm)
+  }
 
   for (k in seq_along(row_indices)) {
     i <- row_indices[k]

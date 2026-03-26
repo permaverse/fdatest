@@ -128,19 +128,23 @@ iwt2 <- function(
     row_vals
   }
 
-  row_tasks <- mirai::mirai_map(
-    row_indices,
-    \(.i) compute_row(.i),
-    .args = list(
-      compute_row = compute_row,
+  if (mirai::daemons_set()) {
+    perm_args <- list(
       t0_2x = t0_2x,
       t_coeff_2x = t_coeff_2x,
       n_perm = n_perm,
       p = p,
       recycle = recycle
     )
-  )
-  row_results <- row_tasks[]
+    row_tasks <- mirai::mirai_map(
+      row_indices,
+      \(.i) compute_row(.i),
+      .args = perm_args
+    )
+    row_results <- row_tasks[]
+  } else {
+    row_results <- lapply(row_indices, compute_row)
+  }
 
   for (k in seq_along(row_indices)) {
     i <- row_indices[k]

@@ -168,7 +168,9 @@ p_fa_twt_2f <- autoplot(res_twtaov2)
 expect_true(inherits(p_fa_twt_2f, "gg") || inherits(p_fa_twt_2f, "patchwork"))
 
 p_fa_twt_2f_adj <- autoplot(res_twtaov2, plot_adjpval = TRUE)
-expect_true(inherits(p_fa_twt_2f_adj, "gg") || inherits(p_fa_twt_2f_adj, "patchwork"))
+expect_true(
+  inherits(p_fa_twt_2f_adj, "gg") || inherits(p_fa_twt_2f_adj, "patchwork")
+)
 
 # Swapped alpha (alpha1 < alpha2 triggers internal swap)
 p_fa_swap <- autoplot(res_fanova, alpha1 = 0.01, alpha2 = 0.05)
@@ -248,7 +250,9 @@ p_flm_twt_2v <- autoplot(res_twtlm2)
 expect_true(inherits(p_flm_twt_2v, "gg") || inherits(p_flm_twt_2v, "patchwork"))
 
 p_flm_twt_2v_adj <- autoplot(res_twtlm2, plot_adjpval = TRUE)
-expect_true(inherits(p_flm_twt_2v_adj, "gg") || inherits(p_flm_twt_2v_adj, "patchwork"))
+expect_true(
+  inherits(p_flm_twt_2v_adj, "gg") || inherits(p_flm_twt_2v_adj, "patchwork")
+)
 
 # Swapped alpha (alpha1 < alpha2 triggers internal swap)
 p_flm_swap <- autoplot(res_flm, alpha1 = 0.01, alpha2 = 0.05)

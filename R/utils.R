@@ -221,17 +221,26 @@ twosample_alt_permtest <- function(coeff, n1, n_perm, alternative, paired) {
 
   # Run permutations in parallel via mirai_map().
   # Each task returns one row of t_coeff (length p).
-  perm_tasks <- mirai::mirai_map(
-    seq_len(n_perm),
-    \(.x) fdatest:::.twosample_one_perm(coeff, n1, alternative, paired),
-    .args = list(
+  if (mirai::daemons_set()) {
+    perm_args <- list(
       coeff = coeff,
       n1 = n1,
       alternative = alternative,
       paired = paired
     )
-  )
-  t_coeff <- do.call(rbind, perm_tasks[])
+    perm_tasks <- mirai::mirai_map(
+      seq_len(n_perm),
+      function(.x) {
+        rlang::inject(.twosample_one_perm(!!!perm_args))
+      }
+    )
+    t_coeff <- do.call(rbind, perm_tasks[])
+  } else {
+    t_coeff <- matrix(nrow = n_perm, ncol = p)
+    for (i in seq_len(n_perm)) {
+      t_coeff[i, ] <- .twosample_one_perm(coeff, n1, alternative, paired)
+    }
+  }
 
   pval <- colSums(
     t_coeff >= matrix(t0, nrow = n_perm, ncol = p, byrow = TRUE)
@@ -431,7 +440,6 @@ aov_permtest <- function(formula, dx, n_perm, method) {
     }
   }
 
-  # Run permutations in parallel via mirai_map().
   perm_args <- list(
     coeff = coeff,
     n = n,
@@ -445,33 +453,36 @@ aov_permtest <- function(formula, dx, n_perm, method) {
     residui = residui,
     fitted_part = fitted_part
   )
-  perm_tasks <- mirai::mirai_map(
-    seq_len(n_perm),
-    \(.x) {
-      fdatest:::.aov_one_perm(
-        coeff,
-        n,
-        p,
-        nvar,
-        design_matrix,
-        index_vars,
-        df_vars,
-        regr0_df_residual,
-        method,
-        residui,
-        fitted_part
-      )
-    },
-    .args = perm_args
-  )
-  perm_results <- perm_tasks[]
 
-  t_glob <- do.call(rbind, lapply(perm_results, `[[`, "t_glob_row"))
-  # t_part: array dim c(n_perm, nvar, p)
-  t_part <- array(
-    dim = c(n_perm, nvar, p),
-    data = do.call(c, lapply(perm_results, function(r) t(r$t_part_row)))
+  # Run permutations in parallel via mirai_map().
+  if (mirai::daemons_set()) {
+    perm_tasks <- mirai::mirai_map(
+      seq_len(n_perm),
+      function(.x, func) {
+        rlang::inject(func(!!!perm_args))
+      },
+      func = .aov_one_perm
+    )
+    perm_results <- perm_tasks[.progress]
+  } else {
+    perm_results <- lapply(
+      seq_len(n_perm),
+      function(.x) {
+        rlang::inject(.aov_one_perm(!!!perm_args))
+      }
+    )
+  }
+
+  t_glob <- do.call(
+    rbind,
+    lapply(perm_results, function(.x) .x$t_glob_row)
   )
+  # t_glob <- do.call(rbind, lapply(perm_results, `[[`, "t_glob_row"))
+  # t_part: array dim c(n_perm, nvar, p)
+  t_part <- array(dim = c(n_perm, nvar, p), data = NA_real_)
+  for (i in seq_len(n_perm)) {
+    t_part[i, , ] <- perm_results[[i]]$t_part_row
+  }
 
   pval_glob <- colSums(
     t_glob >= matrix(t0_glob, nrow = n_perm, ncol = p, byrow = TRUE)
@@ -679,7 +690,6 @@ lm_permtest <- function(formula, dx, n_perm, method) {
     )
   }
 
-  # Run permutations in parallel via mirai_map().
   perm_args <- list(
     coeff = coeff,
     n = n,
@@ -691,31 +701,31 @@ lm_permtest <- function(formula, dx, n_perm, method) {
     residui = residui,
     fitted_part = fitted_part
   )
-  perm_tasks <- mirai::mirai_map(
-    seq_len(n_perm),
-    \(.x) {
-      fdatest:::.lm_one_perm(
-        coeff,
-        n,
-        p,
-        nvar,
-        design_matrix,
-        regr0_df_residual,
-        method,
-        residui,
-        fitted_part
-      )
-    },
-    .args = perm_args
-  )
-  perm_results <- perm_tasks[]
+
+  # Run permutations in parallel via mirai_map().
+  if (mirai::daemons_set()) {
+    perm_tasks <- mirai::mirai_map(
+      seq_len(n_perm),
+      function(.x) {
+        rlang::inject(.lm_one_perm(!!!perm_args))
+      }
+    )
+    perm_results <- perm_tasks[]
+  } else {
+    perm_results <- lapply(
+      seq_len(n_perm),
+      function(i) {
+        rlang::inject(.lm_one_perm(!!!perm_args))
+      }
+    )
+  }
 
   t_glob <- do.call(rbind, lapply(perm_results, `[[`, "t_glob_row"))
   # t_part: array dim c(n_perm, nvar+1, p)
-  t_part <- array(
-    dim = c(n_perm, nvar + 1L, p),
-    data = do.call(c, lapply(perm_results, function(r) t(r$t_part_row)))
-  )
+  t_part <- array(dim = c(n_perm, nvar + 1L, p), data = NA_real_)
+  for (i in seq_len(n_perm)) {
+    t_part[i, , ] <- perm_results[[i]]$t_part_row
+  }
 
   pval_glob <- colSums(
     t_glob >= matrix(t0_glob, nrow = n_perm, ncol = p, byrow = TRUE)
