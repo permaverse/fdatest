@@ -458,10 +458,9 @@ aov_permtest <- function(formula, dx, n_perm, method) {
   if (mirai::daemons_set()) {
     perm_tasks <- mirai::mirai_map(
       seq_len(n_perm),
-      function(.x, func) {
-        rlang::inject(func(!!!perm_args))
-      },
-      func = .aov_one_perm
+      function(.x) {
+        rlang::inject(.aov_one_perm(!!!perm_args))
+      }
     )
     perm_results <- perm_tasks[.progress]
   } else {
