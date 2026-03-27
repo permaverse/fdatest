@@ -464,9 +464,13 @@ aov_permtest <- function(formula, dx, n_perm, method) {
     )
     perm_results <- perm_tasks[.progress]
   } else {
+    mirai::daemons(1L, seed = 42)
+    seeds <- lapply(seq_len(n_perm), \(.x) mirai::nextstream())
+    mirai::daemons(0L)
     perm_results <- lapply(
       seq_len(n_perm),
       function(.x) {
+        .Random.seed <<- seeds[[.x]]
         rlang::inject(.aov_one_perm(!!!perm_args))
       }
     )
@@ -755,4 +759,15 @@ lm_permtest <- function(formula, dx, n_perm, method) {
     pval_part = pval_part,
     method = method
   )
+}
+
+optimize_order <- function(x) {
+  n <- length(x)
+  half <- ceiling(n / 2)
+  x_half_1 <- x[1:half]
+  x_half_2 <- rev(x[(half + 1):n])
+  x_reordered <- numeric(n)
+  x_reordered[seq(1, n, by = 2)] <- x_half_1
+  x_reordered[seq(2, n, by = 2)] <- x_half_2
+  x_reordered
 }

@@ -149,6 +149,56 @@ iwt_aov <- function(
     list(glob = glob_vals, part = part_vals)
   }
 
+  compute_row_pair_aov <- function(
+    i,
+    t0_2x_glob,
+    t_2x_glob,
+    t0_2x_part,
+    t_2x_part,
+    n_perm,
+    p,
+    nvar,
+    recycle
+  ) {
+    if (i == p - i) {
+      return(compute_row_aov(
+        i = i,
+        t0_2x_glob = t0_2x_glob,
+        t_2x_glob = t_2x_glob,
+        t0_2x_part = t0_2x_part,
+        t_2x_part = t_2x_part,
+        n_perm = n_perm,
+        p = p,
+        nvar = nvar,
+        recycle = recycle
+      ))
+    }
+    list(
+      compute_row_aov(
+        i = i,
+        t0_2x_glob = t0_2x_glob,
+        t_2x_glob = t_2x_glob,
+        t0_2x_part = t0_2x_part,
+        t_2x_part = t_2x_part,
+        n_perm = n_perm,
+        p = p,
+        nvar = nvar,
+        recycle = recycle
+      ),
+      compute_row_aov(
+        i = p - i,
+        t0_2x_glob = t0_2x_glob,
+        t_2x_glob = t_2x_glob,
+        t0_2x_part = t0_2x_part,
+        t_2x_part = t_2x_part,
+        n_perm = n_perm,
+        p = p,
+        nvar = nvar,
+        recycle = recycle
+      )
+    )
+  }
+
   perm_args <- list(
     t0_2x_glob = t0_2x_glob,
     t_2x_glob = t_2x_glob,
@@ -161,15 +211,19 @@ iwt_aov <- function(
   )
 
   if (mirai::daemons_set()) {
+    optimized_order <- optimize_order(row_indices)
     row_tasks <- mirai::mirai_map(
-      row_indices,
+      1:ceiling(p / 2),
       function(.i) {
-        rlang::inject(compute_row_aov(.i, !!!perm_args))
-      },
-      compute_row_aov = compute_row_aov,
-      perm_args = perm_args
+        rlang::inject(compute_row_pair_aov(.i, !!!perm_args))
+      }
     )
     row_results <- row_tasks[.progress]
+    row_results <- unlist(row_results, recursive = FALSE)
+    row_results <- row_results[order(
+      optimized_order,
+      decreasing = TRUE
+    )]
   } else {
     row_results <- lapply(
       row_indices,
