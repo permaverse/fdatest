@@ -37,11 +37,11 @@ expect_equal(length(res_iwt_r$R2_eval), p)
 # IWTlm — method = "residuals", nvar > 1 (multi-predictor)
 # Exercises the paste(variables_reduced, ...) reduced-formula branch
 # ===========================================================================
-grpA <- c(0L, 0L, 1L, 1L, 0L, 0L, 1L, 1L)
-grpB <- c(0L, 1L, 0L, 1L, 0L, 1L, 0L, 1L)
+grp_a <- c(0L, 0L, 1L, 1L, 0L, 0L, 1L, 1L)
+grp_b <- c(0L, 1L, 0L, 1L, 0L, 1L, 0L, 1L)
 
 set.seed(42)
-res_iwt_r2 <- IWTlm(temperature ~ grpA + grpB, B = 5L, method = "residuals")
+res_iwt_r2 <- IWTlm(temperature ~ grp_a + grp_b, B = 5L, method = "residuals")
 expect_inherits(res_iwt_r2, "flm")
 expect_equal(length(res_iwt_r2$adjusted_pval_F), p)
 # pval_matrix_part has one slice per predictor + intercept
@@ -95,7 +95,7 @@ expect_null(res_twt_r$pval_matrix_F)
 
 # TWTlm — method = "residuals", nvar > 1
 set.seed(42)
-res_twt_r2 <- TWTlm(temperature ~ grpA + grpB, B = 5L, method = "residuals")
+res_twt_r2 <- TWTlm(temperature ~ grp_a + grp_b, B = 5L, method = "residuals")
 expect_inherits(res_twt_r2, "flm")
 expect_equal(length(res_twt_r2$adjusted_pval_F), p)
 
@@ -135,7 +135,7 @@ expect_true(!is.null(res_g_r$Global_pval_part))
 # Globallm — method = "residuals", nvar > 1
 set.seed(42)
 res_g_r2 <- Globallm(
-  temperature ~ grpA + grpB,
+  temperature ~ grp_a + grp_b,
   B = 5L,
   stat = "Integral",
   method = "residuals"

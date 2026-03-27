@@ -46,21 +46,22 @@
 #'   xlab = 'Day',
 #'   xrange = c(1, 365)
 #' )
-Globallm <- function( # nolint: object_name_linter.
-  formula,
-  dx = NULL,
-  B = 1000L, # nolint: object_name_linter.
-  method = c("residuals", "responses"),
-  stat = c("Integral", "Max")
-) {
-  global_lm(
-    formula = formula,
-    dx = dx,
-    n_perm = B,
-    method = method,
-    stat = stat
-  )
-}
+Globallm <- # nolint: object_name_linter.
+  function(
+    formula,
+    dx = NULL,
+    B = 1000L, # nolint: object_name_linter.
+    method = c("residuals", "responses"),
+    stat = c("Integral", "Max")
+  ) {
+    global_lm(
+      formula = formula,
+      dx = dx,
+      n_perm = B,
+      method = method,
+      stat = stat
+    )
+  }
 
 #' @param n_perm An integer value specifying the number of permutations for the
 #'   permutation tests. Defaults to `1000L`.

@@ -102,7 +102,9 @@ autoplot.ftwosample <- function(
   ...
 ) {
   if (length(alpha1) != 1L || length(alpha2) != 1L) {
-    cli::cli_abort("{.arg alpha1} and {.arg alpha2} must each be a single numeric value.")
+    cli::cli_abort(
+      "{.arg alpha1} and {.arg alpha2} must each be a single numeric value."
+    )
   }
   if (alpha1 < alpha2) {
     temp <- alpha1
@@ -173,6 +175,19 @@ autoplot.ftwosample <- function(
     NULL
   }
 
+  sig_layer_scale <- if (nrow(sig_regions) > 0) {
+    ggplot2::scale_fill_manual(
+      values = c("alpha1" = "gray70", "alpha2" = "gray50"),
+      labels = c(
+        "alpha1" = paste0("p < ", alpha1),
+        "alpha2" = paste0("p < ", alpha2)
+      ),
+      name = "Significance"
+    )
+  } else {
+    NULL
+  }
+
   # Functional data plot
   p1 <- ggplot2::ggplot(
     data_long,
@@ -184,16 +199,9 @@ autoplot.ftwosample <- function(
     )
   ) +
     sig_layer +
+    sig_layer_scale +
     ggplot2::geom_line(linewidth = linewidth) +
     ggplot2::scale_color_viridis_d(name = "Group") +
-    ggplot2::scale_fill_manual(
-      values = c("alpha1" = "gray70", "alpha2" = "gray50"),
-      labels = c(
-        "alpha1" = paste0("p < ", alpha1),
-        "alpha2" = paste0("p < ", alpha2)
-      ),
-      name = "Significance"
-    ) +
     ggplot2::labs(subtitle = "Functional Data", x = "Domain", y = ylabel) +
     ggplot2::theme_minimal()
 
@@ -205,20 +213,13 @@ autoplot.ftwosample <- function(
 
   p2 <- ggplot2::ggplot(pval_data, ggplot2::aes(x = .data$x, y = .data$pval)) +
     sig_layer +
+    sig_layer_scale +
     ggplot2::geom_hline(
       yintercept = seq(0, 1, 0.1),
       color = "lightgray",
       linetype = "dotted"
     ) +
     ggplot2::geom_line(linewidth = 2 * linewidth) +
-    ggplot2::scale_fill_manual(
-      values = c("alpha1" = "gray70", "alpha2" = "gray50"),
-      labels = c(
-        "alpha1" = paste0("p < ", alpha1),
-        "alpha2" = paste0("p < ", alpha2)
-      ),
-      name = "Significance"
-    ) +
     ggplot2::scale_y_continuous(limits = c(0, 1)) +
     ggplot2::labs(subtitle = "Adjusted p-values", x = "Domain", y = "p-value") +
     ggplot2::theme_minimal()

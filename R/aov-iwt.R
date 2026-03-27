@@ -55,21 +55,22 @@
 #'   xlab = 'Day',
 #'   xrange = c(1, 365)
 #' )
-IWTaov <- function( # nolint: object_name_linter.
-  formula,
-  dx = NULL,
-  B = 1000L, # nolint: object_name_linter.
-  method = c("residuals", "responses"),
-  recycle = TRUE
-) {
-  iwt_aov(
-    formula = formula,
-    dx = dx,
-    n_perm = B,
-    method = method,
-    recycle = recycle
-  )
-}
+IWTaov <- # nolint: object_name_linter.
+  function(
+    formula,
+    dx = NULL,
+    B = 1000L, # nolint: object_name_linter.
+    method = c("residuals", "responses"),
+    recycle = TRUE
+  ) {
+    iwt_aov(
+      formula = formula,
+      dx = dx,
+      n_perm = B,
+      method = method,
+      recycle = recycle
+    )
+  }
 
 #' @param n_perm An integer value specifying the number of permutations for the
 #'   permutation tests. Defaults to `1000L`.
@@ -116,47 +117,132 @@ iwt_aov <- function(
     t_2x_part[, ii, ] <- cbind(t_part[, ii, ], t_part[, ii, ])
   }
 
-  maxrow <- 1L
-  if (recycle) {
-    for (i in (p - 1L):maxrow) {
-      for (j in seq_len(p)) {
-        inf <- j
-        sup <- (p - i) + j
-        t0_temp <- sum(t0_2x_glob[inf:sup])
-        t_temp <- rowSums(t_2x_glob[, inf:sup, drop = FALSE])
-        pval_temp <- sum(t_temp >= t0_temp) / n_perm
-        matrice_pval_asymm_glob[i, j] <- pval_temp
-        for (ii in seq_len(nvar)) {
-          t0_temp <- sum(t0_2x_part[ii, inf:sup])
-          t_temp <- rowSums(t_2x_part[, ii, inf:sup, drop = FALSE])
-          pval_temp <- sum(t_temp >= t0_temp) / n_perm
-          matrice_pval_asymm_part[ii, i, j] <- pval_temp
-        }
+  row_indices <- (p - 1L):1L
+
+  compute_row_aov <- function(
+    i,
+    t0_2x_glob,
+    t_2x_glob,
+    t0_2x_part,
+    t_2x_part,
+    n_perm,
+    p,
+    nvar,
+    recycle
+  ) {
+    js <- if (recycle) seq_len(p) else seq_len(i)
+    glob_vals <- numeric(length(js))
+    part_vals <- matrix(nrow = nvar, ncol = length(js))
+    for (k in seq_along(js)) {
+      j <- js[k]
+      inf <- j
+      sup <- (p - i) + j
+      t0_temp <- sum(t0_2x_glob[inf:sup])
+      t_temp <- rowSums(t_2x_glob[, inf:sup, drop = FALSE])
+      glob_vals[k] <- sum(t_temp >= t0_temp) / n_perm
+      for (ii in seq_len(nvar)) {
+        t0_temp <- sum(t0_2x_part[ii, inf:sup])
+        t_temp <- rowSums(t_2x_part[, ii, inf:sup, drop = FALSE])
+        part_vals[ii, k] <- sum(t_temp >= t0_temp) / n_perm
       }
-      cli::cli_h1(
-        "Creating the p-value matrix: end of row {p - i + 1} out of {p}"
-      )
     }
+    list(glob = glob_vals, part = part_vals)
+  }
+
+  compute_row_pair_aov <- function(
+    i,
+    t0_2x_glob,
+    t_2x_glob,
+    t0_2x_part,
+    t_2x_part,
+    n_perm,
+    p,
+    nvar,
+    recycle
+  ) {
+    if (i == p - i) {
+      return(compute_row_aov(
+        i = i,
+        t0_2x_glob = t0_2x_glob,
+        t_2x_glob = t_2x_glob,
+        t0_2x_part = t0_2x_part,
+        t_2x_part = t_2x_part,
+        n_perm = n_perm,
+        p = p,
+        nvar = nvar,
+        recycle = recycle
+      ))
+    }
+    list(
+      compute_row_aov(
+        i = i,
+        t0_2x_glob = t0_2x_glob,
+        t_2x_glob = t_2x_glob,
+        t0_2x_part = t0_2x_part,
+        t_2x_part = t_2x_part,
+        n_perm = n_perm,
+        p = p,
+        nvar = nvar,
+        recycle = recycle
+      ),
+      compute_row_aov(
+        i = p - i,
+        t0_2x_glob = t0_2x_glob,
+        t_2x_glob = t_2x_glob,
+        t0_2x_part = t0_2x_part,
+        t_2x_part = t_2x_part,
+        n_perm = n_perm,
+        p = p,
+        nvar = nvar,
+        recycle = recycle
+      )
+    )
+  }
+
+  perm_args <- list(
+    t0_2x_glob = t0_2x_glob,
+    t_2x_glob = t_2x_glob,
+    t0_2x_part = t0_2x_part,
+    t_2x_part = t_2x_part,
+    n_perm = n_perm,
+    p = p,
+    nvar = nvar,
+    recycle = recycle
+  )
+
+  if (mirai::daemons_set()) {
+    optimized_order <- optimize_order(row_indices)
+    row_tasks <- mirai::mirai_map(
+      1:ceiling(p / 2),
+      function(.i) {
+        rlang::inject(compute_row_pair_aov(.i, !!!perm_args))
+      }
+    )
+    row_results <- row_tasks[.progress]
+    row_results <- unlist(row_results, recursive = FALSE)
+    row_results <- row_results[order(
+      optimized_order,
+      decreasing = TRUE
+    )]
   } else {
-    for (i in (p - 1L):maxrow) {
-      for (j in seq_len(i)) {
-        inf <- j
-        sup <- (p - i) + j
-        t0_temp <- sum(t0_2x_glob[inf:sup])
-        t_temp <- rowSums(t_2x_glob[, inf:sup, drop = FALSE])
-        pval_temp <- sum(t_temp >= t0_temp) / n_perm
-        matrice_pval_asymm_glob[i, j] <- pval_temp
-        for (ii in seq_len(nvar)) {
-          t0_temp <- sum(t0_2x_part[ii, inf:sup])
-          t_temp <- rowSums(t_2x_part[, ii, inf:sup, drop = FALSE])
-          pval_temp <- sum(t_temp >= t0_temp) / n_perm
-          matrice_pval_asymm_part[ii, i, j] <- pval_temp
-        }
+    row_results <- lapply(
+      row_indices,
+      function(.i) {
+        rlang::inject(compute_row_aov(.i, !!!perm_args))
       }
-      cli::cli_h1(
-        "Creating the p-value matrix: end of row {p - i + 1} out of {p}"
-      )
+    )
+  }
+
+  for (k in seq_along(row_indices)) {
+    i <- row_indices[k]
+    js <- if (recycle) seq_len(p) else seq_len(i)
+    matrice_pval_asymm_glob[i, js] <- row_results[[k]]$glob
+    for (ii in seq_len(nvar)) {
+      matrice_pval_asymm_part[ii, i, js] <- row_results[[k]]$part[ii, ]
     }
+    cli::cli_h1(
+      "Creating the p-value matrix: end of row {p - i + 1} out of {p}"
+    )
   }
 
   corrected_pval_matrix_glob <- pval_correct(matrice_pval_asymm_glob)

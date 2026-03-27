@@ -45,19 +45,20 @@
 #'   xlab = 'Day',
 #'   xrange = c(1, 365)
 #' )
-TWTaov <- function( # nolint: object_name_linter.
-  formula,
-  dx = NULL,
-  B = 1000L, # nolint: object_name_linter.
-  method = c("residuals", "responses")
-) {
-  twt_aov(
-    formula = formula,
-    dx = dx,
-    n_perm = B,
-    method = method
-  )
-}
+TWTaov <- # nolint: object_name_linter.
+  function(
+    formula,
+    dx = NULL,
+    B = 1000L, # nolint: object_name_linter.
+    method = c("residuals", "responses")
+  ) {
+    twt_aov(
+      formula = formula,
+      dx = dx,
+      n_perm = B,
+      method = method
+    )
+  }
 
 #' @param n_perm An integer value specifying the number of permutations for the
 #'   permutation tests. Defaults to `1000L`.

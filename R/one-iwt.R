@@ -66,14 +66,16 @@
 #'
 #' # Selecting the significant components at 5% level
 #' which(IWT_result$adjusted_pval < 0.05)
-IWT1 <- function( # nolint: object_name_linter.
-  data, # nolint: indentation_linter.
-  mu = 0,
-  B = 1000L, # nolint: object_name_linter.
-  dx = NULL,
-  recycle = TRUE) {
-  iwt1(data = data, mu = mu, n_perm = B, dx = dx, recycle = recycle)
-}
+IWT1 <- # nolint: object_name_linter.
+  function(
+    data,
+    mu = 0,
+    B = 1000L, # nolint: object_name_linter.
+    dx = NULL,
+    recycle = TRUE
+  ) {
+    iwt1(data = data, mu = mu, n_perm = B, dx = dx, recycle = recycle)
+  }
 
 #' @param n_perm An integer value specifying the number of permutations for the
 #'   permutation tests. Defaults to `1000L`.
@@ -98,17 +100,31 @@ iwt1 <- function(
   cli::cli_h1("Point-wise tests")
 
   t0 <- abs(colMeans(coeff))^2
-  t_coeff <- matrix(ncol = p, nrow = n_perm)
-  for (perm in seq_len(n_perm)) {
-    signs <- stats::rbinom(n, 1, 0.5) * 2 - 1
-    coeff_perm <- coeff * signs
-    t_coeff[perm, ] <- abs(colMeans(coeff_perm))^2
+
+  # Run permutations in parallel via mirai_map().
+  # Each task produces one numeric vector of length p.
+  if (mirai::daemons_set()) {
+    perm_tasks <- mirai::mirai_map(
+      seq_len(n_perm),
+      \(.x) {
+        signs <- stats::rbinom(n, 1, 0.5) * 2 - 1
+        abs(colMeans(coeff * signs))^2
+      },
+      .args = list(coeff = coeff, n = n)
+    )
+    t_coeff <- do.call(rbind, perm_tasks[])
+  } else {
+    t_coeff <- matrix(nrow = n_perm, ncol = p)
+    for (i in seq_len(n_perm)) {
+      signs <- stats::rbinom(n, 1, 0.5) * 2 - 1
+      t_coeff[i, ] <- abs(colMeans(coeff * signs))^2
+    }
   }
 
-  pval <- numeric(p)
-  for (i in seq_len(p)) {
-    pval[i] <- sum(t_coeff[, i] >= t0[i]) / n_perm
-  }
+  pval <- colSums(
+    t_coeff >= matrix(t0, nrow = n_perm, ncol = p, byrow = TRUE)
+  ) /
+    n_perm
 
   cli::cli_h1("Interval-wise tests")
 
