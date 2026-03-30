@@ -119,86 +119,6 @@ iwt_aov <- function(
 
   row_indices <- (p - 1L):1L
 
-  compute_row_aov <- function(
-    i,
-    t0_2x_glob,
-    t_2x_glob,
-    t0_2x_part,
-    t_2x_part,
-    n_perm,
-    p,
-    nvar,
-    recycle
-  ) {
-    js <- if (recycle) seq_len(p) else seq_len(i)
-    glob_vals <- numeric(length(js))
-    part_vals <- matrix(nrow = nvar, ncol = length(js))
-    for (k in seq_along(js)) {
-      j <- js[k]
-      inf <- j
-      sup <- (p - i) + j
-      t0_temp <- sum(t0_2x_glob[inf:sup])
-      t_temp <- rowSums(t_2x_glob[, inf:sup, drop = FALSE])
-      glob_vals[k] <- sum(t_temp >= t0_temp) / n_perm
-      for (ii in seq_len(nvar)) {
-        t0_temp <- sum(t0_2x_part[ii, inf:sup])
-        t_temp <- rowSums(t_2x_part[, ii, inf:sup, drop = FALSE])
-        part_vals[ii, k] <- sum(t_temp >= t0_temp) / n_perm
-      }
-    }
-    list(glob = glob_vals, part = part_vals)
-  }
-
-  compute_row_pair_aov <- function(
-    i,
-    t0_2x_glob,
-    t_2x_glob,
-    t0_2x_part,
-    t_2x_part,
-    n_perm,
-    p,
-    nvar,
-    recycle
-  ) {
-    if (i == p - i) {
-      return(compute_row_aov(
-        i = i,
-        t0_2x_glob = t0_2x_glob,
-        t_2x_glob = t_2x_glob,
-        t0_2x_part = t0_2x_part,
-        t_2x_part = t_2x_part,
-        n_perm = n_perm,
-        p = p,
-        nvar = nvar,
-        recycle = recycle
-      ))
-    }
-    list(
-      compute_row_aov(
-        i = i,
-        t0_2x_glob = t0_2x_glob,
-        t_2x_glob = t_2x_glob,
-        t0_2x_part = t0_2x_part,
-        t_2x_part = t_2x_part,
-        n_perm = n_perm,
-        p = p,
-        nvar = nvar,
-        recycle = recycle
-      ),
-      compute_row_aov(
-        i = p - i,
-        t0_2x_glob = t0_2x_glob,
-        t_2x_glob = t_2x_glob,
-        t0_2x_part = t0_2x_part,
-        t_2x_part = t_2x_part,
-        n_perm = n_perm,
-        p = p,
-        nvar = nvar,
-        recycle = recycle
-      )
-    )
-  }
-
   perm_args <- list(
     t0_2x_glob = t0_2x_glob,
     t_2x_glob = t_2x_glob,
@@ -211,25 +131,19 @@ iwt_aov <- function(
   )
 
   if (mirai::daemons_set()) {
-    # optimized_order <- optimize_order(row_indices)
-    # row_tasks <- mirai::mirai_map(
-    #   1:ceiling(p / 2),
-    #   function(.i) {
-    #     rlang::inject(compute_row_pair_aov(.i, !!!perm_args))
-    #   }
-    # )
+    optimized_order <- optimize_order(row_indices)
     row_tasks <- mirai::mirai_map(
-      row_indices,
+      1:ceiling((p - 1) / 2),
       function(.i) {
-        rlang::inject(compute_row_aov(.i, !!!perm_args))
+        rlang::inject(compute_row_pair_aov(.i, !!!perm_args))
       }
     )
     row_results <- row_tasks[.progress]
-    # row_results <- unlist(row_results, recursive = FALSE)
-    # row_results <- row_results[order(
-    #   optimized_order,
-    #   decreasing = TRUE
-    # )]
+    row_results <- unlist(row_results, recursive = FALSE)
+    row_results <- row_results[order(
+      optimized_order,
+      decreasing = TRUE
+    )]
   } else {
     row_results <- lapply(
       row_indices,
