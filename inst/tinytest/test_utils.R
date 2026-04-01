@@ -70,12 +70,20 @@ expect_error(fdatest:::pval_correct_cpp(array_pm))
 rect_pm <- matrix(stats::runif(12), nrow = 4, ncol = 3)
 expect_error(fdatest:::pval_correct_cpp(rect_pm))
 
-# for the C++ version: add example with NA values
+# for the C++ version: add example with NA values (NA in a non-last row)
 pm_with_na <- matrix(stats::runif(16), nrow = 4, ncol = 4)
 pm_with_na[1, 1] <- NA
 corrected_with_na <- fdatest:::pval_correct_cpp(pm_with_na)
 expect_equal(dim(corrected_with_na), c(4L, 4L))
 expect_true(all(corrected_with_na >= 0 & corrected_with_na <= 1, na.rm = TRUE))
+
+# for the C++ version: NA in the last row makes pval_var start as NaN,
+# exercising the `pval_var = seg_max` branch (std::isnan(pval_var) == true)
+pm_with_na_lastrow <- matrix(stats::runif(16), nrow = 4, ncol = 4)
+pm_with_na_lastrow[4, 4] <- NA
+corrected_na_last <- fdatest:::pval_correct_cpp(pm_with_na_lastrow)
+expect_equal(dim(corrected_na_last), c(4L, 4L))
+expect_true(all(corrected_na_last >= 0 & corrected_na_last <= 1, na.rm = TRUE))
 
 # ---------------------------------------------------------------------------
 # onesample2coeffs — matrix input
