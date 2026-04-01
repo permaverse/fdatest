@@ -62,6 +62,21 @@ expect_true(all(corrected >= 0 & corrected <= 1, na.rm = TRUE))
 # Corrected values form a valid p-value matrix
 expect_true(!any(corrected < 0, na.rm = TRUE))
 
+# for the C++ version: Expect matrix, not array
+array_pm <- array(stats::runif(16), dim = c(4, 4, 1))
+expect_error(fdatest:::pval_correct_cpp(array_pm))
+
+# for the C++ version: Expect square matrix
+rect_pm <- matrix(stats::runif(12), nrow = 4, ncol = 3)
+expect_error(fdatest:::pval_correct_cpp(rect_pm))
+
+# for the C++ version: add example with NA values
+pm_with_na <- matrix(stats::runif(16), nrow = 4, ncol = 4)
+pm_with_na[1, 1] <- NA
+corrected_with_na <- fdatest:::pval_correct_cpp(pm_with_na)
+expect_equal(dim(corrected_with_na), c(4L, 4L))
+expect_true(all(corrected_with_na >= 0 & corrected_with_na <= 1, na.rm = TRUE))
+
 # ---------------------------------------------------------------------------
 # onesample2coeffs — matrix input
 # ---------------------------------------------------------------------------

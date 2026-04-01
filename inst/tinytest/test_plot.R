@@ -254,6 +254,28 @@ expect_true(
   inherits(p_flm_twt_2v_adj, "gg") || inherits(p_flm_twt_2v_adj, "patchwork")
 )
 
+# Too few colors (< nvar+1) triggers "Not enough colors" warning and auto-extension
+# res_flm2 has 3 partial vars, so nvar+1 = 4; passing 2 colors triggers the branch
+expect_warning(
+  p_flm_few_col <- autoplot(res_flm2, col = c("red", "blue")),
+  "Not enough colors"
+)
+expect_true(
+  inherits(p_flm_few_col, "gg") || inherits(p_flm_few_col, "patchwork")
+)
+
+# Too many colors (> nvar+1) triggers "More colors ... will be ignored" warning
+expect_warning(
+  p_flm_many_col <- autoplot(
+    res_flm2,
+    col = c("red", "blue", "green", "purple", "orange")
+  ),
+  "Extra colors will be ignored"
+)
+expect_true(
+  inherits(p_flm_many_col, "gg") || inherits(p_flm_many_col, "patchwork")
+)
+
 # Swapped alpha (alpha1 < alpha2 triggers internal swap)
 p_flm_swap <- autoplot(res_flm, alpha1 = 0.01, alpha2 = 0.05)
 expect_true(inherits(p_flm_swap, "gg") || inherits(p_flm_swap, "patchwork"))
