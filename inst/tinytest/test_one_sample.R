@@ -1,7 +1,5 @@
 # Tests for one-sample IWT: R/one-iwt.R, R/ITP1bspline.R, R/ITP1fourier.R
-library(fdatest)
 
-data("NASAtemp", package = "fdatest")
 d1 <- NASAtemp$milan[1:6, 1:8]
 p <- ncol(d1)
 
@@ -56,3 +54,5 @@ expect_inherits(res_bsp, "IWT1")
 set.seed(42)
 res_fou <- suppressWarnings(ITP1fourier(data = d1, mu = 0, B = 5L))
 expect_inherits(res_fou, "IWT1")
+
+set.seed(NULL)

@@ -114,7 +114,17 @@ iwt_lm <- function(
 
   row_indices <- (p - 1L):1L
 
-  compute_row_lm <- function(i) {
+  compute_row_lm <- function(
+    i,
+    t0_2x_glob,
+    t_2x_glob,
+    t0_2x_part,
+    t_2x_part,
+    n_perm,
+    p,
+    nvar,
+    recycle
+  ) {
     js <- if (recycle) seq_len(p) else seq_len(i)
     glob_vals <- numeric(length(js))
     part_vals <- matrix(nrow = nvar + 1L, ncol = length(js))
@@ -134,26 +144,26 @@ iwt_lm <- function(
     list(glob = glob_vals, part = part_vals)
   }
 
+  perm_args <- list(
+    t0_2x_glob = t0_2x_glob,
+    t_2x_glob = t_2x_glob,
+    t0_2x_part = t0_2x_part,
+    t_2x_part = t_2x_part,
+    n_perm = n_perm,
+    p = p,
+    nvar = nvar,
+    recycle = recycle
+  )
+
   if (mirai::daemons_set()) {
-    perm_args <- list(
-      compute_row_lm = compute_row_lm,
-      t0_2x_glob = t0_2x_glob,
-      t_2x_glob = t_2x_glob,
-      t0_2x_part = t0_2x_part,
-      t_2x_part = t_2x_part,
-      n_perm = n_perm,
-      p = p,
-      nvar = nvar,
-      recycle = recycle
-    )
-    row_tasks <- mirai::mirai_map(
-      row_indices,
-      \(.i) compute_row_lm(.i),
-      .args = perm_args
-    )
-    row_results <- row_tasks[]
+    row_tasks <- mirai::mirai_map(row_indices, function(.i) {
+      rlang::inject(compute_row_lm(.i, !!!perm_args))
+    })
+    row_results <- row_tasks[.progress]
   } else {
-    row_results <- lapply(row_indices, compute_row_lm)
+    row_results <- lapply(row_indices, function(.i) {
+      rlang::inject(compute_row_lm(.i, !!!perm_args))
+    })
   }
 
   for (k in seq_along(row_indices)) {
@@ -168,13 +178,13 @@ iwt_lm <- function(
     )
   }
 
-  corrected_pval_matrix_glob <- pval_correct(matrice_pval_asymm_glob)
+  corrected_pval_matrix_glob <- pval_correct_cpp(matrice_pval_asymm_glob)
   corrected_pval_glob <- corrected_pval_matrix_glob[1, ]
 
   corrected_pval_part <- matrix(nrow = nvar + 1L, ncol = p)
   corrected_pval_matrix_part <- array(dim = c(nvar + 1L, p, p))
   for (ii in seq_len(nvar + 1L)) {
-    corrected_pval_matrix_part[ii, , ] <- pval_correct(
+    corrected_pval_matrix_part[ii, , ] <- pval_correct_cpp(
       matrice_pval_asymm_part[ii, , ]
     )
     corrected_pval_part[ii, ] <- corrected_pval_matrix_part[ii, 1, ]

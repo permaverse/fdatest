@@ -3,7 +3,6 @@
 # plot-fanova.R:     autoplot.fanova, plot.fanova
 # plot-flm.R:        autoplot.flm, plot.flm
 # plot.IWT1.R:       plot.IWT1
-library(fdatest)
 library(ggplot2)
 library(tinysnapshot)
 using(tinysnapshot)
@@ -12,8 +11,9 @@ using(tinysnapshot)
 options(tinysnapshot_device = "png")
 # Snapshots were produced on macOS; skip comparisons on other OSes
 options(tinysnapshot_os = "Darwin")
+# Ensure no mirai daemons are running (could interfere with random seeds and cause test failures)
+mirai::daemons(0L)
 
-data("NASAtemp", package = "fdatest")
 d1 <- NASAtemp$milan[1:4, 1:8]
 d2 <- NASAtemp$paris[1:4, 1:8]
 temperature <- rbind(d1, d2)
@@ -310,3 +310,5 @@ expect_error(
 
 # Clean up
 unlink(tmp_pdf)
+
+set.seed(NULL)

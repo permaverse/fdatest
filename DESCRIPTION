@@ -34,6 +34,8 @@ Imports:
     mirai,
     patchwork,
     rlang
+LinkingTo: 
+    cpp11
 Suggests:
     tinysnapshot,
     tinytest

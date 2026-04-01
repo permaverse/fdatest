@@ -6,9 +6,7 @@
 #
 # To achieve 100% line coverage we create minimal fake objects with the old
 # class names where the current public API can no longer produce them.
-library(fdatest)
 
-data("NASAtemp", package = "fdatest")
 d1 <- NASAtemp$milan[1:4, 1:8]
 d2 <- NASAtemp$paris[1:4, 1:8]
 p <- ncol(d1)
@@ -155,15 +153,15 @@ expect_true(TRUE)
 # "grpA:grpB", which exercises that branch.
 # ===========================================================================
 nvar_ia <- 3L
-n_obs   <- nrow(d1) + nrow(d2)   # 8 observations
+n_obs <- nrow(d1) + nrow(d2) # 8 observations
 
-grp_a  <- c(0L, 0L, 0L, 0L, 1L, 1L, 1L, 1L)
-grp_b  <- c(0L, 0L, 1L, 1L, 0L, 0L, 1L, 1L)
-dm_ia  <- cbind(
+grp_a <- c(0L, 0L, 0L, 0L, 1L, 1L, 1L, 1L)
+grp_b <- c(0L, 0L, 1L, 1L, 0L, 0L, 1L, 1L)
+dm_ia <- cbind(
   `(Intercept)` = rep(1L, n_obs),
-  grpA           = grp_a,
-  grpB           = grp_b,
-  `grpA:grpB`   = grp_a * grp_b
+  grpA = grp_a,
+  grpB = grp_b,
+  `grpA:grpB` = grp_a * grp_b
 )
 
 fake_iwt_aov_ia <- list(
@@ -224,12 +222,12 @@ expect_true(TRUE)
 # "g2" appear in two columns, making the intersection length-2.
 # ===========================================================================
 nvar_mc <- 3L
-dm_mc   <- cbind(
+dm_mc <- cbind(
   `(Intercept)` = rep(1L, n_obs),
-  g1             = c(0L, 0L, 0L, 0L, 1L, 1L, 1L, 1L),
-  g2             = c(0L, 0L, 1L, 1L, 0L, 0L, 1L, 1L),
-  `g1:g2a`      = c(0L, 0L, 0L, 0L, 0L, 0L, 1L, 1L),
-  `g1:g2b`      = c(0L, 1L, 0L, 1L, 0L, 1L, 0L, 1L)
+  g1 = c(0L, 0L, 0L, 0L, 1L, 1L, 1L, 1L),
+  g2 = c(0L, 0L, 1L, 1L, 0L, 0L, 1L, 1L),
+  `g1:g2a` = c(0L, 0L, 0L, 0L, 0L, 0L, 1L, 1L),
+  `g1:g2b` = c(0L, 1L, 0L, 1L, 0L, 1L, 0L, 1L)
 )
 
 fake_iwt_aov_mc <- list(
@@ -272,8 +270,8 @@ expect_true(TRUE)
 nvar_mf <- 1L
 dm_mf <- cbind(
   `(Intercept)` = rep(1L, n_obs),
-  grpA           = c(0L, 0L, 0L, 0L, 1L, 1L, 1L, 1L),
-  grpB           = c(0L, 0L, 1L, 1L, 0L, 0L, 1L, 1L)
+  grpA = c(0L, 0L, 0L, 0L, 1L, 1L, 1L, 1L),
+  grpB = c(0L, 0L, 1L, 1L, 0L, 0L, 1L, 1L)
 )
 
 fake_iwt_aov_mf <- list(
@@ -304,3 +302,5 @@ with_null_device({
   IWTimage(fake_iwt_aov_mf, abscissa_range = c(0, 1))
 })
 expect_true(TRUE)
+
+set.seed(NULL)

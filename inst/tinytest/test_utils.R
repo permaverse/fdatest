@@ -1,7 +1,5 @@
 # Tests for utility functions in R/utils.R
-library(fdatest)
 
-data("NASAtemp", package = "fdatest")
 d1 <- NASAtemp$milan[1:4, 1:8]
 d2 <- NASAtemp$paris[1:4, 1:8]
 
@@ -52,7 +50,12 @@ expect_equal(fdatest:::extract_fitted(fit_lm), stats::fitted(fit_lm))
 set.seed(1)
 pm <- matrix(stats::runif(16), nrow = 4, ncol = 4)
 pm[4, ] <- stats::runif(4, 0.1, 0.9) # bottom row (diag = 1)
+
 corrected <- fdatest:::pval_correct(pm)
+expect_equal(dim(corrected), c(4L, 4L))
+expect_true(all(corrected >= 0 & corrected <= 1, na.rm = TRUE))
+
+corrected <- fdatest:::pval_correct_cpp(pm)
 expect_equal(dim(corrected), c(4L, 4L))
 expect_true(all(corrected >= 0 & corrected <= 1, na.rm = TRUE))
 
@@ -116,3 +119,5 @@ expect_true(is.matrix(dm))
 expect_equal(nrow(dm), nrow(temperature))
 expect_equal(ncol(dm), 2L) # intercept and groups8
 expect_true("(Intercept)" %in% colnames(dm))
+
+set.seed(NULL)

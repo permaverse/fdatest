@@ -133,7 +133,7 @@ iwt_aov <- function(
   if (mirai::daemons_set()) {
     optimized_order <- optimize_order(row_indices)
     row_tasks <- mirai::mirai_map(
-      1:ceiling((p - 1) / 2),
+      (p - 1L):floor((p - 1L) / 2),
       function(.i) {
         rlang::inject(compute_row_pair_aov(.i, !!!perm_args))
       }
@@ -145,12 +145,9 @@ iwt_aov <- function(
       decreasing = TRUE
     )]
   } else {
-    row_results <- lapply(
-      row_indices,
-      function(.i) {
-        rlang::inject(compute_row_aov(.i, !!!perm_args))
-      }
-    )
+    row_results <- lapply(row_indices, function(.i) {
+      rlang::inject(compute_row_aov(.i, !!!perm_args))
+    })
   }
 
   for (k in seq_along(row_indices)) {
@@ -165,13 +162,13 @@ iwt_aov <- function(
     )
   }
 
-  corrected_pval_matrix_glob <- pval_correct(matrice_pval_asymm_glob)
+  corrected_pval_matrix_glob <- pval_correct_cpp(matrice_pval_asymm_glob)
   corrected_pval_glob <- corrected_pval_matrix_glob[1, ]
 
   corrected_pval_part <- matrix(nrow = nvar, ncol = p)
   corrected_pval_matrix_part <- array(dim = c(nvar, p, p))
   for (ii in seq_len(nvar)) {
-    corrected_pval_matrix_part[ii, , ] <- pval_correct(
+    corrected_pval_matrix_part[ii, , ] <- pval_correct_cpp(
       matrice_pval_asymm_part[ii, , ]
     )
     corrected_pval_part[ii, ] <- corrected_pval_matrix_part[ii, 1, ]

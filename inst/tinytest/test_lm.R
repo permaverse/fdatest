@@ -1,9 +1,7 @@
 # Tests for functional linear models:
 # R/lm-iwt.R, R/lm-twt.R, R/lm-global.R,
 # R/functional-lm-test.R, R/ITPlmbspline.R
-library(fdatest)
 
-data("NASAtemp", package = "fdatest")
 d1 <- NASAtemp$milan[1:4, 1:8]
 d2 <- NASAtemp$paris[1:4, 1:8]
 temperature <- rbind(d1, d2) # 8 obs × 8 time pts
@@ -204,3 +202,5 @@ expect_equal(res_ft_g$correction, "Global")
 set.seed(42)
 res_itp_lm <- suppressWarnings(ITPlmbspline(temperature ~ groups, B = 5L))
 expect_inherits(res_itp_lm, "flm")
+
+set.seed(NULL)

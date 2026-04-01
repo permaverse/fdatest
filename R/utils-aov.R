@@ -204,24 +204,14 @@ aov_permtest <- function(formula, dx, n_perm, method) {
 
   # Run permutations in parallel via mirai_map().
   if (mirai::daemons_set()) {
-    perm_tasks <- mirai::mirai_map(
-      seq_len(n_perm),
-      function(.x) {
-        rlang::inject(.aov_one_perm(!!!perm_args))
-      }
-    )
+    perm_tasks <- mirai::mirai_map(seq_len(n_perm), function(.x) {
+      rlang::inject(.aov_one_perm(!!!perm_args))
+    })
     perm_results <- perm_tasks[.progress]
   } else {
-    mirai::daemons(1L, seed = 42)
-    seeds <- lapply(seq_len(n_perm), \(.x) mirai::nextstream())
-    mirai::daemons(0L)
-    perm_results <- lapply(
-      seq_len(n_perm),
-      function(.x) {
-        .Random.seed <<- seeds[[.x]]
-        rlang::inject(.aov_one_perm(!!!perm_args))
-      }
-    )
+    perm_results <- lapply(seq_len(n_perm), function(.x) {
+      rlang::inject(.aov_one_perm(!!!perm_args))
+    })
   }
 
   t_glob <- do.call(

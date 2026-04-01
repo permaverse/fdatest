@@ -1,7 +1,5 @@
 # Tests for summary methods: R/summary.fanova.R, R/summary.flm.R
-library(fdatest)
 
-data("NASAtemp", package = "fdatest")
 d1 <- NASAtemp$milan[1:4, 1:8]
 d2 <- NASAtemp$paris[1:4, 1:8]
 temperature <- rbind(d1, d2)
@@ -149,3 +147,5 @@ for (i in seq_along(codes)) {
     info = paste("t-test signif code for pval =", p_vals[i])
   )
 }
+
+set.seed(NULL)

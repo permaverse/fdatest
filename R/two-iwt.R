@@ -114,7 +114,7 @@ iwt2 <- function(
   maxrow <- 1L
   row_indices <- if (recycle) (p - 1L):maxrow else (p - 1L):maxrow
 
-  compute_row <- function(i) {
+  compute_row <- function(i, t0_2x, t_coeff_2x, n_perm, p, nvar, recycle) {
     js <- if (recycle) seq_len(p) else seq_len(i)
     row_vals <- numeric(if (recycle) p else i)
     for (k in seq_along(js)) {
@@ -128,22 +128,23 @@ iwt2 <- function(
     row_vals
   }
 
+  perm_args <- list(
+    t0_2x = t0_2x,
+    t_coeff_2x = t_coeff_2x,
+    n_perm = n_perm,
+    p = p,
+    recycle = recycle
+  )
+
   if (mirai::daemons_set()) {
-    perm_args <- list(
-      t0_2x = t0_2x,
-      t_coeff_2x = t_coeff_2x,
-      n_perm = n_perm,
-      p = p,
-      recycle = recycle
-    )
-    row_tasks <- mirai::mirai_map(
-      row_indices,
-      \(.i) compute_row(.i),
-      .args = perm_args
-    )
-    row_results <- row_tasks[]
+    row_tasks <- mirai::mirai_map(row_indices, function(.i) {
+      rlang::inject(compute_row(.i, !!!perm_args))
+    })
+    row_results <- row_tasks[.progress]
   } else {
-    row_results <- lapply(row_indices, compute_row)
+    row_results <- lapply(row_indices, function(.i) {
+      rlang::inject(compute_row(.i, !!!perm_args))
+    })
   }
 
   for (k in seq_along(row_indices)) {
@@ -157,7 +158,7 @@ iwt2 <- function(
     }
   }
 
-  corrected_pval_matrix <- pval_correct(matrice_pval_asymm)
+  corrected_pval_matrix <- pval_correct_cpp(matrice_pval_asymm)
   corrected_pval <- corrected_pval_matrix[1, ]
 
   if (verbose) {

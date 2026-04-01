@@ -106,20 +106,27 @@ iwt1 <- function(
   if (mirai::daemons_set()) {
     perm_tasks <- mirai::mirai_map(
       seq_len(n_perm),
-      \(.x) {
+      function(.x) {
         signs <- stats::rbinom(n, 1, 0.5) * 2 - 1
         abs(colMeans(coeff * signs))^2
       },
-      .args = list(coeff = coeff, n = n)
+      coeff = coeff,
+      n = n
     )
-    t_coeff <- do.call(rbind, perm_tasks[])
+    t_coeff <- do.call(rbind, perm_tasks[.progress])
   } else {
+    # mirai::daemons(1L, seed = 42)
+    # seeds <- lapply(seq_len(n_perm), \(.x) mirai::nextstream())
+    # mirai::daemons(0L)
     t_coeff <- matrix(nrow = n_perm, ncol = p)
     for (i in seq_len(n_perm)) {
+      # .Random.seed <<- seeds[[i]]
       signs <- stats::rbinom(n, 1, 0.5) * 2 - 1
       t_coeff[i, ] <- abs(colMeans(coeff * signs))^2
     }
   }
+
+  print(t_coeff)
 
   pval <- colSums(
     t_coeff >= matrix(t0, nrow = n_perm, ncol = p, byrow = TRUE)
@@ -162,7 +169,7 @@ iwt1 <- function(
     }
   }
 
-  corrected_pval_matrix <- pval_correct(matrice_pval_asymm)
+  corrected_pval_matrix <- pval_correct_cpp(matrice_pval_asymm)
   corrected_pval <- corrected_pval_matrix[1, ]
 
   cli::cli_h1("Interval-Wise Testing completed")
