@@ -199,10 +199,6 @@ plot(
   xlab = 'Day',
   xrange = c(1, 365)
 )
-#> Warning: Removed 365 rows containing missing values or values outside the scale range
-#> (`geom_line()`).
-#> Warning: Removed 365 rows containing missing values or values outside the scale range
-#> (`geom_line()`).
 
 
 plot(
@@ -212,8 +208,4 @@ plot(
   xlab = 'Day',
   xrange = c(1, 365)
 )
-#> Warning: Removed 365 rows containing missing values or values outside the scale range
-#> (`geom_line()`).
-#> Warning: Removed 365 rows containing missing values or values outside the scale range
-#> (`geom_line()`).
 ```
