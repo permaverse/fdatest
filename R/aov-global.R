@@ -143,18 +143,19 @@ global_aov <- function(
 
 #' @rdname global_aov
 #' @export
-Globalaov <- function( # nolint: object_name_linter.
-  formula,
-  dx = NULL,
-  B = 1000L, # nolint: object_name_linter.
-  method = c("residuals", "responses"),
-  stat = c("Integral", "Max")
-) {
-  global_aov(
-    formula = formula,
-    dx = dx,
-    n_perm = B,
-    method = method,
-    stat = stat
-  )
-}
+Globalaov <- # nolint: object_name_linter.
+  function(
+    formula,
+    dx = NULL,
+    B = 1000L, # nolint: object_name_linter.
+    method = c("residuals", "responses"),
+    stat = c("Integral", "Max")
+  ) {
+    global_aov(
+      formula = formula,
+      dx = dx,
+      n_perm = B,
+      method = method,
+      stat = stat
+    )
+  }

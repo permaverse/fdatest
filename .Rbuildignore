@@ -8,6 +8,5 @@
 ^\.github$
 ^codecov\.yml$
 ^\.lintr$
-^lint_check\.R$
 ^[.]?air[.]toml$
 ^\.vscode$

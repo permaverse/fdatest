@@ -31,8 +31,11 @@ Imports:
     fda,
     ggplot2,
     lifecycle,
+    mirai,
     patchwork,
     rlang
+LinkingTo: 
+    cpp11
 Suggests:
     tinysnapshot,
     tinytest

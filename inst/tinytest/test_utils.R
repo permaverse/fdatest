@@ -1,7 +1,5 @@
 # Tests for utility functions in R/utils.R
-library(fdatest)
 
-data("NASAtemp", package = "fdatest")
 d1 <- NASAtemp$milan[1:4, 1:8]
 d2 <- NASAtemp$paris[1:4, 1:8]
 
@@ -52,12 +50,40 @@ expect_equal(fdatest:::extract_fitted(fit_lm), stats::fitted(fit_lm))
 set.seed(1)
 pm <- matrix(stats::runif(16), nrow = 4, ncol = 4)
 pm[4, ] <- stats::runif(4, 0.1, 0.9) # bottom row (diag = 1)
+
 corrected <- fdatest:::pval_correct(pm)
+expect_equal(dim(corrected), c(4L, 4L))
+expect_true(all(corrected >= 0 & corrected <= 1, na.rm = TRUE))
+
+corrected <- fdatest:::pval_correct_cpp(pm)
 expect_equal(dim(corrected), c(4L, 4L))
 expect_true(all(corrected >= 0 & corrected <= 1, na.rm = TRUE))
 
 # Corrected values form a valid p-value matrix
 expect_true(!any(corrected < 0, na.rm = TRUE))
+
+# for the C++ version: Expect matrix, not array
+array_pm <- array(stats::runif(16), dim = c(4, 4, 1))
+expect_error(fdatest:::pval_correct_cpp(array_pm))
+
+# for the C++ version: Expect square matrix
+rect_pm <- matrix(stats::runif(12), nrow = 4, ncol = 3)
+expect_error(fdatest:::pval_correct_cpp(rect_pm))
+
+# for the C++ version: add example with NA values (NA in a non-last row)
+pm_with_na <- matrix(stats::runif(16), nrow = 4, ncol = 4)
+pm_with_na[1, 1] <- NA
+corrected_with_na <- fdatest:::pval_correct_cpp(pm_with_na)
+expect_equal(dim(corrected_with_na), c(4L, 4L))
+expect_true(all(corrected_with_na >= 0 & corrected_with_na <= 1, na.rm = TRUE))
+
+# for the C++ version: NA in the last row makes pval_var start as NaN,
+# exercising the `pval_var = seg_max` branch (std::isnan(pval_var) == true)
+pm_with_na_lastrow <- matrix(stats::runif(16), nrow = 4, ncol = 4)
+pm_with_na_lastrow[4, 4] <- NA
+corrected_na_last <- fdatest:::pval_correct_cpp(pm_with_na_lastrow)
+expect_equal(dim(corrected_na_last), c(4L, 4L))
+expect_true(all(corrected_na_last >= 0 & corrected_na_last <= 1, na.rm = TRUE))
 
 # ---------------------------------------------------------------------------
 # onesample2coeffs — matrix input
@@ -116,3 +142,5 @@ expect_true(is.matrix(dm))
 expect_equal(nrow(dm), nrow(temperature))
 expect_equal(ncol(dm), 2L) # intercept and groups8
 expect_true("(Intercept)" %in% colnames(dm))
+
+set.seed(NULL)

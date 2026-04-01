@@ -1,7 +1,6 @@
 # Tests for fd-object paths in R/utils.R:
 #   onesample2coeffs(), twosamples2coeffs(), formula2coeff()
 # fda is in Imports so it is always available; no skip needed.
-library(fdatest)
 
 # ---------------------------------------------------------------------------
 # Shared fd fixtures
@@ -121,3 +120,5 @@ res2 <- IWT2(fd1, fd2, B = 5L, verbose = FALSE)
 expect_true(inherits(res2, "ftwosample"))
 p2 <- autoplot(res2)
 expect_true(inherits(p2, "gg") || inherits(p2, "patchwork"))
+
+set.seed(NULL)

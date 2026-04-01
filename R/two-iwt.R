@@ -33,29 +33,30 @@
 #'
 #' # Selecting the significant components at 5% level
 #' which(IWT_result$adjusted_pvalues < 0.05)
-IWT2 <- function( # nolint: object_name_linter.
-  data1,
-  data2,
-  mu = 0,
-  dx = NULL,
-  B = 1000L, # nolint: object_name_linter.
-  paired = FALSE,
-  alternative = c("two.sided", "less", "greater"),
-  verbose = FALSE,
-  recycle = TRUE
-) {
-  iwt2(
-    data1 = data1,
-    data2 = data2,
-    mu = mu,
-    dx = dx,
-    n_perm = B,
-    paired = paired,
-    alternative = alternative,
-    verbose = verbose,
-    recycle = recycle
-  )
-}
+IWT2 <- # nolint: object_name_linter.
+  function(
+    data1,
+    data2,
+    mu = 0,
+    dx = NULL,
+    B = 1000L, # nolint: object_name_linter.
+    paired = FALSE,
+    alternative = c("two.sided", "less", "greater"),
+    verbose = FALSE,
+    recycle = TRUE
+  ) {
+    iwt2(
+      data1 = data1,
+      data2 = data2,
+      mu = mu,
+      dx = dx,
+      n_perm = B,
+      paired = paired,
+      alternative = alternative,
+      verbose = verbose,
+      recycle = recycle
+    )
+  }
 
 #' @param n_perm An integer value specifying the number of permutations for the
 #'   permutation tests. Defaults to `1000L`.
@@ -111,39 +112,53 @@ iwt2 <- function(
   t_coeff_2x <- cbind(t_coeff, t_coeff)
 
   maxrow <- 1L
-  if (recycle) {
-    for (i in (p - 1L):maxrow) {
-      for (j in seq_len(p)) {
-        inf <- j
-        sup <- (p - i) + j
-        t0_temp <- sum(t0_2x[inf:sup])
-        t_temp <- rowSums(t_coeff_2x[, inf:sup, drop = FALSE])
-        matrice_pval_asymm[i, j] <- sum(t_temp >= t0_temp) / n_perm
-      }
-      if (verbose) {
-        cli::cli_h1(
-          "Creating the p-value matrix: end of row {p - i + 1} out of {p}"
-        )
-      }
+  row_indices <- if (recycle) (p - 1L):maxrow else (p - 1L):maxrow
+
+  compute_row <- function(i, t0_2x, t_coeff_2x, n_perm, p, nvar, recycle) {
+    js <- if (recycle) seq_len(p) else seq_len(i)
+    row_vals <- numeric(if (recycle) p else i)
+    for (k in seq_along(js)) {
+      j <- js[k]
+      inf <- j
+      sup <- (p - i) + j
+      t0_temp <- sum(t0_2x[inf:sup])
+      t_temp <- rowSums(t_coeff_2x[, inf:sup, drop = FALSE])
+      row_vals[k] <- sum(t_temp >= t0_temp) / n_perm
     }
+    row_vals
+  }
+
+  perm_args <- list(
+    t0_2x = t0_2x,
+    t_coeff_2x = t_coeff_2x,
+    n_perm = n_perm,
+    p = p,
+    recycle = recycle
+  )
+
+  if (mirai::daemons_set()) {
+    row_tasks <- mirai::mirai_map(row_indices, function(.i) {
+      rlang::inject(compute_row(.i, !!!perm_args))
+    })
+    row_results <- row_tasks[.progress]
   } else {
-    for (i in (p - 1L):maxrow) {
-      for (j in seq_len(i)) {
-        inf <- j
-        sup <- (p - i) + j
-        t0_temp <- sum(t0_2x[inf:sup])
-        t_temp <- rowSums(t_coeff_2x[, inf:sup, drop = FALSE])
-        matrice_pval_asymm[i, j] <- sum(t_temp >= t0_temp) / n_perm
-      }
-      if (verbose) {
-        cli::cli_h1(
-          "Creating the p-value matrix: end of row {p - i + 1} out of {p}"
-        )
-      }
+    row_results <- lapply(row_indices, function(.i) {
+      rlang::inject(compute_row(.i, !!!perm_args))
+    })
+  }
+
+  for (k in seq_along(row_indices)) {
+    i <- row_indices[k]
+    js <- if (recycle) seq_len(p) else seq_len(i)
+    matrice_pval_asymm[i, js] <- row_results[[k]]
+    if (verbose) {
+      cli::cli_h1(
+        "Creating the p-value matrix: end of row {p - i + 1} out of {p}"
+      )
     }
   }
 
-  corrected_pval_matrix <- pval_correct(matrice_pval_asymm)
+  corrected_pval_matrix <- pval_correct_cpp(matrice_pval_asymm)
   corrected_pval <- corrected_pval_matrix[1, ]
 
   if (verbose) {

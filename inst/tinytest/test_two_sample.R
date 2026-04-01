@@ -2,9 +2,7 @@
 # two-iwt.R, two-twt.R, two-fdr.R, two-pct.R, two-global.R
 # functional-two-sample-test.R
 # ITP2bspline.R, ITP2fourier.R, ITP2pafourier.R
-library(fdatest)
 
-data("NASAtemp", package = "fdatest")
 d1 <- NASAtemp$milan[1:4, 1:8]
 d2 <- NASAtemp$paris[1:4, 1:8]
 p <- ncol(d1)
@@ -276,3 +274,5 @@ res_itp2pa <- suppressWarnings(ITP2pafourier(
   B = 5L
 ))
 expect_inherits(res_itp2pa, "ftwosample")
+
+set.seed(NULL)

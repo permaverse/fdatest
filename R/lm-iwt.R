@@ -50,21 +50,22 @@
 #'   xlab = 'Day',
 #'   xrange = c(1, 365)
 #' )
-IWTlm <- function( # nolint: object_name_linter.
-  formula,
-  dx = NULL,
-  B = 1000L, # nolint: object_name_linter.
-  method = c("residuals", "responses"),
-  recycle = TRUE
-) {
-  iwt_lm(
-    formula = formula,
-    dx = dx,
-    n_perm = B,
-    method = method,
-    recycle = recycle
-  )
-}
+IWTlm <- # nolint: object_name_linter.
+  function(
+    formula,
+    dx = NULL,
+    B = 1000L, # nolint: object_name_linter.
+    method = c("residuals", "responses"),
+    recycle = TRUE
+  ) {
+    iwt_lm(
+      formula = formula,
+      dx = dx,
+      n_perm = B,
+      method = method,
+      recycle = recycle
+    )
+  }
 
 #' @param n_perm An integer value specifying the number of permutations for the
 #'   permutation tests. Defaults to `1000L`.
@@ -111,51 +112,79 @@ iwt_lm <- function(
     t_2x_part[, ii, ] <- cbind(t_part[, ii, ], t_part[, ii, ])
   }
 
-  if (recycle) {
-    for (i in (p - 1L):1L) {
-      for (j in seq_len(p)) {
-        inf <- j
-        sup <- (p - i) + j
-        t0_temp <- sum(t0_2x_glob[inf:sup])
-        t_temp <- rowSums(t_2x_glob[, inf:sup, drop = FALSE])
-        matrice_pval_asymm_glob[i, j] <- sum(t_temp >= t0_temp) / n_perm
-        for (ii in seq_len(nvar + 1L)) {
-          t0_temp <- sum(t0_2x_part[ii, inf:sup])
-          t_temp <- rowSums(t_2x_part[, ii, inf:sup, drop = FALSE])
-          matrice_pval_asymm_part[ii, i, j] <- sum(t_temp >= t0_temp) / n_perm
-        }
+  row_indices <- (p - 1L):1L
+
+  compute_row_lm <- function(
+    i,
+    t0_2x_glob,
+    t_2x_glob,
+    t0_2x_part,
+    t_2x_part,
+    n_perm,
+    p,
+    nvar,
+    recycle
+  ) {
+    js <- if (recycle) seq_len(p) else seq_len(i)
+    glob_vals <- numeric(length(js))
+    part_vals <- matrix(nrow = nvar + 1L, ncol = length(js))
+    for (k in seq_along(js)) {
+      j <- js[k]
+      inf <- j
+      sup <- (p - i) + j
+      t0_temp <- sum(t0_2x_glob[inf:sup])
+      t_temp <- rowSums(t_2x_glob[, inf:sup, drop = FALSE])
+      glob_vals[k] <- sum(t_temp >= t0_temp) / n_perm
+      for (ii in seq_len(nvar + 1L)) {
+        t0_temp <- sum(t0_2x_part[ii, inf:sup])
+        t_temp <- rowSums(t_2x_part[, ii, inf:sup, drop = FALSE])
+        part_vals[ii, k] <- sum(t_temp >= t0_temp) / n_perm
       }
-      cli::cli_h1(
-        "Creating the p-value matrix: end of row {p - i + 1} out of {p}"
-      )
     }
-  } else {
-    for (i in (p - 1L):1L) {
-      for (j in seq_len(i)) {
-        inf <- j
-        sup <- (p - i) + j
-        t0_temp <- sum(t0_2x_glob[inf:sup])
-        t_temp <- rowSums(t_2x_glob[, inf:sup, drop = FALSE])
-        matrice_pval_asymm_glob[i, j] <- sum(t_temp >= t0_temp) / n_perm
-        for (ii in seq_len(nvar + 1L)) {
-          t0_temp <- sum(t0_2x_part[ii, inf:sup])
-          t_temp <- rowSums(t_2x_part[, ii, inf:sup, drop = FALSE])
-          matrice_pval_asymm_part[ii, i, j] <- sum(t_temp >= t0_temp) / n_perm
-        }
-      }
-      cli::cli_h1(
-        "Creating the p-value matrix: end of row {p - i + 1} out of {p}"
-      )
-    }
+    list(glob = glob_vals, part = part_vals)
   }
 
-  corrected_pval_matrix_glob <- pval_correct(matrice_pval_asymm_glob)
+  perm_args <- list(
+    t0_2x_glob = t0_2x_glob,
+    t_2x_glob = t_2x_glob,
+    t0_2x_part = t0_2x_part,
+    t_2x_part = t_2x_part,
+    n_perm = n_perm,
+    p = p,
+    nvar = nvar,
+    recycle = recycle
+  )
+
+  if (mirai::daemons_set()) {
+    row_tasks <- mirai::mirai_map(row_indices, function(.i) {
+      rlang::inject(compute_row_lm(.i, !!!perm_args))
+    })
+    row_results <- row_tasks[.progress]
+  } else {
+    row_results <- lapply(row_indices, function(.i) {
+      rlang::inject(compute_row_lm(.i, !!!perm_args))
+    })
+  }
+
+  for (k in seq_along(row_indices)) {
+    i <- row_indices[k]
+    js <- if (recycle) seq_len(p) else seq_len(i)
+    matrice_pval_asymm_glob[i, js] <- row_results[[k]]$glob
+    for (ii in seq_len(nvar + 1L)) {
+      matrice_pval_asymm_part[ii, i, js] <- row_results[[k]]$part[ii, ]
+    }
+    cli::cli_h1(
+      "Creating the p-value matrix: end of row {p - i + 1} out of {p}"
+    )
+  }
+
+  corrected_pval_matrix_glob <- pval_correct_cpp(matrice_pval_asymm_glob)
   corrected_pval_glob <- corrected_pval_matrix_glob[1, ]
 
   corrected_pval_part <- matrix(nrow = nvar + 1L, ncol = p)
   corrected_pval_matrix_part <- array(dim = c(nvar + 1L, p, p))
   for (ii in seq_len(nvar + 1L)) {
-    corrected_pval_matrix_part[ii, , ] <- pval_correct(
+    corrected_pval_matrix_part[ii, , ] <- pval_correct_cpp(
       matrice_pval_asymm_part[ii, , ]
     )
     corrected_pval_part[ii, ] <- corrected_pval_matrix_part[ii, 1, ]

@@ -73,12 +73,31 @@ autoplot.flm <- function(
   ...
 ) {
   if (length(alpha1) != 1L || length(alpha2) != 1L) {
-    cli::cli_abort("{.arg alpha1} and {.arg alpha2} must each be a single numeric value.")
+    cli::cli_abort(
+      "{.arg alpha1} and {.arg alpha2} must each be a single numeric value."
+    )
   }
   if (alpha1 < alpha2) {
     temp <- alpha1
     alpha1 <- alpha2
     alpha2 <- temp
+  }
+
+  if (length(col) == 1L) {
+    col <- c(col, grDevices::rainbow(dim(object$adjusted_pval_part)[1]))
+  } else if (length(col) < dim(object$adjusted_pval_part)[1] + 1) {
+    cli::cli_warn(
+      "Not enough colors provided in {.arg col}. Additional colors will be generated."
+    )
+    col <- c(
+      col,
+      grDevices::rainbow(dim(object$adjusted_pval_part)[1] + 1 - length(col))
+    )
+  } else if (length(col) > dim(object$adjusted_pval_part)[1] + 1) {
+    cli::cli_warn(
+      "More colors provided in {.arg col} than needed. Extra colors will be ignored."
+    )
+    col <- col[seq_len(dim(object$adjusted_pval_part)[1] + 1)]
   }
 
   p <- length(object$unadjusted_pval_F)

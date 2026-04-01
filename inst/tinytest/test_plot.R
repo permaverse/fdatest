@@ -3,7 +3,6 @@
 # plot-fanova.R:     autoplot.fanova, plot.fanova
 # plot-flm.R:        autoplot.flm, plot.flm
 # plot.IWT1.R:       plot.IWT1
-library(fdatest)
 library(ggplot2)
 library(tinysnapshot)
 using(tinysnapshot)
@@ -12,8 +11,9 @@ using(tinysnapshot)
 options(tinysnapshot_device = "png")
 # Snapshots were produced on macOS; skip comparisons on other OSes
 options(tinysnapshot_os = "Darwin")
+# Ensure no mirai daemons are running (could interfere with random seeds and cause test failures)
+mirai::daemons(0L)
 
-data("NASAtemp", package = "fdatest")
 d1 <- NASAtemp$milan[1:4, 1:8]
 d2 <- NASAtemp$paris[1:4, 1:8]
 temperature <- rbind(d1, d2)
@@ -38,16 +38,16 @@ set.seed(42)
 res_twtlm <- TWTlm(temperature ~ groups, B = 5L)
 
 # Two-factor design: exercises if(nvar > 1) F-test panel and per-factor loop
-grpA <- c(0L, 0L, 1L, 1L, 0L, 0L, 1L, 1L)
-grpB <- c(0L, 1L, 0L, 1L, 0L, 1L, 0L, 1L)
+grp_a <- c(0L, 0L, 1L, 1L, 0L, 0L, 1L, 1L)
+grp_b <- c(0L, 1L, 0L, 1L, 0L, 1L, 0L, 1L)
 set.seed(42)
-res_fanova2 <- IWTaov(temperature ~ grpA + grpB, B = 5L)
+res_fanova2 <- IWTaov(temperature ~ grp_a + grp_b, B = 5L)
 set.seed(42)
-res_twtaov2 <- TWTaov(temperature ~ grpA + grpB, B = 5L)
+res_twtaov2 <- TWTaov(temperature ~ grp_a + grp_b, B = 5L)
 set.seed(42)
-res_flm2 <- IWTlm(temperature ~ grpA + grpB, B = 5L)
+res_flm2 <- IWTlm(temperature ~ grp_a + grp_b, B = 5L)
 set.seed(42)
-res_twtlm2 <- TWTlm(temperature ~ grpA + grpB, B = 5L)
+res_twtlm2 <- TWTlm(temperature ~ grp_a + grp_b, B = 5L)
 
 # ===========================================================================
 # autoplot.ftwosample, plot.ftwosample
@@ -151,7 +151,7 @@ expect_true(inherits(p_fa_2f_adj, "gg") || inherits(p_fa_2f_adj, "patchwork"))
 groups3 <- factor(c(1L, 2L, 3L, 1L, 2L, 3L, 1L, 2L))
 set.seed(42)
 res_fanova_3l <- IWTaov(
-  temperature ~ groups3 * grpB,
+  temperature ~ groups3 * grp_b,
   B = 5L,
   method = "responses"
 )
@@ -168,7 +168,9 @@ p_fa_twt_2f <- autoplot(res_twtaov2)
 expect_true(inherits(p_fa_twt_2f, "gg") || inherits(p_fa_twt_2f, "patchwork"))
 
 p_fa_twt_2f_adj <- autoplot(res_twtaov2, plot_adjpval = TRUE)
-expect_true(inherits(p_fa_twt_2f_adj, "gg") || inherits(p_fa_twt_2f_adj, "patchwork"))
+expect_true(
+  inherits(p_fa_twt_2f_adj, "gg") || inherits(p_fa_twt_2f_adj, "patchwork")
+)
 
 # Swapped alpha (alpha1 < alpha2 triggers internal swap)
 p_fa_swap <- autoplot(res_fanova, alpha1 = 0.01, alpha2 = 0.05)
@@ -237,7 +239,7 @@ p_flm_custom <- autoplot(
 )
 expect_true(inherits(p_flm_custom, "gg") || inherits(p_flm_custom, "patchwork"))
 
-# Two-predictor LM — exercises longer per-variable loop (intercept + grpA + grpB)
+# Two-predictor LM — exercises longer per-variable loop (intercept + grp_a + grp_b)
 p_flm_2v <- autoplot(res_flm2)
 expect_true(inherits(p_flm_2v, "gg") || inherits(p_flm_2v, "patchwork"))
 
@@ -248,7 +250,31 @@ p_flm_twt_2v <- autoplot(res_twtlm2)
 expect_true(inherits(p_flm_twt_2v, "gg") || inherits(p_flm_twt_2v, "patchwork"))
 
 p_flm_twt_2v_adj <- autoplot(res_twtlm2, plot_adjpval = TRUE)
-expect_true(inherits(p_flm_twt_2v_adj, "gg") || inherits(p_flm_twt_2v_adj, "patchwork"))
+expect_true(
+  inherits(p_flm_twt_2v_adj, "gg") || inherits(p_flm_twt_2v_adj, "patchwork")
+)
+
+# Too few colors (< nvar+1) triggers "Not enough colors" warning and auto-extension
+# res_flm2 has 3 partial vars, so nvar+1 = 4; passing 2 colors triggers the branch
+expect_warning(
+  p_flm_few_col <- autoplot(res_flm2, col = c("red", "blue")),
+  "Not enough colors"
+)
+expect_true(
+  inherits(p_flm_few_col, "gg") || inherits(p_flm_few_col, "patchwork")
+)
+
+# Too many colors (> nvar+1) triggers "More colors ... will be ignored" warning
+expect_warning(
+  p_flm_many_col <- autoplot(
+    res_flm2,
+    col = c("red", "blue", "green", "purple", "orange")
+  ),
+  "Extra colors will be ignored"
+)
+expect_true(
+  inherits(p_flm_many_col, "gg") || inherits(p_flm_many_col, "patchwork")
+)
 
 # Swapped alpha (alpha1 < alpha2 triggers internal swap)
 p_flm_swap <- autoplot(res_flm, alpha1 = 0.01, alpha2 = 0.05)
@@ -306,3 +332,5 @@ expect_error(
 
 # Clean up
 unlink(tmp_pdf)
+
+set.seed(NULL)
