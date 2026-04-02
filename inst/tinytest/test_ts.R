@@ -318,6 +318,34 @@ expect_inherits(res_ft_pct, "fts")
 expect_equal(res_ft_pct$correction, "PCT")
 
 # ===========================================================================
+# alternative != "two.sided" combined with standardize = TRUE
+# (exercises the one-sided + standardised path in ts_prepare_data, shared
+#  across all methods; IWT2 used as a representative)
+# ===========================================================================
+for (alt in c("less", "greater")) {
+  set.seed(42)
+  res_std <- IWT2(
+    data1 = d1,
+    data2 = d2,
+    mu = 0,
+    B = 5L,
+    alternative = alt,
+    standardize = TRUE,
+    verbose = FALSE
+  )
+  expect_inherits(
+    res_std,
+    "fts",
+    info = paste("IWT2 alternative =", alt, "standardize = TRUE")
+  )
+  expect_equal(
+    length(res_std$adjusted_pvalues),
+    p,
+    info = paste("IWT2 alternative =", alt, "standardize = TRUE")
+  )
+}
+
+# ===========================================================================
 # Deprecated wrappers
 # ===========================================================================
 set.seed(42)
