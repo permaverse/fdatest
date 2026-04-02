@@ -12,7 +12,10 @@ Global2(
   dx = NULL,
   B = 1000L,
   paired = FALSE,
-  statistic = c("Integral", "Max", "Integral_std", "Max_std")
+  alternative = c("two.sided", "less", "greater"),
+  standardize = FALSE,
+  verbose = FALSE,
+  aggregation_strategy = c("integral", "max")
 )
 
 global2(
@@ -22,7 +25,10 @@ global2(
   dx = NULL,
   n_perm = 1000L,
   paired = FALSE,
-  statistic = c("Integral", "Max", "Integral_std", "Max_std")
+  alternative = c("two.sided", "less", "greater"),
+  standardize = FALSE,
+  verbose = FALSE,
+  aggregation_strategy = c("integral", "max")
 )
 }
 \arguments{
@@ -58,16 +64,19 @@ algorithm to evaluate the p-value of the permutation tests. Defaults to
 \item{paired}{A boolean value specifying whether a paired test should be
 performed. Defaults to \code{FALSE}.}
 
-\item{statistic}{A string specifying the test statistic to use. Possible
-values are:
-\itemize{
-\item \code{"Integral"}: Integral of the squared sample mean difference.
-\item \code{"Max"}: Maximum of the squared sample mean difference.
-\item \code{"Integral_std"}: Integral of the squared t-test statistic.
-\item \code{"Max_std"}: Maximum of the squared t-test statistic.
-}
+\item{alternative}{A string specifying the type of alternative hypothesis.
+Choices are \code{"two.sided"}, \code{"less"} or \code{"greater"}. Defaults to
+\code{"two.sided"}.}
 
-Defaults to \code{"Integral"}.}
+\item{standardize}{A boolean value specifying whether to standardize the test
+statistic. Defaults to \code{FALSE}.}
+
+\item{verbose}{A boolean value specifying whether to print the progress of
+the computation. Defaults to \code{FALSE}.}
+
+\item{aggregation_strategy}{A string specifying the strategy to aggregate the
+point-wise test statistics for the correction procedure. Possible values
+are \code{"integral"} and \code{"max"}. Defaults to \code{"integral"}.}
 
 \item{n_perm}{An integer value specifying the number of permutations for the
 permutation tests. Defaults to \code{1000L}.}

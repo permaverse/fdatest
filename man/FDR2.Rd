@@ -12,7 +12,9 @@ FDR2(
   dx = NULL,
   B = 1000L,
   paired = FALSE,
-  alternative = c("two.sided", "less", "greater")
+  alternative = c("two.sided", "less", "greater"),
+  standardize = FALSE,
+  verbose = FALSE
 )
 
 fdr2(
@@ -22,7 +24,9 @@ fdr2(
   dx = NULL,
   n_perm = 1000L,
   paired = FALSE,
-  alternative = c("two.sided", "less", "greater")
+  alternative = c("two.sided", "less", "greater"),
+  standardize = FALSE,
+  verbose = FALSE
 )
 }
 \arguments{
@@ -61,6 +65,12 @@ performed. Defaults to \code{FALSE}.}
 \item{alternative}{A string specifying the type of alternative hypothesis.
 Choices are \code{"two.sided"}, \code{"less"} or \code{"greater"}. Defaults to
 \code{"two.sided"}.}
+
+\item{standardize}{A boolean value specifying whether to standardize the test
+statistic. Defaults to \code{FALSE}.}
+
+\item{verbose}{A boolean value specifying whether to print the progress of
+the computation. Defaults to \code{FALSE}.}
 
 \item{n_perm}{An integer value specifying the number of permutations for the
 permutation tests. Defaults to \code{1000L}.}

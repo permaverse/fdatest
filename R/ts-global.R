@@ -38,7 +38,10 @@ Global2 <- # nolint: object_name_linter.
     dx = NULL,
     B = 1000L, # nolint: object_name_linter.
     paired = FALSE,
-    statistic = c("Integral", "Max", "Integral_std", "Max_std")
+    alternative = c("two.sided", "less", "greater"),
+    standardize = FALSE,
+    verbose = FALSE,
+    aggregation_strategy = c("integral", "max")
   ) {
     global2(
       data1 = data1,
@@ -47,7 +50,10 @@ Global2 <- # nolint: object_name_linter.
       dx = dx,
       n_perm = B,
       paired = paired,
-      statistic = statistic
+      alternative = alternative,
+      standardize = standardize,
+      verbose = verbose,
+      aggregation_strategy = aggregation_strategy
     )
   }
 
@@ -62,86 +68,56 @@ global2 <- function(
   dx = NULL,
   n_perm = 1000L,
   paired = FALSE,
-  statistic = c("Integral", "Max", "Integral_std", "Max_std")
+  alternative = c("two.sided", "less", "greater"),
+  standardize = FALSE,
+  verbose = FALSE,
+  aggregation_strategy = c("integral", "max")
 ) {
-  statistic <- rlang::arg_match(statistic)
-  inputs <- twosamples2coeffs(data1, data2, mu, dx = dx)
-  coeff1 <- inputs$coeff1
-  coeff2 <- inputs$coeff2
-  mu_eval <- inputs$mu
+  if (verbose) {
+    cli::cli_h1("Data preparation and point-wise testing")
+  }
 
-  n1 <- dim(coeff1)[1]
-  n2 <- dim(coeff2)[1]
-  n <- n1 + n2
-  etichetta_ord <- c(rep(1, n1), rep(2, n2))
-  coeff <- rbind(coeff1, coeff2)
-  p <- dim(coeff)[2]
-  data_eval <- coeff
-
-  meandiff2 <- (colMeans(coeff[seq_len(n1), ]) -
-    colMeans(coeff[(n1 + 1):n, ]))^2 # nolint: indentation_linter.
-  s1 <- stats::cov(coeff[seq_len(n1), ])
-  s2 <- stats::cov(coeff[(n1 + 1):n, ])
-  sp <- ((n1 - 1) * s1 + (n2 - 1) * s2) / (n1 + n2 - 2)
-  t0 <- switch(
-    statistic,
-    Integral = meandiff2,
-    Max = meandiff2,
-    Integral_std = meandiff2 / diag(sp),
-    Max_std = meandiff2 / diag(sp)
+  prepped_data <- ts_prepare_data(
+    data1 = data1,
+    data2 = data2,
+    mu = mu,
+    dx = dx,
+    n_perm = n_perm,
+    paired = paired,
+    alternative = alternative,
+    standardize = standardize
   )
 
-  t_coeff <- matrix(ncol = p, nrow = n_perm)
-  for (perm in seq_len(n_perm)) {
-    if (paired) {
-      if_perm <- stats::rbinom(n1, 1, 0.5)
-      coeff_perm <- coeff
-      for (couple in seq_len(n1)) {
-        if (if_perm[couple] == 1) {
-          coeff_perm[c(couple, n1 + couple), ] <- coeff[
-            c(n1 + couple, couple),
-          ]
-        }
-      }
-    } else {
-      permutazioni <- sample(n)
-      coeff_perm <- coeff[permutazioni, ]
+  data_eval <- prepped_data$data
+  mu_eval <- prepped_data$mu
+  group_labels <- prepped_data$group_labels
+  p <- prepped_data$p
+
+  t0 <- prepped_data$t0
+  t_coeff <- prepped_data$t_coeff
+  pval <- prepped_data$pval
+
+  aggregation_strategy <- rlang::arg_match(aggregation_strategy)
+
+  adjusted_pval <- switch(
+    aggregation_strategy,
+    integral = {
+      t0_comb <- sum(t0)
+      t_comb <- rowSums(t_coeff)
+      pval_temp <- mean(t_comb >= t0_comb)
+      rep(pval_temp, p)
+    },
+    max = {
+      t0_comb <- max(t0)
+      t_comb <- apply(t_coeff, 1, max)
+      pval_temp <- mean(t_comb >= t0_comb)
+      rep(pval_temp, p)
     }
-
-    meandiff2_perm <- (colMeans(coeff_perm[seq_len(n1), ]) -
-      colMeans(coeff_perm[(n1 + 1):n, ]))^2 # nolint: indentation_linter.
-    s1_perm <- stats::cov(coeff_perm[seq_len(n1), ])
-    s2_perm <- stats::cov(coeff_perm[(n1 + 1):n, ])
-    sp_perm <- ((n1 - 1) * s1_perm + (n2 - 1) * s2_perm) / (n1 + n2 - 2)
-    t_coeff[perm, ] <- switch(
-      statistic,
-      Integral = meandiff2_perm,
-      Max = meandiff2_perm,
-      Integral_std = meandiff2_perm / diag(sp_perm),
-      Max_std = meandiff2_perm / diag(sp_perm)
-    )
-  }
-
-  pval <- numeric(p)
-  for (i in seq_len(p)) {
-    pval[i] <- sum(t_coeff[, i] >= t0[i]) / n_perm
-  }
-
-  adjusted_pval <- if (statistic %in% c("Integral", "Integral_std")) {
-    t0_comb <- sum(t0)
-    t_comb <- rowSums(t_coeff)
-    pval_temp <- mean(t_comb >= t0_comb)
-    rep(pval_temp, p)
-  } else {
-    t0_comb <- max(t0)
-    t_comb <- apply(t_coeff, 1, max)
-    pval_temp <- mean(t_comb >= t0_comb)
-    rep(pval_temp, p)
-  }
+  )
 
   out <- list(
     data = data_eval,
-    group_labels = etichetta_ord,
+    group_labels = group_labels,
     mu = mu_eval,
     unadjusted_pvalues = pval,
     adjusted_pvalues = adjusted_pval,

@@ -13,10 +13,11 @@ functional_two_sample_test(
   B = 1000L,
   paired = FALSE,
   alternative = c("two.sided", "less", "greater"),
-  statistic = c("Integral", "Max", "Integral_std", "Max_std"),
+  standardize = FALSE,
+  verbose = FALSE,
+  aggregation_strategy = c("integral", "max"),
   recycle = TRUE,
-  partition = NULL,
-  verbose = FALSE
+  partition = NULL
 )
 }
 \arguments{
@@ -60,16 +61,15 @@ performed. Defaults to \code{FALSE}.}
 Choices are \code{"two.sided"}, \code{"less"} or \code{"greater"}. Defaults to
 \code{"two.sided"}.}
 
-\item{statistic}{A string specifying the test statistic to use. Possible
-values are:
-\itemize{
-\item \code{"Integral"}: Integral of the squared sample mean difference.
-\item \code{"Max"}: Maximum of the squared sample mean difference.
-\item \code{"Integral_std"}: Integral of the squared t-test statistic.
-\item \code{"Max_std"}: Maximum of the squared t-test statistic.
-}
+\item{standardize}{A boolean value specifying whether to standardize the test
+statistic. Defaults to \code{FALSE}.}
 
-Defaults to \code{"Integral"}.}
+\item{verbose}{A boolean value specifying whether to print the progress of
+the computation. Defaults to \code{FALSE}.}
+
+\item{aggregation_strategy}{A string specifying the strategy to aggregate the
+point-wise test statistics for the correction procedure. Possible values
+are \code{"integral"} and \code{"max"}. Defaults to \code{"integral"}.}
 
 \item{recycle}{A boolean value specifying whether the recycled version of the
 interval-wise testing procedure should be used. See Pini and Vantini (2017)
@@ -79,9 +79,6 @@ for details. Defaults to \code{TRUE}.}
 membership of each point of the domain to an element of the partition.
 Only used and \strong{must} be set if the \code{correction} argument is set to
 \code{"PCT"}.}
-
-\item{verbose}{A boolean value specifying whether to print the progress of
-the computation. Defaults to \code{FALSE}.}
 }
 \value{
 An object of class \code{fts} containing the following components:

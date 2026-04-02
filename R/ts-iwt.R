@@ -42,7 +42,9 @@ IWT2 <- # nolint: object_name_linter.
     B = 1000L, # nolint: object_name_linter.
     paired = FALSE,
     alternative = c("two.sided", "less", "greater"),
+    standardize = FALSE,
     verbose = FALSE,
+    aggregation_strategy = c("integral", "max"),
     recycle = TRUE
   ) {
     iwt2(
@@ -53,7 +55,9 @@ IWT2 <- # nolint: object_name_linter.
       n_perm = B,
       paired = paired,
       alternative = alternative,
+      standardize = standardize,
       verbose = verbose,
+      aggregation_strategy = aggregation_strategy,
       recycle = recycle
     )
   }
@@ -70,56 +74,55 @@ iwt2 <- function(
   n_perm = 1000L,
   paired = FALSE,
   alternative = c("two.sided", "less", "greater"),
+  standardize = FALSE,
   verbose = FALSE,
+  aggregation_strategy = c("integral", "max"),
   recycle = TRUE
 ) {
-  alternative <- rlang::arg_match(alternative)
+  if (verbose) {
+    cli::cli_h1("Data preparation and point-wise testing")
+  }
 
-  inputs <- twosamples2coeffs(data1, data2, mu, dx = dx)
-  coeff1 <- inputs$coeff1
-  coeff2 <- inputs$coeff2
-  mu_eval <- inputs$mu
-
-  n1 <- dim(coeff1)[1]
-  n2 <- dim(coeff2)[1]
-  p <- dim(coeff1)[2]
-  n <- n1 + n2
-  etichetta_ord <- c(rep(1, n1), rep(2, n2))
-  coeff1 <- coeff1 - matrix(data = mu_eval, nrow = n1, ncol = p)
-
-  coeff <- rbind(coeff1, coeff2)
-  data_eval <- rbind(
-    coeff1 + matrix(mu_eval, nrow = n1, ncol = p),
-    coeff2
+  prepped_data <- ts_prepare_data(
+    data1 = data1,
+    data2 = data2,
+    mu = mu,
+    dx = dx,
+    n_perm = n_perm,
+    paired = paired,
+    alternative = alternative,
+    standardize = standardize
   )
 
+  data_eval <- prepped_data$data
+  mu_eval <- prepped_data$mu
+  group_labels <- prepped_data$group_labels
+  p <- prepped_data$p
+
+  t0 <- prepped_data$t0
+  t_coeff <- prepped_data$t_coeff
+  pval <- prepped_data$pval
+
   if (verbose) {
-    cli::cli_h1("Point-wise tests")
+    cli::cli_h1("Interval-Wise Testing")
   }
 
-  perm_res <- ts_permtest(coeff, n1, n_perm, alternative, paired)
-  t0 <- perm_res$t0
-  t_coeff <- perm_res$t_coeff
-  pval <- perm_res$pval
-
-  if (verbose) {
-    cli::cli_h1("Interval-wise tests")
-  }
+  aggregation_strategy <- rlang::arg_match(aggregation_strategy)
 
   matrice_pval_asymm <- matrix(nrow = p, ncol = p)
   matrice_pval_asymm[p, ] <- pval[seq_len(p)]
   t0_2x <- c(t0, t0)
   t_coeff_2x <- cbind(t_coeff, t_coeff)
 
-  maxrow <- 1L
-  row_indices <- if (recycle) (p - 1L):maxrow else (p - 1L):maxrow
+  row_indices <- (p - 1L):1L
 
   perm_args <- list(
     t0_2x = t0_2x,
     t_coeff_2x = t_coeff_2x,
     n_perm = n_perm,
     p = p,
-    recycle = recycle
+    recycle = recycle,
+    aggregation_strategy = aggregation_strategy
   )
 
   if (mirai::daemons_set()) {
@@ -156,7 +159,7 @@ iwt2 <- function(
 
   out <- list(
     data = data_eval,
-    group_labels = etichetta_ord,
+    group_labels = group_labels,
     mu = mu_eval,
     unadjusted_pvalues = pval,
     adjusted_pvalues = corrected_pval,

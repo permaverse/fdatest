@@ -13,7 +13,9 @@ TWT2(
   B = 1000L,
   paired = FALSE,
   alternative = c("two.sided", "less", "greater"),
-  verbose = FALSE
+  standardize = FALSE,
+  verbose = FALSE,
+  aggregation_strategy = c("integral", "max")
 )
 
 twt2(
@@ -24,7 +26,9 @@ twt2(
   n_perm = 1000L,
   paired = FALSE,
   alternative = c("two.sided", "less", "greater"),
-  verbose = FALSE
+  standardize = FALSE,
+  verbose = FALSE,
+  aggregation_strategy = c("integral", "max")
 )
 }
 \arguments{
@@ -64,8 +68,15 @@ performed. Defaults to \code{FALSE}.}
 Choices are \code{"two.sided"}, \code{"less"} or \code{"greater"}. Defaults to
 \code{"two.sided"}.}
 
+\item{standardize}{A boolean value specifying whether to standardize the test
+statistic. Defaults to \code{FALSE}.}
+
 \item{verbose}{A boolean value specifying whether to print the progress of
 the computation. Defaults to \code{FALSE}.}
+
+\item{aggregation_strategy}{A string specifying the strategy to aggregate the
+point-wise test statistics for the correction procedure. Possible values
+are \code{"integral"} and \code{"max"}. Defaults to \code{"integral"}.}
 
 \item{n_perm}{An integer value specifying the number of permutations for the
 permutation tests. Defaults to \code{1000L}.}

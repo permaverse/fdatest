@@ -49,7 +49,10 @@ PCT2 <- # nolint: object_name_linter.
     dx = NULL,
     B = 1000L, # nolint: object_name_linter.
     paired = FALSE,
-    alternative = c("two.sided", "less", "greater")
+    alternative = c("two.sided", "less", "greater"),
+    standardize = FALSE,
+    verbose = FALSE,
+    aggregation_strategy = c("integral", "max")
   ) {
     pct2(
       data1 = data1,
@@ -59,7 +62,10 @@ PCT2 <- # nolint: object_name_linter.
       dx = dx,
       n_perm = B,
       paired = paired,
-      alternative = alternative
+      alternative = alternative,
+      standardize = standardize,
+      verbose = verbose,
+      aggregation_strategy = aggregation_strategy
     )
   }
 
@@ -75,27 +81,40 @@ pct2 <- function(
   dx = NULL,
   n_perm = 1000L,
   paired = FALSE,
-  alternative = c("two.sided", "less", "greater")
+  alternative = c("two.sided", "less", "greater"),
+  standardize = FALSE,
+  verbose = FALSE,
+  aggregation_strategy = c("integral", "max")
 ) {
-  alternative <- rlang::arg_match(alternative)
+  if (verbose) {
+    cli::cli_h1("Data preparation and point-wise testing")
+  }
 
-  inputs <- twosamples2coeffs(data1, data2, mu, dx = dx)
-  coeff1 <- inputs$coeff1
-  coeff2 <- inputs$coeff2
-  mu_eval <- inputs$mu
+  prepped_data <- ts_prepare_data(
+    data1 = data1,
+    data2 = data2,
+    mu = mu,
+    dx = dx,
+    n_perm = n_perm,
+    paired = paired,
+    alternative = alternative,
+    standardize = standardize
+  )
 
-  n1 <- dim(coeff1)[1]
-  n2 <- dim(coeff2)[1]
-  n <- n1 + n2
-  etichetta_ord <- c(rep(1, n1), rep(2, n2))
-  coeff <- rbind(coeff1, coeff2)
-  p <- dim(coeff)[2]
-  data_eval <- coeff
+  data_eval <- prepped_data$data
+  mu_eval <- prepped_data$mu
+  group_labels <- prepped_data$group_labels
+  p <- prepped_data$p
 
-  perm_res <- ts_permtest(coeff, n1, n_perm, alternative, paired)
-  t0 <- perm_res$t0
-  t_coeff <- perm_res$t_coeff
-  pval <- perm_res$pval
+  t0 <- prepped_data$t0
+  t_coeff <- prepped_data$t_coeff
+  pval <- prepped_data$pval
+
+  if (verbose) {
+    cli::cli_h1("Partition Closed Testing")
+  }
+
+  aggregation_strategy <- rlang::arg_match(aggregation_strategy)
 
   partition <- factor(partition)
   nintervals <- length(levels(partition))
@@ -119,8 +138,16 @@ pct2 <- function(
   adjusted_pval <- numeric(p)
   for (test in seq_len(ntests)) {
     active <- which(all_combs[test, ] == 1)
-    t0_comb <- sum(t0[active])
-    t_comb <- rowSums(t_coeff[, active, drop = FALSE])
+    t0_comb <- if (aggregation_strategy == "integral") {
+      sum(t0[active], na.rm = TRUE)
+    } else {
+      max(t0[active], na.rm = TRUE)
+    }
+    t_comb <- if (aggregation_strategy == "integral") {
+      rowSums(t_coeff[, active, drop = FALSE], na.rm = TRUE)
+    } else {
+      apply(t_coeff[, active, drop = FALSE], 1, max, na.rm = TRUE)
+    }
     pval_temp <- mean(t_comb >= t0_comb)
     adjusted_pval[active] <- apply(
       rbind(adjusted_pval[active], pval_temp),
@@ -131,7 +158,7 @@ pct2 <- function(
 
   out <- list(
     data = data_eval,
-    group_labels = etichetta_ord,
+    group_labels = group_labels,
     mu = mu_eval,
     unadjusted_pvalues = pval,
     adjusted_pvalues = adjusted_pval

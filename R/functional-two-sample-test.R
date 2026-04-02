@@ -38,21 +38,17 @@
 #' @param alternative A string specifying the type of alternative hypothesis.
 #'   Choices are `"two.sided"`, `"less"` or `"greater"`. Defaults to
 #'   `"two.sided"`.
-#' @param statistic A string specifying the test statistic to use. Possible
-#'   values are:
-#'
-#'   - `"Integral"`: Integral of the squared sample mean difference.
-#'   - `"Max"`: Maximum of the squared sample mean difference.
-#'   - `"Integral_std"`: Integral of the squared t-test statistic.
-#'   - `"Max_std"`: Maximum of the squared t-test statistic.
-#'
-#'   Defaults to `"Integral"`.
+#' @param standardize A boolean value specifying whether to standardize the test
+#'   statistic. Defaults to `FALSE`.
+#' @param verbose A boolean value specifying whether to print the progress of
+#'  the computation. Defaults to `FALSE`.
+#' @param aggregation_strategy A string specifying the strategy to aggregate the
+#'   point-wise test statistics for the correction procedure. Possible values
+#'   are `"integral"` and `"max"`. Defaults to `"integral"`.
 #' @param partition An integer vector of length \eqn{J} specifying the
 #'   membership of each point of the domain to an element of the partition.
 #'   Only used and **must** be set if the `correction` argument is set to
 #'   `"PCT"`.
-#' @param verbose A boolean value specifying whether to print the progress of
-#'  the computation. Defaults to `FALSE`.
 #'
 #' @returns An object of class `fts` containing the following components:
 #'
@@ -140,10 +136,11 @@ functional_two_sample_test <- function(
   B = 1000L, # nolint: object_name_linter.
   paired = FALSE,
   alternative = c("two.sided", "less", "greater"),
-  statistic = c("Integral", "Max", "Integral_std", "Max_std"),
+  standardize = FALSE,
+  verbose = FALSE,
+  aggregation_strategy = c("integral", "max"),
   recycle = TRUE,
-  partition = NULL,
-  verbose = FALSE
+  partition = NULL
 ) {
   if (correction == "PCT" && is.null(partition)) {
     cli::cli_abort(
@@ -162,7 +159,9 @@ functional_two_sample_test <- function(
       n_perm = B,
       paired = paired,
       alternative = alternative,
+      standardize = standardize,
       verbose = verbose,
+      aggregation_strategy = aggregation_strategy,
       recycle = recycle
     ),
     TWT = twt2(
@@ -173,17 +172,22 @@ functional_two_sample_test <- function(
       n_perm = B,
       paired = paired,
       alternative = alternative,
-      verbose = verbose
+      standardize = standardize,
+      verbose = verbose,
+      aggregation_strategy = aggregation_strategy
     ),
     PCT = pct2(
       data1 = data1,
       data2 = data2,
-      partition = partition,
       mu = mu,
       dx = dx,
       n_perm = B,
       paired = paired,
-      alternative = alternative
+      alternative = alternative,
+      standardize = standardize,
+      verbose = verbose,
+      aggregation_strategy = aggregation_strategy,
+      partition = partition
     ),
     Global = global2(
       data1 = data1,
@@ -192,7 +196,10 @@ functional_two_sample_test <- function(
       dx = dx,
       n_perm = B,
       paired = paired,
-      statistic = statistic
+      alternative = alternative,
+      standardize = standardize,
+      verbose = verbose,
+      aggregation_strategy = aggregation_strategy
     ),
     FDR = fdr2(
       data1 = data1,
@@ -201,7 +208,9 @@ functional_two_sample_test <- function(
       dx = dx,
       n_perm = B,
       paired = paired,
-      alternative = alternative
+      alternative = alternative,
+      standardize = standardize,
+      verbose = verbose
     )
   )
 

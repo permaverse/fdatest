@@ -39,7 +39,9 @@ TWT2 <- # nolint: object_name_linter.
     B = 1000L, # nolint: object_name_linter.
     paired = FALSE,
     alternative = c("two.sided", "less", "greater"),
-    verbose = FALSE
+    standardize = FALSE,
+    verbose = FALSE,
+    aggregation_strategy = c("integral", "max")
   ) {
     twt2(
       data1 = data1,
@@ -49,7 +51,9 @@ TWT2 <- # nolint: object_name_linter.
       n_perm = B,
       paired = paired,
       alternative = alternative,
-      verbose = verbose
+      standardize = standardize,
+      verbose = verbose,
+      aggregation_strategy = aggregation_strategy
     )
   }
 
@@ -65,53 +69,76 @@ twt2 <- function(
   n_perm = 1000L,
   paired = FALSE,
   alternative = c("two.sided", "less", "greater"),
-  verbose = FALSE
+  standardize = FALSE,
+  verbose = FALSE,
+  aggregation_strategy = c("integral", "max")
 ) {
-  alternative <- rlang::arg_match(alternative)
+  if (verbose) {
+    cli::cli_h1("Data preparation and point-wise testing")
+  }
 
-  inputs <- twosamples2coeffs(data1, data2, mu, dx = dx)
-  coeff1 <- inputs$coeff1
-  coeff2 <- inputs$coeff2
-  mu_eval <- inputs$mu
+  prepped_data <- ts_prepare_data(
+    data1 = data1,
+    data2 = data2,
+    mu = mu,
+    dx = dx,
+    n_perm = n_perm,
+    paired = paired,
+    alternative = alternative,
+    standardize = standardize
+  )
 
-  n1 <- dim(coeff1)[1]
-  n2 <- dim(coeff2)[1]
-  n <- n1 + n2
-  data_eval <- rbind(coeff1, coeff2)
-  p <- dim(data_eval)[2]
-  coeff1 <- coeff1 - matrix(data = mu_eval, nrow = n1, ncol = p)
-  coeff <- rbind(coeff1, coeff2)
-  etichetta_ord <- c(rep(1, n1), rep(2, n2))
+  data_eval <- prepped_data$data
+  mu_eval <- prepped_data$mu
+  group_labels <- prepped_data$group_labels
+  p <- prepped_data$p
 
-  perm_res <- ts_permtest(coeff, n1, n_perm, alternative, paired)
-  t0 <- perm_res$t0
-  t_coeff <- perm_res$t_coeff
-  pval <- perm_res$pval
+  t0 <- prepped_data$t0
+  t_coeff <- prepped_data$t_coeff
+  pval <- prepped_data$pval
 
   if (verbose) {
-    cli::cli_h1("Threshold-wise tests")
+    cli::cli_h1("Threshold-Wise Testing")
   }
+
+  aggregation_strategy <- rlang::arg_match(aggregation_strategy)
 
   thresholds <- c(0, sort(unique(pval)), 1)
   adjusted_pval <- pval
   pval_tmp <- rep(0, p)
   for (test in seq_along(thresholds)) {
     points_1 <- which(pval <= thresholds[test])
-    t0_comb <- sum(t0[points_1], na.rm = TRUE)
-    t_comb <- rowSums(t_coeff[, points_1, drop = FALSE], na.rm = TRUE)
+    t0_comb <- if (aggregation_strategy == "integral") {
+      sum(t0[points_1], na.rm = TRUE)
+    } else {
+      max(t0[points_1], na.rm = TRUE)
+    }
+    t_comb <- if (aggregation_strategy == "integral") {
+      rowSums(t_coeff[, points_1, drop = FALSE], na.rm = TRUE)
+    } else {
+      apply(t_coeff[, points_1, drop = FALSE], 1, max, na.rm = TRUE)
+    }
     pval_tmp[points_1] <- mean(t_comb >= t0_comb)
     adjusted_pval <- apply(rbind(adjusted_pval, pval_tmp), 2, max)
 
     points_2 <- which(pval > thresholds[test])
-    t0_comb <- sum(t0[points_2])
-    t_comb <- rowSums(t_coeff[, points_2, drop = FALSE], na.rm = TRUE)
+    t0_comb <- if (aggregation_strategy == "integral") {
+      sum(t0[points_2], na.rm = TRUE)
+    } else {
+      max(t0[points_2], na.rm = TRUE)
+    }
+    t_comb <- if (aggregation_strategy == "integral") {
+      rowSums(t_coeff[, points_2, drop = FALSE], na.rm = TRUE)
+    } else {
+      apply(t_coeff[, points_2, drop = FALSE], 1, max, na.rm = TRUE)
+    }
     pval_tmp[points_2] <- mean(t_comb >= t0_comb)
     adjusted_pval <- apply(rbind(adjusted_pval, pval_tmp), 2, max)
   }
 
   out <- list(
-    data = coeff,
-    group_labels = etichetta_ord,
+    data = data_eval,
+    group_labels = group_labels,
     mu = mu_eval,
     unadjusted_pvalues = pval,
     adjusted_pvalues = adjusted_pval

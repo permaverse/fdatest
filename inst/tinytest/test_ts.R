@@ -67,24 +67,35 @@ res_iwt_p <- IWT2(
 expect_inherits(res_iwt_p, "fts")
 
 # ===========================================================================
-# Global2 — all four statistic options
+# Global2 — all four combinations of standardize / aggregation_strategy
 # ===========================================================================
-for (stat in c("Integral", "Max", "Integral_std", "Max_std")) {
-  set.seed(42)
-  res_g <- Global2(data1 = d1, data2 = d2, mu = 0, B = 5L, statistic = stat)
-  expect_inherits(
-    res_g,
-    "fts",
-    info = paste("Global2 statistic =", stat)
-  )
-  expect_true(
-    !is.null(res_g$global_pvalue),
-    info = paste("Global2 global_pvalue for", stat)
-  )
-  expect_true(
-    res_g$global_pvalue >= 0 && res_g$global_pvalue <= 1,
-    info = paste("Global2 pvalue range for", stat)
-  )
+for (std in c(FALSE, TRUE)) {
+  for (agg in c("integral", "max")) {
+    set.seed(42)
+    res_g <- Global2(
+      data1 = d1,
+      data2 = d2,
+      mu = 0,
+      B = 5L,
+      standardize = std,
+      aggregation_strategy = agg
+    )
+    info_label <- paste0(
+      "Global2 standardize=",
+      std,
+      " aggregation_strategy=",
+      agg
+    )
+    expect_inherits(res_g, "fts", info = info_label)
+    expect_true(
+      !is.null(res_g$global_pvalue),
+      info = info_label
+    )
+    expect_true(
+      res_g$global_pvalue >= 0 && res_g$global_pvalue <= 1,
+      info = info_label
+    )
+  }
 }
 
 # Global2 paired
@@ -94,7 +105,6 @@ res_g_p <- Global2(
   data2 = d2,
   mu = 0,
   B = 5L,
-  statistic = "Integral",
   paired = TRUE
 )
 expect_inherits(res_g_p, "fts")
