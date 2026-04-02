@@ -9,7 +9,7 @@
 #'   call to [`functional_lm_test()`].
 #' @param ... Further arguments passed to or from other methods.
 #'
-#' @return No value returned. The function [`summary.fanova()`] computes and
+#' @return No value returned. The function [`summary.faov()`] computes and
 #'   returns a list of summary statistics of the fitted functional linear model
 #'   given in `object`, using the component `call` from its arguments, plus:
 #'
@@ -20,7 +20,7 @@
 #'   - `R2`: Range of the functional R-squared.
 #'   - `ftest`: IWT-adjusted minimum p-value of functional F-test.
 #'
-#' @seealso [`IWTimage()`] for the plot of p-values heatmaps and [`plot.fanova()`]
+#' @seealso [`IWTimage()`] for the plot of p-values heatmaps and [`plot.faov()`]
 #'   for the plot of analysis of variance results.
 #'
 #' @references

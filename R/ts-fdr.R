@@ -76,7 +76,7 @@ fdr2 <- function(
   coeff <- rbind(coeff1, coeff2)
   data_eval <- coeff
 
-  perm_res <- twosample_alt_permtest(coeff, n1, n_perm, alternative, paired)
+  perm_res <- ts_permtest(coeff, n1, n_perm, alternative, paired)
   pval <- perm_res$pval
 
   adjusted_pval <- stats::p.adjust(pval, method = "BH")
@@ -88,6 +88,6 @@ fdr2 <- function(
     unadjusted_pvalues = pval,
     adjusted_pvalues = adjusted_pval
   )
-  class(out) <- "ftwosample"
+  class(out) <- "fts"
   out
 }

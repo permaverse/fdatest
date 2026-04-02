@@ -44,7 +44,7 @@
 #'   case the statistic is defined as the maximum of the F-test statistic over
 #'   the domain. Defaults to  `"Integral"`.
 #'
-#' @returns An object of class `fanova` containing the following components:
+#' @returns An object of class `faov` containing the following components:
 #'
 #'   - `call`: The matched call.
 #'   - `design_matrix`: The design matrix of the functional-on-scalar linear
@@ -92,7 +92,7 @@
 #'   - `Global_pval_factors`: Global p-value of test F involving each factor
 #'   separately; this component is present only if `correction` is set to `"Global"`.
 #'
-#' @seealso See also [`plot.fanova()`] for plotting the results and [`summary.fanova()`]
+#' @seealso See also [`plot.faov()`] for plotting the results and [`summary.faov()`]
 #'  for summarizing the results of the functional analysis of variance.
 #'
 #' @references

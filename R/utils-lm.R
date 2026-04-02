@@ -233,3 +233,83 @@ lm_permtest <- function(formula, dx, n_perm, method) {
     method = method
   )
 }
+
+compute_row_lm <- function(
+  i,
+  t0_2x_glob,
+  t_2x_glob,
+  t0_2x_part,
+  t_2x_part,
+  n_perm,
+  p,
+  nvar,
+  recycle
+) {
+  js <- if (recycle) seq_len(p) else seq_len(i)
+  glob_vals <- numeric(length(js))
+  part_vals <- matrix(nrow = nvar + 1L, ncol = length(js))
+  for (k in seq_along(js)) {
+    j <- js[k]
+    inf <- j
+    sup <- (p - i) + j
+    t0_temp <- sum(t0_2x_glob[inf:sup])
+    t_temp <- rowSums(t_2x_glob[, inf:sup, drop = FALSE])
+    glob_vals[k] <- sum(t_temp >= t0_temp) / n_perm
+    for (ii in seq_len(nvar + 1L)) {
+      t0_temp <- sum(t0_2x_part[ii, inf:sup])
+      t_temp <- rowSums(t_2x_part[, ii, inf:sup, drop = FALSE])
+      part_vals[ii, k] <- sum(t_temp >= t0_temp) / n_perm
+    }
+  }
+  list(glob = glob_vals, part = part_vals)
+}
+
+compute_row_pair_lm <- function(
+  i,
+  t0_2x_glob,
+  t_2x_glob,
+  t0_2x_part,
+  t_2x_part,
+  n_perm,
+  p,
+  nvar,
+  recycle
+) {
+  if (i == p - i) {
+    return(list(compute_row_lm(
+      i = i,
+      t0_2x_glob = t0_2x_glob,
+      t_2x_glob = t_2x_glob,
+      t0_2x_part = t0_2x_part,
+      t_2x_part = t_2x_part,
+      n_perm = n_perm,
+      p = p,
+      nvar = nvar,
+      recycle = recycle
+    )))
+  }
+  list(
+    compute_row_lm(
+      i = i,
+      t0_2x_glob = t0_2x_glob,
+      t_2x_glob = t_2x_glob,
+      t0_2x_part = t0_2x_part,
+      t_2x_part = t_2x_part,
+      n_perm = n_perm,
+      p = p,
+      nvar = nvar,
+      recycle = recycle
+    ),
+    compute_row_lm(
+      i = p - i,
+      t0_2x_glob = t0_2x_glob,
+      t_2x_glob = t_2x_glob,
+      t0_2x_part = t0_2x_part,
+      t_2x_part = t_2x_part,
+      n_perm = n_perm,
+      p = p,
+      nvar = nvar,
+      recycle = recycle
+    )
+  )
+}

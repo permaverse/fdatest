@@ -54,7 +54,7 @@
 #' @param verbose A boolean value specifying whether to print the progress of
 #'  the computation. Defaults to `FALSE`.
 #'
-#' @returns An object of class `ftwosample` containing the following components:
+#' @returns An object of class `fts` containing the following components:
 #'
 #'   - `data`: A numeric matrix of shape \eqn{n \times J} containing the
 #'   evaluation of the \eqn{n = n_1 + n_2} functions on a **common** uniform
@@ -81,7 +81,7 @@
 #'   \eqn{j, j+1 , \dots, j+(p-i)}. Only present if the `correction` argument is
 #'   set to `"IWT"`.
 #'
-#' @seealso See also [`plot.ftwosample()`] for plotting the results.
+#' @seealso See also [`plot.fts()`] for plotting the results.
 #'
 #' @references
 #' Abramowicz, K., Pini, A., Schelin, L., Stamm, A., & Vantini, S. (2022).

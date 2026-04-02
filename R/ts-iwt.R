@@ -97,7 +97,7 @@ iwt2 <- function(
     cli::cli_h1("Point-wise tests")
   }
 
-  perm_res <- twosample_alt_permtest(coeff, n1, n_perm, alternative, paired)
+  perm_res <- ts_permtest(coeff, n1, n_perm, alternative, paired)
   t0 <- perm_res$t0
   t_coeff <- perm_res$t_coeff
   pval <- perm_res$pval
@@ -114,20 +114,6 @@ iwt2 <- function(
   maxrow <- 1L
   row_indices <- if (recycle) (p - 1L):maxrow else (p - 1L):maxrow
 
-  compute_row <- function(i, t0_2x, t_coeff_2x, n_perm, p, nvar, recycle) {
-    js <- if (recycle) seq_len(p) else seq_len(i)
-    row_vals <- numeric(if (recycle) p else i)
-    for (k in seq_along(js)) {
-      j <- js[k]
-      inf <- j
-      sup <- (p - i) + j
-      t0_temp <- sum(t0_2x[inf:sup])
-      t_temp <- rowSums(t_coeff_2x[, inf:sup, drop = FALSE])
-      row_vals[k] <- sum(t_temp >= t0_temp) / n_perm
-    }
-    row_vals
-  }
-
   perm_args <- list(
     t0_2x = t0_2x,
     t_coeff_2x = t_coeff_2x,
@@ -137,13 +123,16 @@ iwt2 <- function(
   )
 
   if (mirai::daemons_set()) {
-    row_tasks <- mirai::mirai_map(row_indices, function(.i) {
-      rlang::inject(compute_row(.i, !!!perm_args))
+    optimized_order <- optimize_order(row_indices)
+    row_tasks <- mirai::mirai_map((p - 1L):floor(p / 2), function(.i) {
+      rlang::inject(compute_row_pair_ts(.i, !!!perm_args))
     })
     row_results <- row_tasks[.progress]
+    row_results <- unlist(row_results, recursive = FALSE)
+    row_results <- row_results[order(optimized_order, decreasing = TRUE)]
   } else {
     row_results <- lapply(row_indices, function(.i) {
-      rlang::inject(compute_row(.i, !!!perm_args))
+      rlang::inject(compute_row_ts(.i, !!!perm_args))
     })
   }
 
@@ -173,6 +162,6 @@ iwt2 <- function(
     adjusted_pvalues = corrected_pval,
     pvalue_matrix = matrice_pval_asymm
   )
-  class(out) <- "ftwosample"
+  class(out) <- "fts"
   out
 }

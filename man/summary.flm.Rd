@@ -13,7 +13,7 @@ call to \code{\link[=functional_lm_test]{functional_lm_test()}}.}
 \item{...}{Further arguments passed to or from other methods.}
 }
 \value{
-No value returned. The function \code{\link[=summary.fanova]{summary.fanova()}} computes and
+No value returned. The function \code{\link[=summary.faov]{summary.faov()}} computes and
 returns a list of summary statistics of the fitted functional linear model
 given in \code{object}, using the component \code{call} from its arguments, plus:
 \itemize{
@@ -61,6 +61,6 @@ cruciate ligament. \emph{Scandinavian Journal of Statistics} 45(4),
 1036-1061.
 }
 \seealso{
-\code{\link[=IWTimage]{IWTimage()}} for the plot of p-values heatmaps and \code{\link[=plot.fanova]{plot.fanova()}}
+\code{\link[=IWTimage]{IWTimage()}} for the plot of p-values heatmaps and \code{\link[=plot.faov]{plot.faov()}}
 for the plot of analysis of variance results.
 }

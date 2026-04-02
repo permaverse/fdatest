@@ -83,7 +83,7 @@ twt2 <- function(
   coeff <- rbind(coeff1, coeff2)
   etichetta_ord <- c(rep(1, n1), rep(2, n2))
 
-  perm_res <- twosample_alt_permtest(coeff, n1, n_perm, alternative, paired)
+  perm_res <- ts_permtest(coeff, n1, n_perm, alternative, paired)
   t0 <- perm_res$t0
   t_coeff <- perm_res$t_coeff
   pval <- perm_res$pval
@@ -116,6 +116,6 @@ twt2 <- function(
     unadjusted_pvalues = pval,
     adjusted_pvalues = adjusted_pval
   )
-  class(out) <- "ftwosample"
+  class(out) <- "fts"
   out
 }

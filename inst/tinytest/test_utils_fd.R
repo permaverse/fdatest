@@ -117,7 +117,7 @@ grDevices::dev.off()
 
 set.seed(3L)
 res2 <- IWT2(fd1, fd2, B = 5L, verbose = FALSE)
-expect_true(inherits(res2, "ftwosample"))
+expect_true(inherits(res2, "fts"))
 p2 <- autoplot(res2)
 expect_true(inherits(p2, "gg") || inherits(p2, "patchwork"))
 

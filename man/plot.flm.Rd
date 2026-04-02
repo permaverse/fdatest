@@ -82,7 +82,7 @@ The \code{plot.flm()} function is a wrapper around \code{autoplot.flm()}
 that prints the plot directly.
 }
 \description{
-The \code{S3} methods \code{autoplot.fanova()} and \code{plot.fanova()} are methods
+The \code{S3} methods \code{autoplot.faov()} and \code{plot.faov()} are methods
 for plotting results of functional analysis of variance tests. They visualize the
 functional data and the adjusted p-values obtained from the testing
 procedures for mean comparison of multiple groups. The plots highlight significant

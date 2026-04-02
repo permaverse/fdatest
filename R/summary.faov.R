@@ -1,15 +1,15 @@
 #' Summarizing Functional Analysis of Variance Fits
 #'
-#' `summary` method for class `fanova`. Function returning a summary
+#' `summary` method for class `faov`. Function returning a summary
 #' of the results of IWT for the test on a functional analysis of variance:
 #' minimum IWT-adjusted p-values of the F-tests on the whole model and on each
 #' factor are reported.
 #'
-#' @param object  An object of class `fanova`, usually, a result of a
+#' @param object  An object of class `faov`, usually, a result of a
 #'   call to [`functional_anova_test()`].
 #' @param ... Further arguments passed to or from other methods.
 #'
-#' @return No value returned. The function [`summary.fanova()`] computes and
+#' @return No value returned. The function [`summary.faov()`] computes and
 #'   returns a list of summary statistics of the fitted functional analysis of
 #'   variance given in `object`, using the component `call` from its
 #'   arguments, plus:
@@ -21,7 +21,7 @@
 #'   - `R2`: Range of the functional R-squared.
 #'   - `ftest`: IWT-adjusted minimum p-value of functional F-test.
 #'
-#' @seealso [`IWTimage()`] for the plot of p-values heatmaps and [`plot.fanova()`]
+#' @seealso [`IWTimage()`] for the plot of p-values heatmaps and [`plot.faov()`]
 #'   for the plot of analysis of variance results.
 #'
 #' @references
@@ -53,7 +53,7 @@
 #'
 #' # Summary of the IWT results
 #' summary(IWT_result)
-summary.fanova <- function(object, ...) {
+summary.faov <- function(object, ...) {
   printresult <- vector("list")
   printresult$call <- object$call
   printresult$factors <- matrix(

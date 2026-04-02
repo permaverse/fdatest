@@ -84,7 +84,7 @@ Only used and \strong{must} be set if the \code{correction} argument is set to
 the computation. Defaults to \code{FALSE}.}
 }
 \value{
-An object of class \code{ftwosample} containing the following components:
+An object of class \code{fts} containing the following components:
 \itemize{
 \item \code{data}: A numeric matrix of shape \eqn{n \times J} containing the
 evaluation of the \eqn{n = n_1 + n_2} functions on a \strong{common} uniform
@@ -177,5 +177,5 @@ Lundtorp Olsen, N., Pini, A., & Vantini, S. (2021). False discovery rate for
 functional data \emph{TEST} 30, 784–809.
 }
 \seealso{
-See also \code{\link[=plot.ftwosample]{plot.ftwosample()}} for plotting the results.
+See also \code{\link[=plot.fts]{plot.fts()}} for plotting the results.
 }

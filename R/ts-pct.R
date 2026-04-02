@@ -92,7 +92,7 @@ pct2 <- function(
   p <- dim(coeff)[2]
   data_eval <- coeff
 
-  perm_res <- twosample_alt_permtest(coeff, n1, n_perm, alternative, paired)
+  perm_res <- ts_permtest(coeff, n1, n_perm, alternative, paired)
   t0 <- perm_res$t0
   t_coeff <- perm_res$t_coeff
   pval <- perm_res$pval
@@ -136,6 +136,6 @@ pct2 <- function(
     unadjusted_pvalues = pval,
     adjusted_pvalues = adjusted_pval
   )
-  class(out) <- "ftwosample"
+  class(out) <- "fts"
   out
 }

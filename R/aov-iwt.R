@@ -132,18 +132,12 @@ iwt_aov <- function(
 
   if (mirai::daemons_set()) {
     optimized_order <- optimize_order(row_indices)
-    row_tasks <- mirai::mirai_map(
-      (p - 1L):floor((p - 1L) / 2),
-      function(.i) {
-        rlang::inject(compute_row_pair_aov(.i, !!!perm_args))
-      }
-    )
+    row_tasks <- mirai::mirai_map((p - 1L):floor((p - 1L) / 2), function(.i) {
+      rlang::inject(compute_row_pair_aov(.i, !!!perm_args))
+    })
     row_results <- row_tasks[.progress]
     row_results <- unlist(row_results, recursive = FALSE)
-    row_results <- row_results[order(
-      optimized_order,
-      decreasing = TRUE
-    )]
+    row_results <- row_results[order(optimized_order, decreasing = TRUE)]
   } else {
     row_results <- lapply(row_indices, function(.i) {
       rlang::inject(compute_row_aov(.i, !!!perm_args))
@@ -207,6 +201,6 @@ iwt_aov <- function(
     residuals_eval = residuals_t,
     R2_eval = r2_t
   )
-  class(out) <- "fanova"
+  class(out) <- "faov"
   out
 }

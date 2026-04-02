@@ -53,7 +53,7 @@ case the statistic is defined as the maximum of the F-test statistic over
 the domain. Defaults to  \code{"Integral"}.}
 }
 \value{
-An object of class \code{fanova} containing the following components:
+An object of class \code{faov} containing the following components:
 \itemize{
 \item \code{call}: The matched call.
 \item \code{design_matrix}: The design matrix of the functional-on-scalar linear
@@ -183,6 +183,6 @@ cruciate ligament. \emph{Scandinavian Journal of Statistics} 45(4),
 1036-1061.
 }
 \seealso{
-See also \code{\link[=plot.fanova]{plot.fanova()}} for plotting the results and \code{\link[=summary.fanova]{summary.fanova()}}
+See also \code{\link[=plot.faov]{plot.faov()}} for plotting the results and \code{\link[=summary.faov]{summary.faov()}}
 for summarizing the results of the functional analysis of variance.
 }

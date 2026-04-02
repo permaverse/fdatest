@@ -61,7 +61,7 @@ cruciate ligament. \emph{Scandinavian Journal of Statistics} 45(4),
 1036-1061.
 }
 \seealso{
-See \code{\link[=plot.IWT1]{plot.IWT1()}}, \code{\link[=plot.ftwosample]{plot.ftwosample()}}, \code{\link[=plot.flm]{plot.flm()}} and
-\code{\link[=plot.fanova]{plot.fanova()}} for the plot method applied to the IWT results of one-
+See \code{\link[=plot.IWT1]{plot.IWT1()}}, \code{\link[=plot.fts]{plot.fts()}}, \code{\link[=plot.flm]{plot.flm()}} and
+\code{\link[=plot.faov]{plot.faov()}} for the plot method applied to the IWT results of one-
 and two-population tests, linear models, and ANOVA, respectively.
 }

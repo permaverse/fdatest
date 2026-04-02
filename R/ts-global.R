@@ -147,6 +147,6 @@ global2 <- function(
     adjusted_pvalues = adjusted_pval,
     global_pvalue = adjusted_pval[1]
   )
-  class(out) <- "ftwosample"
+  class(out) <- "fts"
   out
 }

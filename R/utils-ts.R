@@ -1,6 +1,6 @@
-# Internal helper: one permutation iteration for twosample_alt_permtest.
+# Internal helper: one permutation iteration for ts_permtest.
 # Returns a numeric vector of length p (the permuted test statistic row).
-.twosample_one_perm <- function(coeff, n1, alternative, paired) {
+.ts_one_perm <- function(coeff, n1, alternative, paired) {
   n <- nrow(coeff)
   if (paired) {
     if_perm <- stats::rbinom(n1, 1, 0.5)
@@ -27,7 +27,7 @@
 
 # Internal helper: shared pointwise permutation test for two-sample functions
 # (iwt2, twt2, fdr2, pct2). Returns list(t0, t_coeff, pval).
-twosample_alt_permtest <- function(coeff, n1, n_perm, alternative, paired) {
+ts_permtest <- function(coeff, n1, n_perm, alternative, paired) {
   n <- nrow(coeff)
   p <- ncol(coeff)
 
@@ -53,12 +53,12 @@ twosample_alt_permtest <- function(coeff, n1, n_perm, alternative, paired) {
 
   if (mirai::daemons_set()) {
     perm_tasks <- mirai::mirai_map(seq_len(n_perm), function(.x) {
-      rlang::inject(.twosample_one_perm(!!!perm_args))
+      rlang::inject(.ts_one_perm(!!!perm_args))
     })
     perm_results <- perm_tasks[.progress]
   } else {
     perm_results <- lapply(seq_len(n_perm), function(.x) {
-      rlang::inject(.twosample_one_perm(!!!perm_args))
+      rlang::inject(.ts_one_perm(!!!perm_args))
     })
   }
   t_coeff <- do.call(rbind, perm_results)
@@ -69,4 +69,60 @@ twosample_alt_permtest <- function(coeff, n1, n_perm, alternative, paired) {
     n_perm
 
   list(t0 = t0, t_coeff = t_coeff, pval = pval)
+}
+
+compute_row_ts <- function(i, t0_2x, t_coeff_2x, n_perm, p, nvar, recycle) {
+  js <- if (recycle) seq_len(p) else seq_len(i)
+  row_vals <- numeric(if (recycle) p else i)
+  for (k in seq_along(js)) {
+    j <- js[k]
+    inf <- j
+    sup <- (p - i) + j
+    t0_temp <- sum(t0_2x[inf:sup])
+    t_temp <- rowSums(t_coeff_2x[, inf:sup, drop = FALSE])
+    row_vals[k] <- sum(t_temp >= t0_temp) / n_perm
+  }
+  row_vals
+}
+
+compute_row_pair_ts <- function(
+  i,
+  t0_2x,
+  t_coeff_2x,
+  n_perm,
+  p,
+  nvar,
+  recycle
+) {
+  if (i == p - i) {
+    return(list(compute_row_ts(
+      i = i,
+      t0_2x = t0_2x,
+      t_coeff_2x = t_coeff_2x,
+      n_perm = n_perm,
+      p = p,
+      nvar = nvar,
+      recycle = recycle
+    )))
+  }
+  list(
+    compute_row_ts(
+      i = i,
+      t0_2x = t0_2x,
+      t_coeff_2x = t_coeff_2x,
+      n_perm = n_perm,
+      p = p,
+      nvar = nvar,
+      recycle = recycle
+    ),
+    compute_row_ts(
+      i = p - i,
+      t0_2x = t0_2x,
+      t_coeff_2x = t_coeff_2x,
+      n_perm = n_perm,
+      p = p,
+      nvar = nvar,
+      recycle = recycle
+    )
+  )
 }

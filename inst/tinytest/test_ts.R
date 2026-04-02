@@ -14,7 +14,7 @@ partition <- c(rep(1L, 4L), rep(2L, 4L)) # 2 partitions over 8 grid pts
 set.seed(42)
 res_iwt <- IWT2(data1 = d1, data2 = d2, mu = 0, B = 5L, verbose = FALSE)
 
-expect_inherits(res_iwt, "ftwosample")
+expect_inherits(res_iwt, "fts")
 expect_equal(length(res_iwt$adjusted_pvalues), p)
 expect_equal(length(res_iwt$unadjusted_pvalues), p)
 expect_true(all(res_iwt$adjusted_pvalues >= 0 & res_iwt$adjusted_pvalues <= 1))
@@ -27,7 +27,7 @@ expect_true(all(res_iwt$adjusted_pvalues >= res_iwt$unadjusted_pvalues))
 # verbose = TRUE (exercises CLI progress path)
 set.seed(42)
 res_iwt_v <- IWT2(data1 = d1, data2 = d2, mu = 0, B = 5L, verbose = TRUE)
-expect_inherits(res_iwt_v, "ftwosample")
+expect_inherits(res_iwt_v, "fts")
 
 # recycle disabled
 set.seed(42)
@@ -39,7 +39,7 @@ res_iwt_nr <- IWT2(
   recycle = FALSE,
   verbose = FALSE
 )
-expect_inherits(res_iwt_nr, "ftwosample")
+expect_inherits(res_iwt_nr, "fts")
 expect_true(is.na(res_iwt_nr$pvalue_matrix[1, p])) # upper-right is NA
 
 # recycle = FALSE + verbose = TRUE (exercises the cli progress line in the else branch)
@@ -52,7 +52,7 @@ res_iwt_nr_v <- IWT2(
   recycle = FALSE,
   verbose = TRUE
 )
-expect_inherits(res_iwt_nr_v, "ftwosample")
+expect_inherits(res_iwt_nr_v, "fts")
 
 # paired samples
 set.seed(42)
@@ -64,7 +64,7 @@ res_iwt_p <- IWT2(
   paired = TRUE,
   verbose = FALSE
 )
-expect_inherits(res_iwt_p, "ftwosample")
+expect_inherits(res_iwt_p, "fts")
 
 # ===========================================================================
 # Global2 — all four statistic options
@@ -74,7 +74,7 @@ for (stat in c("Integral", "Max", "Integral_std", "Max_std")) {
   res_g <- Global2(data1 = d1, data2 = d2, mu = 0, B = 5L, statistic = stat)
   expect_inherits(
     res_g,
-    "ftwosample",
+    "fts",
     info = paste("Global2 statistic =", stat)
   )
   expect_true(
@@ -97,7 +97,7 @@ res_g_p <- Global2(
   statistic = "Integral",
   paired = TRUE
 )
-expect_inherits(res_g_p, "ftwosample")
+expect_inherits(res_g_p, "fts")
 
 # ===========================================================================
 # TWT2 — all three alternative options
@@ -112,7 +112,7 @@ for (alt in c("two.sided", "less", "greater")) {
     alternative = alt,
     verbose = FALSE
   )
-  expect_inherits(res_t, "ftwosample", info = paste("TWT2 alternative =", alt))
+  expect_inherits(res_t, "fts", info = paste("TWT2 alternative =", alt))
   expect_equal(
     length(res_t$adjusted_pvalues),
     p,
@@ -130,19 +130,19 @@ res_t_p <- TWT2(
   paired = TRUE,
   verbose = FALSE
 )
-expect_inherits(res_t_p, "ftwosample")
+expect_inherits(res_t_p, "fts")
 
 # TWT2 verbose = TRUE
 set.seed(42)
 res_t_v <- TWT2(data1 = d1, data2 = d2, mu = 0, B = 5L, verbose = TRUE)
-expect_inherits(res_t_v, "ftwosample")
+expect_inherits(res_t_v, "fts")
 
 # ===========================================================================
 # FDR2 — two.sided + alternative options
 # ===========================================================================
 set.seed(42)
 res_fdr <- FDR2(data1 = d1, data2 = d2, mu = 0, B = 5L)
-expect_inherits(res_fdr, "ftwosample")
+expect_inherits(res_fdr, "fts")
 expect_equal(length(res_fdr$adjusted_pvalues), p)
 
 set.seed(42)
@@ -153,7 +153,7 @@ res_fdr_less <- FDR2(
   B = 5L,
   alternative = "less"
 )
-expect_inherits(res_fdr_less, "ftwosample")
+expect_inherits(res_fdr_less, "fts")
 
 set.seed(42)
 res_fdr_gr <- FDR2(
@@ -163,19 +163,19 @@ res_fdr_gr <- FDR2(
   B = 5L,
   alternative = "greater"
 )
-expect_inherits(res_fdr_gr, "ftwosample")
+expect_inherits(res_fdr_gr, "fts")
 
 # FDR2 paired
 set.seed(42)
 res_fdr_p <- FDR2(data1 = d1, data2 = d2, mu = 0, B = 5L, paired = TRUE)
-expect_inherits(res_fdr_p, "ftwosample")
+expect_inherits(res_fdr_p, "fts")
 
 # ===========================================================================
 # PCT2
 # ===========================================================================
 set.seed(42)
 res_pct <- PCT2(data1 = d1, data2 = d2, mu = 0, B = 5L, partition = partition)
-expect_inherits(res_pct, "ftwosample")
+expect_inherits(res_pct, "fts")
 expect_equal(length(res_pct$adjusted_pvalues), p)
 
 # ===========================================================================
@@ -189,7 +189,7 @@ res_ft_iwt <- functional_two_sample_test(
   B = 5L,
   verbose = FALSE
 )
-expect_inherits(res_ft_iwt, "ftwosample")
+expect_inherits(res_ft_iwt, "fts")
 expect_equal(res_ft_iwt$correction, "IWT")
 
 set.seed(42)
@@ -200,7 +200,7 @@ res_ft_twt <- functional_two_sample_test(
   B = 5L,
   verbose = FALSE
 )
-expect_inherits(res_ft_twt, "ftwosample")
+expect_inherits(res_ft_twt, "fts")
 expect_equal(res_ft_twt$correction, "TWT")
 
 set.seed(42)
@@ -210,7 +210,7 @@ res_ft_g <- functional_two_sample_test(
   correction = "Global",
   B = 5L
 )
-expect_inherits(res_ft_g, "ftwosample")
+expect_inherits(res_ft_g, "fts")
 expect_equal(res_ft_g$correction, "Global")
 
 set.seed(42)
@@ -220,7 +220,7 @@ res_ft_fdr <- functional_two_sample_test(
   correction = "FDR",
   B = 5L
 )
-expect_inherits(res_ft_fdr, "ftwosample")
+expect_inherits(res_ft_fdr, "fts")
 expect_equal(res_ft_fdr$correction, "FDR")
 
 # PCT without partition → error
@@ -242,7 +242,7 @@ res_ft_pct <- functional_two_sample_test(
   B = 5L,
   partition = partition
 )
-expect_inherits(res_ft_pct, "ftwosample")
+expect_inherits(res_ft_pct, "fts")
 expect_equal(res_ft_pct$correction, "PCT")
 
 # ===========================================================================
@@ -255,7 +255,7 @@ res_itp2b <- suppressWarnings(ITP2bspline(
   mu = 0,
   B = 5L
 ))
-expect_inherits(res_itp2b, "ftwosample")
+expect_inherits(res_itp2b, "fts")
 
 set.seed(42)
 res_itp2f <- suppressWarnings(ITP2fourier(
@@ -264,7 +264,7 @@ res_itp2f <- suppressWarnings(ITP2fourier(
   mu = 0,
   B = 5L
 ))
-expect_inherits(res_itp2f, "ftwosample")
+expect_inherits(res_itp2f, "fts")
 
 set.seed(42)
 res_itp2pa <- suppressWarnings(ITP2pafourier(
@@ -273,6 +273,6 @@ res_itp2pa <- suppressWarnings(ITP2pafourier(
   mu = 0,
   B = 5L
 ))
-expect_inherits(res_itp2pa, "ftwosample")
+expect_inherits(res_itp2pa, "fts")
 
 set.seed(NULL)

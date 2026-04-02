@@ -1,6 +1,6 @@
 #' Plot for Functional Regression Test Results
 #'
-#' The `S3` methods `autoplot.fanova()` and `plot.fanova()` are methods
+#' The `S3` methods `autoplot.faov()` and `plot.faov()` are methods
 #' for plotting results of functional analysis of variance tests. They visualize the
 #' functional data and the adjusted p-values obtained from the testing
 #' procedures for mean comparison of multiple groups. The plots highlight significant
@@ -9,7 +9,7 @@
 #'
 #' @param object,x  The object to be plotted. An object of class "\code{IWTlm}",
 #'   usually, a result of a call to \code{\link{IWTlm}}.
-#' @inherit plot.fanova params seealso
+#' @inherit plot.faov params seealso
 #'
 #' @returns The `autoplot.flm()` function creates a ggplot object that
 #'   displays the functional data and the adjusted p-values. The significant
