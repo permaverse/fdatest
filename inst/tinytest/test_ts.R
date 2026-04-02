@@ -66,6 +66,19 @@ res_iwt_p <- IWT2(
 )
 expect_inherits(res_iwt_p, "fts")
 
+# aggregation_strategy = "max"
+set.seed(42)
+res_iwt_max <- IWT2(
+  data1 = d1,
+  data2 = d2,
+  mu = 0,
+  B = 5L,
+  aggregation_strategy = "max",
+  verbose = FALSE
+)
+expect_inherits(res_iwt_max, "fts")
+expect_equal(length(res_iwt_max$adjusted_pvalues), p)
+
 # ===========================================================================
 # Global2 — all four combinations of standardize / aggregation_strategy
 # ===========================================================================
@@ -109,6 +122,11 @@ res_g_p <- Global2(
 )
 expect_inherits(res_g_p, "fts")
 
+# Global2 verbose = TRUE
+set.seed(42)
+res_g_v <- Global2(data1 = d1, data2 = d2, mu = 0, B = 5L, verbose = TRUE)
+expect_inherits(res_g_v, "fts")
+
 # ===========================================================================
 # TWT2 — all three alternative options
 # ===========================================================================
@@ -147,6 +165,19 @@ set.seed(42)
 res_t_v <- TWT2(data1 = d1, data2 = d2, mu = 0, B = 5L, verbose = TRUE)
 expect_inherits(res_t_v, "fts")
 
+# TWT2 aggregation_strategy = "max"
+set.seed(42)
+res_t_max <- TWT2(
+  data1 = d1,
+  data2 = d2,
+  mu = 0,
+  B = 5L,
+  aggregation_strategy = "max",
+  verbose = FALSE
+)
+expect_inherits(res_t_max, "fts")
+expect_equal(length(res_t_max$adjusted_pvalues), p)
+
 # ===========================================================================
 # FDR2 — two.sided + alternative options
 # ===========================================================================
@@ -180,6 +211,11 @@ set.seed(42)
 res_fdr_p <- FDR2(data1 = d1, data2 = d2, mu = 0, B = 5L, paired = TRUE)
 expect_inherits(res_fdr_p, "fts")
 
+# FDR2 verbose = TRUE
+set.seed(42)
+res_fdr_v <- FDR2(data1 = d1, data2 = d2, mu = 0, B = 5L, verbose = TRUE)
+expect_inherits(res_fdr_v, "fts")
+
 # ===========================================================================
 # PCT2
 # ===========================================================================
@@ -187,6 +223,32 @@ set.seed(42)
 res_pct <- PCT2(data1 = d1, data2 = d2, mu = 0, B = 5L, partition = partition)
 expect_inherits(res_pct, "fts")
 expect_equal(length(res_pct$adjusted_pvalues), p)
+
+# PCT2 verbose = TRUE
+set.seed(42)
+res_pct_v <- PCT2(
+  data1 = d1,
+  data2 = d2,
+  mu = 0,
+  B = 5L,
+  partition = partition,
+  verbose = TRUE
+)
+expect_inherits(res_pct_v, "fts")
+
+# PCT2 aggregation_strategy = "max"
+set.seed(42)
+res_pct_max <- PCT2(
+  data1 = d1,
+  data2 = d2,
+  mu = 0,
+  B = 5L,
+  partition = partition,
+  aggregation_strategy = "max",
+  verbose = FALSE
+)
+expect_inherits(res_pct_max, "fts")
+expect_equal(length(res_pct_max$adjusted_pvalues), p)
 
 # ===========================================================================
 # functional_two_sample_test — all corrections
