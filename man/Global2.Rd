@@ -105,6 +105,8 @@ used to evaluate the functional samples.
 \item \code{adjusted_pvalues}: A numeric vector of size \eqn{J} containing the
 evaluation of the adjusted p-value functione on the \strong{same} uniform grid
 used to evaluate the functional samples.
+\item \code{correction_method}: A string containing the correction method used to
+compute the adjusted p-value function.
 }
 
 Optionally, the list may contain the following components:
@@ -140,13 +142,15 @@ plot(
 which(Global_result$adjusted_pvalues < 0.05)
 }
 \references{
-A. Pini and S. Vantini (2017). The Interval Testing Procedure: Inference for
-Functional Data Controlling the Family Wise Error Rate on Intervals.
-Biometrics 73(3): 835–845.
-
-Pini, A., & Vantini, S. (2017). Interval-wise testing for functional data.
-\emph{Journal of Nonparametric Statistics}, 29(2), 407-424
+\itemize{
+\item Hall, Peter, and Nader Tajvidi. 2002. “Permutation Tests for Equality of
+Distributions in High-Dimensional Settings.” Biometrika 89 (2): 359–74.
+\item Pini, Alessia, Aymeric Stamm, and Simone Vantini. 2018. “Hotelling’s T2 in
+Separable Hilbert Spaces.” Journal of Multivariate Analysis 167: 284–305.
+}
 }
 \seealso{
-See also \code{\link[=plot.fts]{plot.fts()}} for plotting the results.
+\code{\link[=iwt2]{iwt2()}}, \code{\link[=twt2]{twt2()}}, \code{\link[=pct2]{pct2()}}, \code{\link[=fdr2]{fdr2()}} for calling directly
+one of the other tests, \code{\link[=functional_two_sample_test]{functional_two_sample_test()}} for calling the
+interface test and \code{\link[=plot.fts]{plot.fts()}} for plotting the results.
 }

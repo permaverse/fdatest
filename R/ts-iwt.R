@@ -6,15 +6,27 @@
 #' unadjusted p-value function controls the point-wise error rate. The adjusted
 #' p-value function controls the interval-wise error rate.
 #'
-#' @inherit functional_two_sample_test params return seealso
+#' @inherit functional_two_sample_test params return
+#'
+#' @seealso [`global2()`], [`twt2()`], [`pct2()`], [`fdr2()`] for calling directly
+#' one of the other tests, [`functional_two_sample_test()`] for calling the
+#' interface test and [`plot.fts()`] for plotting the results.
 #'
 #' @references
-#' A. Pini and S. Vantini (2017). The Interval Testing Procedure: Inference
-#' for Functional Data Controlling the Family Wise Error Rate on Intervals.
-#' *Biometrics*, 73(3): 835–845.
-#'
-#' A. Pini and S. Vantini (2017). Interval-wise testing for functional data.
-#' *Journal of Nonparametric Statistics*, 29(2), 407-424.
+#' - Pini, Alessia, and Simone Vantini. 2016. “The interval testing procedure: a
+#' general framework for inference in functional data analysis.” Biometrics 72 (3):
+#' 835–845.
+#' - Pini, Alessia, and Simone Vantini. 2017. “Interval-Wise Testing for Functional
+#' Data.” Journal of Nonparametric Statistics 29 (2): 407–24.
+#' - Pini, Alessia, Simone Vantini, Bianca Maria Colosimo, and Marco Grasso. 2018.
+#' “Domain-Selective Functional Analysis of Variance for Supervised Statistical
+#' Profile Monitoring of Signal Data.” Journal of the Royal Statistical Society
+#' Series C: Applied Statistics 67 (1): 55–81.
+#' - Abramowicz, Konrad, Charlotte K Häger, Alessia Pini, Lina Schelin, Sara
+#' Sjöstedt de Luna, and Simone Vantini. 2018. “Nonparametric Inference for
+#' Functional-on-Scalar Linear Models Applied to Knee Kinematic Hop Data After
+#' Injury of the Anterior Cruciate Ligament.” Scandinavian Journal of Statistics 45
+#' (4): 1036–61.
 #'
 #' @export
 #' @examples

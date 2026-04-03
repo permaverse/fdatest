@@ -7,11 +7,15 @@
 #' The adjusted p-value function controls the family-wise error rate
 #' asymptotically.
 #'
-#' @inherit functional_two_sample_test params return seealso
+#' @inherit functional_two_sample_test params return
+#'
+#' @seealso [`global2()`], [`twt2()`], [`pct2()`], [`iwt2()`] for calling directly
+#' one of the other tests, [`functional_two_sample_test()`] for calling the
+#' interface test and [`plot.fts()`] for plotting the results.
 #'
 #' @references
-#' Lundtorp Olsen, N., Pini, A., & Vantini, S. (2021). False discovery rate for
-#' functional data \emph{TEST} 30, 784–809.
+#' - Lundtorp Olsen, Niels, Alessia Pini, and Simone Vantini. 2021. "False discovery
+#' rate for functional data." TEST 30, 784–809.
 #'
 #' @export
 #' @examples

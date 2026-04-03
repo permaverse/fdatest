@@ -151,6 +151,8 @@ used to evaluate the functional samples.
 \item \code{adjusted_pvalues}: A numeric vector of size \eqn{J} containing the
 evaluation of the adjusted p-value functione on the \strong{same} uniform grid
 used to evaluate the functional samples.
+\item \code{correction_method}: A string containing the correction method used to
+compute the adjusted p-value function.
 }
 
 Optionally, the list may contain the following components:
@@ -189,13 +191,25 @@ IWTimage(IWT_result, abscissa_range = c(0, 12))
 which(IWT_result$adjusted_pvalues < 0.05)
 }
 \references{
-A. Pini and S. Vantini (2017). The Interval Testing Procedure: Inference
-for Functional Data Controlling the Family Wise Error Rate on Intervals.
-\emph{Biometrics}, 73(3): 835–845.
-
-A. Pini and S. Vantini (2017). Interval-wise testing for functional data.
-\emph{Journal of Nonparametric Statistics}, 29(2), 407-424.
+\itemize{
+\item Pini, Alessia, and Simone Vantini. 2016. “The interval testing procedure: a
+general framework for inference in functional data analysis.” Biometrics 72 (3):
+835–845.
+\item Pini, Alessia, and Simone Vantini. 2017. “Interval-Wise Testing for Functional
+Data.” Journal of Nonparametric Statistics 29 (2): 407–24.
+\item Pini, Alessia, Simone Vantini, Bianca Maria Colosimo, and Marco Grasso. 2018.
+“Domain-Selective Functional Analysis of Variance for Supervised Statistical
+Profile Monitoring of Signal Data.” Journal of the Royal Statistical Society
+Series C: Applied Statistics 67 (1): 55–81.
+\item Abramowicz, Konrad, Charlotte K Häger, Alessia Pini, Lina Schelin, Sara
+Sjöstedt de Luna, and Simone Vantini. 2018. “Nonparametric Inference for
+Functional-on-Scalar Linear Models Applied to Knee Kinematic Hop Data After
+Injury of the Anterior Cruciate Ligament.” Scandinavian Journal of Statistics 45
+(4): 1036–61.
+}
 }
 \seealso{
-See also \code{\link[=plot.fts]{plot.fts()}} for plotting the results.
+\code{\link[=global2]{global2()}}, \code{\link[=twt2]{twt2()}}, \code{\link[=pct2]{pct2()}}, \code{\link[=fdr2]{fdr2()}} for calling directly
+one of the other tests, \code{\link[=functional_two_sample_test]{functional_two_sample_test()}} for calling the
+interface test and \code{\link[=plot.fts]{plot.fts()}} for plotting the results.
 }

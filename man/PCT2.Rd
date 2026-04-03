@@ -112,6 +112,8 @@ used to evaluate the functional samples.
 \item \code{adjusted_pvalues}: A numeric vector of size \eqn{J} containing the
 evaluation of the adjusted p-value functione on the \strong{same} uniform grid
 used to evaluate the functional samples.
+\item \code{correction_method}: A string containing the correction method used to
+compute the adjusted p-value function.
 }
 
 Optionally, the list may contain the following components:
@@ -157,13 +159,19 @@ plot(
 which(PCT_result$adjusted_pvalues < 0.05)
 }
 \references{
-Abramowicz, K., Pini, A., Schelin, L., Stamm, A., & Vantini, S. (2022).
-“Domain selection and familywise error rate for functional data: A unified
-framework. \emph{Biometrics} 79(2), 1119-1132.
-
-Pini, A., & Vantini, S. (2017). Interval-wise testing for functional data.
-\emph{Journal of Nonparametric Statistics}, 29(2), 407-424.
+\itemize{
+\item Vsevolozhskaya, Olga A, Mark C Greenwood, GJ Bellante, Scott L Powell, Rick
+L Lawrence, and Kevin S Repasky. 2013. “Combining Functions and the Closure
+Principle for Performing Follow-up Tests in Functional Analysis of Variance.”
+Computational Statistics & Data Analysis 67: 175–84.
+\item Vsevolozhskaya, Olga, Mark Greenwood, and Dmitri Holodov. 2014. “Pairwise
+comparison of treatment levels in functional analysis of variance with
+application to erythrocyte hemolysis.” The Annals of Applied Statistics 8 (2):
+905–25. https://doi.org/10.1214/14-AOAS723.
+}
 }
 \seealso{
-See also \code{\link[=plot.fts]{plot.fts()}} for plotting the results.
+\code{\link[=global2]{global2()}}, \code{\link[=twt2]{twt2()}}, \code{\link[=iwt2]{iwt2()}}, \code{\link[=fdr2]{fdr2()}} for calling directly
+one of the other tests, \code{\link[=functional_two_sample_test]{functional_two_sample_test()}} for calling the
+interface test and \code{\link[=plot.fts]{plot.fts()}} for plotting the results.
 }

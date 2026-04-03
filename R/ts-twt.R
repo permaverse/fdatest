@@ -6,15 +6,17 @@
 #' unadjusted p-value function controls the point-wise error rate. The adjusted
 #' p-value function controls the family-wise error rate asymptotically.
 #'
-#' @inherit functional_two_sample_test params return seealso
+#' @inherit functional_two_sample_test params return
+#'
+#' @seealso [`global2()`], [`iwt2()`], [`pct2()`], [`fdr2()`] for calling directly
+#' one of the other tests, [`functional_two_sample_test()`] for calling the
+#' interface test and [`plot.fts()`] for plotting the results.
 #'
 #' @references
-#' Abramowicz, K., Pini, A., Schelin, L., Stamm, A., & Vantini, S. (2022).
-#' “Domain selection and familywise error rate for functional data: A unified
-#' framework. \emph{Biometrics} 79(2), 1119-1132.
-#'
-#' Pini, A., & Vantini, S. (2017). Interval-wise testing for functional data.
-#' \emph{Journal of Nonparametric Statistics}, 29(2), 407-424.
+#' - Abramowicz, Konrad, Alessia Pini, Lina Schelin, Sara Sjöstedt de Luna,
+#' Aymeric Stamm, and Simone Vantini. 2023. “Domain Selection and Familywise
+#' Error Rate for Functional Data: A Unified Framework.” Biometrics 79 (2):
+#' 1119–32.
 #'
 #' @export
 #' @examples

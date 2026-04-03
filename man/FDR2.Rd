@@ -100,6 +100,8 @@ used to evaluate the functional samples.
 \item \code{adjusted_pvalues}: A numeric vector of size \eqn{J} containing the
 evaluation of the adjusted p-value functione on the \strong{same} uniform grid
 used to evaluate the functional samples.
+\item \code{correction_method}: A string containing the correction method used to
+compute the adjusted p-value function.
 }
 
 Optionally, the list may contain the following components:
@@ -137,9 +139,13 @@ plot(
 which(FDR_result$adjusted_pvalues < 0.05)
 }
 \references{
-Lundtorp Olsen, N., Pini, A., & Vantini, S. (2021). False discovery rate for
-functional data \emph{TEST} 30, 784–809.
+\itemize{
+\item Lundtorp Olsen, Niels, Alessia Pini, and Simone Vantini. 2021. "False discovery
+rate for functional data." TEST 30, 784–809.
+}
 }
 \seealso{
-See also \code{\link[=plot.fts]{plot.fts()}} for plotting the results.
+\code{\link[=global2]{global2()}}, \code{\link[=twt2]{twt2()}}, \code{\link[=pct2]{pct2()}}, \code{\link[=iwt2]{iwt2()}} for calling directly
+one of the other tests, \code{\link[=functional_two_sample_test]{functional_two_sample_test()}} for calling the
+interface test and \code{\link[=plot.fts]{plot.fts()}} for plotting the results.
 }

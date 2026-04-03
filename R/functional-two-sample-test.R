@@ -72,6 +72,8 @@
 #'   - `adjusted_pvalues`: A numeric vector of size \eqn{J} containing the
 #'   evaluation of the adjusted p-value functione on the **same** uniform grid
 #'   used to evaluate the functional samples.
+#'   - `correction_method`: A string containing the correction method used to
+#'   compute the adjusted p-value function.
 #'
 #'   Optionally, the list may contain the following components:
 #'
@@ -83,22 +85,51 @@
 #'   \eqn{j, j+1 , \dots, j+(p-i)}. Only present if the `correction` argument is
 #'   set to `"IWT"`.
 #'
-#' @seealso See also [`plot.fts()`] for plotting the results.
+#' @seealso [`global2()`], [`iwt2()`], [`twt2()`], [`pct2()`], [`fdr2()`] for
+#' calling directly one specific test and [`plot.fts()`] for plotting the results.
 #'
 #' @references
-#' Abramowicz, K., Pini, A., Schelin, L., Stamm, A., & Vantini, S. (2022).
-#' “Domain selection and familywise error rate for functional data: A unified
-#' framework. \emph{Biometrics} 79(2), 1119-1132.
+#' For the global testing procedure:
+#' - Hall, Peter, and Nader Tajvidi. 2002. “Permutation Tests for Equality of
+#' Distributions in High-Dimensional Settings.” Biometrika 89 (2): 359–74.
+#' - Pini, Alessia, Aymeric Stamm, and Simone Vantini. 2018. “Hotelling’s T2 in
+#' Separable Hilbert Spaces.” Journal of Multivariate Analysis 167: 284–305.
 #'
-#' Pini, A., & Vantini, S. (2017). Interval-wise testing for functional data.
-#' \emph{Journal of Nonparametric Statistics}, 29(2), 407-424
+#' For the partition closed testing procedure:
+#' - Vsevolozhskaya, Olga A, Mark C Greenwood, GJ Bellante, Scott L Powell, Rick
+#' L Lawrence, and Kevin S Repasky. 2013. “Combining Functions and the Closure
+#' Principle for Performing Follow-up Tests in Functional Analysis of Variance.”
+#' Computational Statistics & Data Analysis 67: 175–84.
+#' - Vsevolozhskaya, Olga, Mark Greenwood, and Dmitri Holodov. 2014. “Pairwise
+#' comparison of treatment levels in functional analysis of variance with
+#' application to erythrocyte hemolysis.” The Annals of Applied Statistics 8 (2):
+#' 905–25. https://doi.org/10.1214/14-AOAS723.
 #'
-#' A. Pini and S. Vantini (2017). The Interval Testing Procedure: Inference for
-#' Functional Data Controlling the Family Wise Error Rate on Intervals.
-#' Biometrics 73(3): 835–845.
+#' For the interval-wise testing procedure:
+#' - Pini, Alessia, and Simone Vantini. 2016. “The interval testing procedure: a
+#' general framework for inference in functional data analysis.” Biometrics 72 (3):
+#' 835–845.
+#' - Pini, Alessia, and Simone Vantini. 2017. “Interval-Wise Testing for Functional
+#' Data.” Journal of Nonparametric Statistics 29 (2): 407–24.
+#' - Pini, Alessia, Simone Vantini, Bianca Maria Colosimo, and Marco Grasso. 2018.
+#' “Domain-Selective Functional Analysis of Variance for Supervised Statistical
+#' Profile Monitoring of Signal Data.” Journal of the Royal Statistical Society
+#' Series C: Applied Statistics 67 (1): 55–81.
+#' - Abramowicz, Konrad, Charlotte K Häger, Alessia Pini, Lina Schelin, Sara
+#' Sjöstedt de Luna, and Simone Vantini. 2018. “Nonparametric Inference for
+#' Functional-on-Scalar Linear Models Applied to Knee Kinematic Hop Data After
+#' Injury of the Anterior Cruciate Ligament.” Scandinavian Journal of Statistics 45
+#' (4): 1036–61.
 #'
-#' Lundtorp Olsen, N., Pini, A., & Vantini, S. (2021). False discovery rate for
-#' functional data \emph{TEST} 30, 784–809.
+#' For the threshold-wise testing procedure:
+#' - Abramowicz, Konrad, Alessia Pini, Lina Schelin, Sara Sjöstedt de Luna,
+#' Aymeric Stamm, and Simone Vantini. 2023. “Domain Selection and Familywise
+#' Error Rate for Functional Data: A Unified Framework.” Biometrics 79 (2):
+#' 1119–32.
+#'
+#' For the functional Benjamini-Hochberg procedure:
+#' - Lundtorp Olsen, Niels, Alessia Pini, and Simone Vantini. 2021. "False discovery
+#' rate for functional data." TEST 30, 784–809.
 #'
 #' @export
 #' @examples

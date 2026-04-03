@@ -6,15 +6,17 @@
 #' unadjusted p-value function controls the point-wise error rate. The adjusted
 #' p-value function controls the interval-wise error rate.
 #'
-#' @inherit functional_two_sample_test params return seealso
+#' @inherit functional_two_sample_test params return
+#'
+#' @seealso [`iwt2()`], [`twt2()`], [`pct2()`], [`fdr2()`] for calling directly
+#' one of the other tests, [`functional_two_sample_test()`] for calling the
+#' interface test and [`plot.fts()`] for plotting the results.
 #'
 #' @references
-#' A. Pini and S. Vantini (2017). The Interval Testing Procedure: Inference for
-#' Functional Data Controlling the Family Wise Error Rate on Intervals.
-#' Biometrics 73(3): 835–845.
-#'
-#' Pini, A., & Vantini, S. (2017). Interval-wise testing for functional data.
-#' \emph{Journal of Nonparametric Statistics}, 29(2), 407-424
+#' - Hall, Peter, and Nader Tajvidi. 2002. “Permutation Tests for Equality of
+#' Distributions in High-Dimensional Settings.” Biometrika 89 (2): 359–74.
+#' - Pini, Alessia, Aymeric Stamm, and Simone Vantini. 2018. “Hotelling’s T2 in
+#' Separable Hilbert Spaces.” Journal of Multivariate Analysis 167: 284–305.
 #'
 #' @export
 #' @examples
