@@ -4,8 +4,7 @@
 #' heat-map, the plot of the corrected p-values, and the plot of the functional
 #' data.
 #'
-#' @param IWT_result Results of the IWT, as created by \code{\link{IWT1}},
-#'   \code{\link{IWT2}}, \code{\link{IWTaov}}, and \code{\link{IWTlm}}.
+#' @param IWT_result Results of the IWT, as created by [`iwt1()`], [`iwt2()`] or [`iwt_aov()`].
 #' @param alpha Threshold for the interval-wise error rate used for the
 #'   hypothesis test. The default is \code{alpha=0.05}.
 #' @param abscissa_range Range of the plot abscissa. The default is \code{c(0,1)}.

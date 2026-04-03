@@ -29,8 +29,8 @@
 }
 \arguments{
 \item{object, x}{An object of class \code{fts}, usually a result of a call
-to \code{\link[=functional_two_sample_test]{functional_two_sample_test()}}, \code{\link[=IWT2]{IWT2()}}, \code{\link[=TWT2]{TWT2()}}, \code{\link[=FDR2]{FDR2()}},
-\code{\link[=PCT2]{PCT2()}} or \code{\link[=Global2]{Global2()}}.}
+to \code{\link[=functional_two_sample_test]{functional_two_sample_test()}}, \code{\link[=iwt2]{iwt2()}}, \code{\link[=twt2]{twt2()}}, \code{\link[=fdr2]{fdr2()}},
+\code{\link[=pct2]{pct2()}} or \code{\link[=global2]{global2()}}.}
 
 \item{xrange}{A length-2 numeric vector specifying the range of the x-axis
 for the plots. Defaults to \code{c(0, 1)}. This should match the domain of the
@@ -74,7 +74,7 @@ areas.
 # Performing the TWT for two populations
 TWT_result <- functional_two_sample_test(
   NASAtemp$paris, NASAtemp$milan,
-  correction = "TWT", B = 10L
+  correction = "TWT", n_perm = 10L
 )
 
 # Plotting the results of the TWT
@@ -90,7 +90,7 @@ which(TWT_result$adjusted_pval < 0.05)
 # Performing the IWT for two populations
 IWT_result <- functional_two_sample_test(
   NASAtemp$paris, NASAtemp$milan,
-  correction = "IWT", B = 10L
+  correction = "IWT", n_perm = 10L
 )
 
 # Plotting the results of the IWT

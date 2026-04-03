@@ -1,4 +1,4 @@
-#' @rdname IWT2
+#' @rdname iwt2
 #'
 #' @param order Order of the B-spline basis expansion. Defaults to `2L`.
 #' @param nknots Number of knots of the B-spline basis expansion. Defaults to
@@ -17,14 +17,14 @@ ITP2bspline <- function(
   lifecycle::deprecate_soft(
     when = "2.2.0",
     what = "ITP2bspline()",
-    with = "IWT2()"
+    with = "iwt2()"
   )
 
-  IWT2(
+  iwt2(
     data1 = data1,
     data2 = data2,
     mu = mu,
-    B = B,
+    n_perm = B,
     paired = paired,
     verbose = FALSE
   )

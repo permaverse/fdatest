@@ -66,35 +66,34 @@ res_iwt_p <- IWT2(
 )
 expect_inherits(res_iwt_p, "fts")
 
-# aggregation_strategy = "max"
+# aggregation_strategy = "max" (tested via new API)
 set.seed(42)
-res_iwt_max <- IWT2(
+res_iwt_max <- iwt2(
   data1 = d1,
   data2 = d2,
   mu = 0,
-  B = 5L,
-  aggregation_strategy = "max",
-  verbose = FALSE
+  n_perm = 5L,
+  aggregation_strategy = "max"
 )
 expect_inherits(res_iwt_max, "fts")
 expect_equal(length(res_iwt_max$adjusted_pvalues), p)
 
 # ===========================================================================
-# Global2 — all four combinations of standardize / aggregation_strategy
+# global2 — all four combinations of standardize / aggregation_strategy
 # ===========================================================================
 for (std in c(FALSE, TRUE)) {
   for (agg in c("integral", "max")) {
     set.seed(42)
-    res_g <- Global2(
+    res_g <- global2(
       data1 = d1,
       data2 = d2,
       mu = 0,
-      B = 5L,
+      n_perm = 5L,
       standardize = std,
       aggregation_strategy = agg
     )
     info_label <- paste0(
-      "Global2 standardize=",
+      "global2 standardize=",
       std,
       " aggregation_strategy=",
       agg
@@ -165,15 +164,14 @@ set.seed(42)
 res_t_v <- TWT2(data1 = d1, data2 = d2, mu = 0, B = 5L, verbose = TRUE)
 expect_inherits(res_t_v, "fts")
 
-# TWT2 aggregation_strategy = "max"
+# aggregation_strategy = "max" (tested via new API)
 set.seed(42)
-res_t_max <- TWT2(
+res_t_max <- twt2(
   data1 = d1,
   data2 = d2,
   mu = 0,
-  B = 5L,
-  aggregation_strategy = "max",
-  verbose = FALSE
+  n_perm = 5L,
+  aggregation_strategy = "max"
 )
 expect_inherits(res_t_max, "fts")
 expect_equal(length(res_t_max$adjusted_pvalues), p)
@@ -236,16 +234,15 @@ res_pct_v <- PCT2(
 )
 expect_inherits(res_pct_v, "fts")
 
-# PCT2 aggregation_strategy = "max"
+# aggregation_strategy = "max" (tested via new API)
 set.seed(42)
-res_pct_max <- PCT2(
+res_pct_max <- pct2(
   data1 = d1,
   data2 = d2,
   mu = 0,
-  B = 5L,
+  n_perm = 5L,
   partition = partition,
-  aggregation_strategy = "max",
-  verbose = FALSE
+  aggregation_strategy = "max"
 )
 expect_inherits(res_pct_max, "fts")
 expect_equal(length(res_pct_max$adjusted_pvalues), p)
@@ -258,7 +255,7 @@ res_ft_iwt <- functional_two_sample_test(
   data1 = d1,
   data2 = d2,
   correction = "IWT",
-  B = 5L,
+  n_perm = 5L,
   verbose = FALSE
 )
 expect_inherits(res_ft_iwt, "fts")
@@ -269,7 +266,7 @@ res_ft_twt <- functional_two_sample_test(
   data1 = d1,
   data2 = d2,
   correction = "TWT",
-  B = 5L,
+  n_perm = 5L,
   verbose = FALSE
 )
 expect_inherits(res_ft_twt, "fts")
@@ -280,7 +277,7 @@ res_ft_g <- functional_two_sample_test(
   data1 = d1,
   data2 = d2,
   correction = "Global",
-  B = 5L
+  n_perm = 5L
 )
 expect_inherits(res_ft_g, "fts")
 expect_equal(res_ft_g$correction, "Global")
@@ -290,7 +287,7 @@ res_ft_fdr <- functional_two_sample_test(
   data1 = d1,
   data2 = d2,
   correction = "FDR",
-  B = 5L
+  n_perm = 5L
 )
 expect_inherits(res_ft_fdr, "fts")
 expect_equal(res_ft_fdr$correction, "FDR")
@@ -301,7 +298,7 @@ expect_error(
     data1 = d1,
     data2 = d2,
     correction = "PCT",
-    B = 5L
+    n_perm = 5L
   )
 )
 
@@ -311,7 +308,7 @@ res_ft_pct <- functional_two_sample_test(
   data1 = d1,
   data2 = d2,
   correction = "PCT",
-  B = 5L,
+  n_perm = 5L,
   partition = partition
 )
 expect_inherits(res_ft_pct, "fts")
@@ -320,28 +317,27 @@ expect_equal(res_ft_pct$correction, "PCT")
 # ===========================================================================
 # alternative != "two.sided" combined with standardize = TRUE
 # (exercises the one-sided + standardised path in ts_prepare_data, shared
-#  across all methods; IWT2 used as a representative)
+#  across all methods; iwt2 used as a representative)
 # ===========================================================================
 for (alt in c("less", "greater")) {
   set.seed(42)
-  res_std <- IWT2(
+  res_std <- iwt2(
     data1 = d1,
     data2 = d2,
     mu = 0,
-    B = 5L,
+    n_perm = 5L,
     alternative = alt,
-    standardize = TRUE,
-    verbose = FALSE
+    standardize = TRUE
   )
   expect_inherits(
     res_std,
     "fts",
-    info = paste("IWT2 alternative =", alt, "standardize = TRUE")
+    info = paste("iwt2 alternative =", alt, "standardize = TRUE")
   )
   expect_equal(
     length(res_std$adjusted_pvalues),
     p,
-    info = paste("IWT2 alternative =", alt, "standardize = TRUE")
+    info = paste("iwt2 alternative =", alt, "standardize = TRUE")
   )
 }
 

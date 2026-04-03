@@ -32,7 +32,11 @@
 #'   `mu` is a numeric vector, it must correspond to evaluation of the mean
 #'   difference function on the **same** grid that has been used to evaluate the
 #'   data samples. Defaults to `0`.
-#' @inheritParams functional_anova_test
+#' @param dx A numeric value specifying the step of the uniform grid on which
+#'   the data are evaluated. If `NULL`, the step is automatically inferred from
+#'   the data. Defaults to `NULL`.
+#' @param n_perm An integer value specifying the number of permutations to use
+#'   for the local testing procedure. Defaults to `1000L`.
 #' @param paired A boolean value specifying whether a paired test should be
 #'   performed. Defaults to `FALSE`.
 #' @param alternative A string specifying the type of alternative hypothesis.
@@ -45,6 +49,8 @@
 #' @param aggregation_strategy A string specifying the strategy to aggregate the
 #'   point-wise test statistics for the correction procedure. Possible values
 #'   are `"integral"` and `"max"`. Defaults to `"integral"`.
+#' @param recycle A boolean value specifying whether to recycle the test statistic
+#'   values across permutations for the IWT procedure. Defaults to `TRUE`.
 #' @param partition An integer vector of length \eqn{J} specifying the
 #'   membership of each point of the domain to an element of the partition.
 #'   Only used and **must** be set if the `correction` argument is set to
@@ -99,7 +105,7 @@
 #' # Performing the TWT for two populations
 #' TWT_result <- functional_two_sample_test(
 #'   NASAtemp$paris, NASAtemp$milan,
-#'   correction = "TWT", B = 10L
+#'   correction = "TWT", n_perm = 10L
 #' )
 #'
 #' # Plotting the results of the TWT
@@ -115,7 +121,7 @@
 #' # Performing the IWT for two populations
 #' IWT_result <- functional_two_sample_test(
 #'   NASAtemp$paris, NASAtemp$milan,
-#'   correction = "IWT", B = 10L
+#'   correction = "IWT", n_perm = 10L
 #' )
 #'
 #' # Plotting the results of the IWT
@@ -130,10 +136,10 @@
 functional_two_sample_test <- function(
   data1,
   data2,
-  correction,
+  correction = c("Global", "IWT", "TWT", "PCT", "FDR"),
   mu = 0,
   dx = NULL,
-  B = 1000L, # nolint: object_name_linter.
+  n_perm = 1000L,
   paired = FALSE,
   alternative = c("two.sided", "less", "greater"),
   standardize = FALSE,
@@ -142,6 +148,7 @@ functional_two_sample_test <- function(
   recycle = TRUE,
   partition = NULL
 ) {
+  correction <- rlang::arg_match(correction)
   if (correction == "PCT" && is.null(partition)) {
     cli::cli_abort(
       'When the {.arg correction} argument is set to {.code "PCT"}, the {.arg
@@ -149,71 +156,95 @@ functional_two_sample_test <- function(
     )
   }
 
-  out <- switch(
-    correction,
-    IWT = iwt2(
-      data1 = data1,
-      data2 = data2,
-      mu = mu,
-      dx = dx,
-      n_perm = B,
-      paired = paired,
-      alternative = alternative,
-      standardize = standardize,
-      verbose = verbose,
-      aggregation_strategy = aggregation_strategy,
-      recycle = recycle
-    ),
-    TWT = twt2(
-      data1 = data1,
-      data2 = data2,
-      mu = mu,
-      dx = dx,
-      n_perm = B,
-      paired = paired,
-      alternative = alternative,
-      standardize = standardize,
-      verbose = verbose,
-      aggregation_strategy = aggregation_strategy
-    ),
-    PCT = pct2(
-      data1 = data1,
-      data2 = data2,
-      mu = mu,
-      dx = dx,
-      n_perm = B,
-      paired = paired,
-      alternative = alternative,
-      standardize = standardize,
-      verbose = verbose,
-      aggregation_strategy = aggregation_strategy,
-      partition = partition
-    ),
-    Global = global2(
-      data1 = data1,
-      data2 = data2,
-      mu = mu,
-      dx = dx,
-      n_perm = B,
-      paired = paired,
-      alternative = alternative,
-      standardize = standardize,
-      verbose = verbose,
-      aggregation_strategy = aggregation_strategy
-    ),
-    FDR = fdr2(
-      data1 = data1,
-      data2 = data2,
-      mu = mu,
-      dx = dx,
-      n_perm = B,
-      paired = paired,
-      alternative = alternative,
-      standardize = standardize,
-      verbose = verbose
-    )
+  if (verbose) {
+    cli::cli_h1("Data preparation and point-wise testing")
+  }
+
+  alternative <- rlang::arg_match(alternative)
+  prepped_data <- ts_prepare_data(
+    data1 = data1,
+    data2 = data2,
+    mu = mu,
+    dx = dx,
+    n_perm = n_perm,
+    paired = paired,
+    alternative = alternative,
+    standardize = standardize
   )
 
-  out$correction <- correction
+  data_eval <- prepped_data$data
+  mu_eval <- prepped_data$mu
+  group_labels <- prepped_data$group_labels
+  p <- prepped_data$p
+
+  t0 <- prepped_data$t0
+  t_coeff <- prepped_data$t_coeff
+  pval <- prepped_data$pval
+
+  if (verbose) {
+    switch(
+      correction,
+      IWT = cli::cli_h1("P-Value Adjustment via Interval-Wise Testing"),
+      TWT = cli::cli_h1("P-Value Adjustment via Threshold-Wise Testing"),
+      PCT = cli::cli_h1("P-Value Adjustment via Partition Closed Testing"),
+      Global = cli::cli_h1("P-Value Adjustment via Global Testing"),
+      FDR = cli::cli_h1("P-Value Adjustment via Benjamini-Hochberg FDR Testing")
+    )
+  }
+
+  aggregation_strategy <- rlang::arg_match(aggregation_strategy)
+  adjustment_results <- switch(
+    correction,
+    IWT = ts_p_adjust_iwt(
+      p = p,
+      pval = pval,
+      t0 = t0,
+      t_coeff = t_coeff,
+      n_perm = n_perm,
+      recycle = recycle,
+      verbose = verbose,
+      aggregation_strategy = aggregation_strategy
+    ),
+    TWT = ts_p_adjust_twt(
+      pval = pval,
+      p = p,
+      t0 = t0,
+      t_coeff = t_coeff,
+      aggregation_strategy = aggregation_strategy
+    ),
+    PCT = ts_p_adjust_pct(
+      partition = partition,
+      p = p,
+      t0 = t0,
+      t_coeff = t_coeff,
+      aggregation_strategy = aggregation_strategy
+    ),
+    Global = ts_p_adjust_global(
+      aggregation_strategy = aggregation_strategy,
+      t0 = t0,
+      t_coeff = t_coeff,
+      p = p
+    ),
+    FDR = ts_p_adjust_fdr(pval = pval)
+  )
+
+  out <- list(
+    data = data_eval,
+    group_labels = group_labels,
+    mu = mu_eval,
+    unadjusted_pvalues = pval,
+    adjusted_pvalues = adjustment_results$adjusted_pvalues,
+    correction_method = correction
+  )
+
+  if (correction == "Global") {
+    out$global_pvalue <- adjustment_results$adjusted_pvalues[1]
+  }
+
+  if (correction == "IWT") {
+    out$pvalue_matrix <- adjustment_results$pvalue_matrix
+  }
+
+  class(out) <- "fts"
   out
 }

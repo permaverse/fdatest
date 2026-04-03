@@ -5,8 +5,8 @@
 \alias{ITP2bspline}
 \alias{ITP2fourier}
 \alias{ITP2pafourier}
-\alias{IWT2}
 \alias{iwt2}
+\alias{IWT2}
 \title{Two population Interval Wise Testing procedure}
 \usage{
 ITP2bspline(
@@ -37,20 +37,6 @@ ITP2pafourier(
   maxfrequency = floor(dim(data1)[2]/2)
 )
 
-IWT2(
-  data1,
-  data2,
-  mu = 0,
-  dx = NULL,
-  B = 1000L,
-  paired = FALSE,
-  alternative = c("two.sided", "less", "greater"),
-  standardize = FALSE,
-  verbose = FALSE,
-  aggregation_strategy = c("integral", "max"),
-  recycle = TRUE
-)
-
 iwt2(
   data1,
   data2,
@@ -62,6 +48,19 @@ iwt2(
   standardize = FALSE,
   verbose = FALSE,
   aggregation_strategy = c("integral", "max"),
+  recycle = TRUE
+)
+
+IWT2(
+  data1,
+  data2,
+  mu = 0,
+  dx = NULL,
+  B = 1000L,
+  paired = FALSE,
+  alternative = c("two.sided", "less", "greater"),
+  statistic = c("Integral", "Max", "Integral_std", "Max_std"),
+  verbose = FALSE,
   recycle = TRUE
 )
 }
@@ -85,9 +84,8 @@ hypothesis. If \code{mu} is a constant, then a constant function is used. If
 difference function on the \strong{same} grid that has been used to evaluate the
 data samples. Defaults to \code{0}.}
 
-\item{B}{An integer value specifying the number of iterations of the MC
-algorithm to evaluate the p-value of the permutation tests. Defaults to
-\code{1000L}.}
+\item{B}{An integer value specifying the number of permutations to use
+for the local testing procedure. Defaults to \code{1000L}.}
 
 \item{paired}{A boolean value specifying whether a paired test should be
 performed. Defaults to \code{FALSE}.}
@@ -101,11 +99,12 @@ performed. Defaults to \code{FALSE}.}
 expansion of data. Defaults to \code{floor(dim(data1)[2] / 2)}, leading to an
 interpolating expansion.}
 
-\item{dx}{A numeric value specifying the discretization step of the grid used
-to evaluate functional data when it is provided as objects of class
-\code{\link[fda:fd]{fda::fd}}. Defaults to \code{NULL}, in which case a default value of \code{0.01} is
-used which corresponds to a grid of size \code{100L}. Unused if functional data
-is provided in the form of matrices.}
+\item{dx}{A numeric value specifying the step of the uniform grid on which
+the data are evaluated. If \code{NULL}, the step is automatically inferred from
+the data. Defaults to \code{NULL}.}
+
+\item{n_perm}{An integer value specifying the number of permutations to use
+for the local testing procedure. Defaults to \code{1000L}.}
 
 \item{alternative}{A string specifying the type of alternative hypothesis.
 Choices are \code{"two.sided"}, \code{"less"} or \code{"greater"}. Defaults to
@@ -121,12 +120,19 @@ the computation. Defaults to \code{FALSE}.}
 point-wise test statistics for the correction procedure. Possible values
 are \code{"integral"} and \code{"max"}. Defaults to \code{"integral"}.}
 
-\item{recycle}{A boolean value specifying whether the recycled version of the
-interval-wise testing procedure should be used. See Pini and Vantini (2017)
-for details. Defaults to \code{TRUE}.}
+\item{recycle}{A boolean value specifying whether to recycle the test statistic
+values across permutations for the IWT procedure. Defaults to \code{TRUE}.}
 
-\item{n_perm}{An integer value specifying the number of permutations for the
-permutation tests. Defaults to \code{1000L}.}
+\item{statistic}{A string specifying the test statistic to use. Possible
+values are:
+\itemize{
+\item \code{"Integral"}: Integral of the squared sample mean difference.
+\item \code{"Max"}: Maximum of the squared sample mean difference.
+\item \code{"Integral_std"}: Integral of the squared t-test statistic.
+\item \code{"Max_std"}: Maximum of the squared t-test statistic.
+}
+
+Defaults to \code{"Integral"}.}
 }
 \value{
 An object of class \code{fts} containing the following components:
@@ -167,7 +173,7 @@ p-value function controls the interval-wise error rate.
 }
 \examples{
 # Performing the IWT for two populations
-IWT_result <- IWT2(NASAtemp$paris, NASAtemp$milan, B = 10L)
+IWT_result <- iwt2(NASAtemp$paris, NASAtemp$milan, n_perm = 10L)
 
 # Plotting the results of the IWT
 plot(

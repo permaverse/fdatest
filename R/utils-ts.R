@@ -97,15 +97,13 @@ ts_permtest <- function(coeff, n1, n_perm, alternative, paired, standardize) {
 ts_prepare_data <- function(
   data1,
   data2,
-  mu = 0,
-  dx = NULL,
-  n_perm = 1000L,
-  paired = FALSE,
-  alternative = c("two.sided", "less", "greater"),
-  standardize = FALSE
+  mu,
+  dx,
+  n_perm,
+  paired,
+  alternative,
+  standardize
 ) {
-  alternative <- rlang::arg_match(alternative)
-
   inputs <- twosamples2coeffs(data1, data2, mu, dx = dx)
   coeff1 <- inputs$coeff1
   coeff2 <- inputs$coeff2

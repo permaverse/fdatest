@@ -40,6 +40,48 @@
 #'
 #' # Selecting the significant components at 5% level
 #' which(PCT_result$adjusted_pvalues < 0.05)
+pct2 <- function(
+  data1,
+  data2,
+  partition,
+  mu = 0,
+  dx = NULL,
+  n_perm = 1000L,
+  paired = FALSE,
+  alternative = c("two.sided", "less", "greater"),
+  standardize = FALSE,
+  verbose = FALSE,
+  aggregation_strategy = c("integral", "max")
+) {
+  functional_two_sample_test(
+    data1 = data1,
+    data2 = data2,
+    mu = mu,
+    dx = dx,
+    n_perm = n_perm,
+    paired = paired,
+    alternative = alternative,
+    standardize = standardize,
+    verbose = verbose,
+    correction = "PCT",
+    aggregation_strategy = aggregation_strategy,
+    partition = partition
+  )
+}
+
+#' @param B An integer value specifying the number of permutations to use
+#'   for the local testing procedure. Defaults to `1000L`.
+#' @param statistic A string specifying the test statistic to use. Possible
+#'   values are:
+#'
+#'   - `"Integral"`: Integral of the squared sample mean difference.
+#'   - `"Max"`: Maximum of the squared sample mean difference.
+#'   - `"Integral_std"`: Integral of the squared t-test statistic.
+#'   - `"Max_std"`: Maximum of the squared t-test statistic.
+#'
+#'   Defaults to `"Integral"`.
+#' @rdname pct2
+#' @export
 PCT2 <- # nolint: object_name_linter.
   function(
     data1,
@@ -50,10 +92,24 @@ PCT2 <- # nolint: object_name_linter.
     B = 1000L, # nolint: object_name_linter.
     paired = FALSE,
     alternative = c("two.sided", "less", "greater"),
-    standardize = FALSE,
-    verbose = FALSE,
-    aggregation_strategy = c("integral", "max")
+    statistic = c("Integral", "Max", "Integral_std", "Max_std"),
+    verbose = FALSE
   ) {
+    statistic <- rlang::arg_match(statistic)
+    standardize <- statistic %in% c("Integral_std", "Max_std")
+    aggregation_strategy <- switch(
+      statistic,
+      "Integral" = "integral",
+      "Max" = "max",
+      "Integral_std" = "integral",
+      "Max_std" = "max"
+    )
+    lifecycle::deprecate_warn(
+      when = "0.2.0",
+      what = "PCT2()",
+      details = "Use pct2() instead. Be mindful that the argument `statistic` has been replaced by `aggregation_strategy` and `standardize`.",
+      id = "fdatest-deprecated-pct2"
+    )
     pct2(
       data1 = data1,
       data2 = data2,
@@ -69,53 +125,13 @@ PCT2 <- # nolint: object_name_linter.
     )
   }
 
-#' @param n_perm An integer value specifying the number of permutations for the
-#'   permutation tests. Defaults to `1000L`.
-#' @rdname PCT2
-#' @export
-pct2 <- function(
-  data1,
-  data2,
+ts_p_adjust_pct <- function(
   partition,
-  mu = 0,
-  dx = NULL,
-  n_perm = 1000L,
-  paired = FALSE,
-  alternative = c("two.sided", "less", "greater"),
-  standardize = FALSE,
-  verbose = FALSE,
-  aggregation_strategy = c("integral", "max")
+  p,
+  t0,
+  t_coeff,
+  aggregation_strategy
 ) {
-  if (verbose) {
-    cli::cli_h1("Data preparation and point-wise testing")
-  }
-
-  prepped_data <- ts_prepare_data(
-    data1 = data1,
-    data2 = data2,
-    mu = mu,
-    dx = dx,
-    n_perm = n_perm,
-    paired = paired,
-    alternative = alternative,
-    standardize = standardize
-  )
-
-  data_eval <- prepped_data$data
-  mu_eval <- prepped_data$mu
-  group_labels <- prepped_data$group_labels
-  p <- prepped_data$p
-
-  t0 <- prepped_data$t0
-  t_coeff <- prepped_data$t_coeff
-  pval <- prepped_data$pval
-
-  if (verbose) {
-    cli::cli_h1("Partition Closed Testing")
-  }
-
-  aggregation_strategy <- rlang::arg_match(aggregation_strategy)
-
   partition <- factor(partition)
   nintervals <- length(levels(partition))
   ntests <- 2^nintervals - 1L
@@ -156,13 +172,7 @@ pct2 <- function(
     )
   }
 
-  out <- list(
-    data = data_eval,
-    group_labels = group_labels,
-    mu = mu_eval,
-    unadjusted_pvalues = pval,
+  list(
     adjusted_pvalues = adjusted_pval
   )
-  class(out) <- "fts"
-  out
 }

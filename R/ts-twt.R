@@ -19,7 +19,7 @@
 #' @export
 #' @examples
 #' # Performing the TWT for two populations
-#' TWT_result <- TWT2(NASAtemp$paris, NASAtemp$milan)
+#' TWT_result <- twt2(NASAtemp$paris, NASAtemp$milan)
 #'
 #' # Plotting the results of the TWT
 #' plot(
@@ -30,6 +30,46 @@
 #'
 #' # Selecting the significant components at 5% level
 #' which(TWT_result$adjusted_pvalues < 0.05)
+twt2 <- function(
+  data1,
+  data2,
+  mu = 0,
+  dx = NULL,
+  n_perm = 1000L,
+  paired = FALSE,
+  alternative = c("two.sided", "less", "greater"),
+  standardize = FALSE,
+  verbose = FALSE,
+  aggregation_strategy = c("integral", "max")
+) {
+  functional_two_sample_test(
+    data1 = data1,
+    data2 = data2,
+    mu = mu,
+    dx = dx,
+    n_perm = n_perm,
+    paired = paired,
+    alternative = alternative,
+    standardize = standardize,
+    verbose = verbose,
+    correction = "TWT",
+    aggregation_strategy = aggregation_strategy
+  )
+}
+
+#' @param B An integer value specifying the number of permutations to use
+#'   for the local testing procedure. Defaults to `1000L`.
+#' @param statistic A string specifying the test statistic to use. Possible
+#'   values are:
+#'
+#'   - `"Integral"`: Integral of the squared sample mean difference.
+#'   - `"Max"`: Maximum of the squared sample mean difference.
+#'   - `"Integral_std"`: Integral of the squared t-test statistic.
+#'   - `"Max_std"`: Maximum of the squared t-test statistic.
+#'
+#'   Defaults to `"Integral"`.
+#' @rdname twt2
+#' @export
 TWT2 <- # nolint: object_name_linter.
   function(
     data1,
@@ -39,10 +79,24 @@ TWT2 <- # nolint: object_name_linter.
     B = 1000L, # nolint: object_name_linter.
     paired = FALSE,
     alternative = c("two.sided", "less", "greater"),
-    standardize = FALSE,
-    verbose = FALSE,
-    aggregation_strategy = c("integral", "max")
+    statistic = c("Integral", "Max", "Integral_std", "Max_std"),
+    verbose = FALSE
   ) {
+    statistic <- rlang::arg_match(statistic)
+    standardize <- statistic %in% c("Integral_std", "Max_std")
+    aggregation_strategy <- switch(
+      statistic,
+      "Integral" = "integral",
+      "Max" = "max",
+      "Integral_std" = "integral",
+      "Max_std" = "max"
+    )
+    lifecycle::deprecate_warn(
+      when = "0.2.0",
+      what = "TWT2()",
+      details = "Use twt2() instead. Be mindful that the argument `statistic` has been replaced by `aggregation_strategy` and `standardize`.",
+      id = "fdatest-deprecated-twt2"
+    )
     twt2(
       data1 = data1,
       data2 = data2,
@@ -57,52 +111,7 @@ TWT2 <- # nolint: object_name_linter.
     )
   }
 
-#' @param n_perm An integer value specifying the number of permutations for the
-#'   permutation tests. Defaults to `1000L`.
-#' @rdname TWT2
-#' @export
-twt2 <- function(
-  data1,
-  data2,
-  mu = 0,
-  dx = NULL,
-  n_perm = 1000L,
-  paired = FALSE,
-  alternative = c("two.sided", "less", "greater"),
-  standardize = FALSE,
-  verbose = FALSE,
-  aggregation_strategy = c("integral", "max")
-) {
-  if (verbose) {
-    cli::cli_h1("Data preparation and point-wise testing")
-  }
-
-  prepped_data <- ts_prepare_data(
-    data1 = data1,
-    data2 = data2,
-    mu = mu,
-    dx = dx,
-    n_perm = n_perm,
-    paired = paired,
-    alternative = alternative,
-    standardize = standardize
-  )
-
-  data_eval <- prepped_data$data
-  mu_eval <- prepped_data$mu
-  group_labels <- prepped_data$group_labels
-  p <- prepped_data$p
-
-  t0 <- prepped_data$t0
-  t_coeff <- prepped_data$t_coeff
-  pval <- prepped_data$pval
-
-  if (verbose) {
-    cli::cli_h1("Threshold-Wise Testing")
-  }
-
-  aggregation_strategy <- rlang::arg_match(aggregation_strategy)
-
+ts_p_adjust_twt <- function(pval, p, t0, t_coeff, aggregation_strategy) {
   thresholds <- c(0, sort(unique(pval)), 1)
   adjusted_pval <- pval
   pval_tmp <- rep(0, p)
@@ -136,13 +145,7 @@ twt2 <- function(
     adjusted_pval <- apply(rbind(adjusted_pval, pval_tmp), 2, max)
   }
 
-  out <- list(
-    data = data_eval,
-    group_labels = group_labels,
-    mu = mu_eval,
-    unadjusted_pvalues = pval,
+  list(
     adjusted_pvalues = adjusted_pval
   )
-  class(out) <- "fts"
-  out
 }

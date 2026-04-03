@@ -19,7 +19,7 @@
 #' @export
 #' @examples
 #' # Performing the IWT for two populations
-#' IWT_result <- IWT2(NASAtemp$paris, NASAtemp$milan, B = 10L)
+#' IWT_result <- iwt2(NASAtemp$paris, NASAtemp$milan, n_perm = 10L)
 #'
 #' # Plotting the results of the IWT
 #' plot(
@@ -33,6 +33,48 @@
 #'
 #' # Selecting the significant components at 5% level
 #' which(IWT_result$adjusted_pvalues < 0.05)
+iwt2 <- function(
+  data1,
+  data2,
+  mu = 0,
+  dx = NULL,
+  n_perm = 1000L,
+  paired = FALSE,
+  alternative = c("two.sided", "less", "greater"),
+  standardize = FALSE,
+  verbose = FALSE,
+  aggregation_strategy = c("integral", "max"),
+  recycle = TRUE
+) {
+  functional_two_sample_test(
+    data1 = data1,
+    data2 = data2,
+    mu = mu,
+    dx = dx,
+    n_perm = n_perm,
+    paired = paired,
+    alternative = alternative,
+    standardize = standardize,
+    verbose = verbose,
+    correction = "IWT",
+    aggregation_strategy = aggregation_strategy,
+    recycle = recycle
+  )
+}
+
+#' @param B An integer value specifying the number of permutations to use
+#'   for the local testing procedure. Defaults to `1000L`.
+#' @param statistic A string specifying the test statistic to use. Possible
+#'   values are:
+#'
+#'   - `"Integral"`: Integral of the squared sample mean difference.
+#'   - `"Max"`: Maximum of the squared sample mean difference.
+#'   - `"Integral_std"`: Integral of the squared t-test statistic.
+#'   - `"Max_std"`: Maximum of the squared t-test statistic.
+#'
+#'   Defaults to `"Integral"`.
+#' @rdname iwt2
+#' @export
 IWT2 <- # nolint: object_name_linter.
   function(
     data1,
@@ -42,11 +84,25 @@ IWT2 <- # nolint: object_name_linter.
     B = 1000L, # nolint: object_name_linter.
     paired = FALSE,
     alternative = c("two.sided", "less", "greater"),
-    standardize = FALSE,
+    statistic = c("Integral", "Max", "Integral_std", "Max_std"),
     verbose = FALSE,
-    aggregation_strategy = c("integral", "max"),
     recycle = TRUE
   ) {
+    statistic <- rlang::arg_match(statistic)
+    standardize <- statistic %in% c("Integral_std", "Max_std")
+    aggregation_strategy <- switch(
+      statistic,
+      "Integral" = "integral",
+      "Max" = "max",
+      "Integral_std" = "integral",
+      "Max_std" = "max"
+    )
+    lifecycle::deprecate_warn(
+      when = "0.2.0",
+      what = "IWT2()",
+      details = "Use iwt2() instead. Be mindful that the argument `statistic` has been replaced by `aggregation_strategy` and `standardize`.",
+      id = "fdatest-deprecated-iwt2"
+    )
     iwt2(
       data1 = data1,
       data2 = data2,
@@ -62,53 +118,16 @@ IWT2 <- # nolint: object_name_linter.
     )
   }
 
-#' @param n_perm An integer value specifying the number of permutations for the
-#'   permutation tests. Defaults to `1000L`.
-#' @rdname IWT2
-#' @export
-iwt2 <- function(
-  data1,
-  data2,
-  mu = 0,
-  dx = NULL,
-  n_perm = 1000L,
-  paired = FALSE,
-  alternative = c("two.sided", "less", "greater"),
-  standardize = FALSE,
-  verbose = FALSE,
-  aggregation_strategy = c("integral", "max"),
-  recycle = TRUE
+ts_p_adjust_iwt <- function(
+  p,
+  pval,
+  t0,
+  t_coeff,
+  n_perm,
+  recycle,
+  verbose,
+  aggregation_strategy
 ) {
-  if (verbose) {
-    cli::cli_h1("Data preparation and point-wise testing")
-  }
-
-  prepped_data <- ts_prepare_data(
-    data1 = data1,
-    data2 = data2,
-    mu = mu,
-    dx = dx,
-    n_perm = n_perm,
-    paired = paired,
-    alternative = alternative,
-    standardize = standardize
-  )
-
-  data_eval <- prepped_data$data
-  mu_eval <- prepped_data$mu
-  group_labels <- prepped_data$group_labels
-  p <- prepped_data$p
-
-  t0 <- prepped_data$t0
-  t_coeff <- prepped_data$t_coeff
-  pval <- prepped_data$pval
-
-  if (verbose) {
-    cli::cli_h1("Interval-Wise Testing")
-  }
-
-  aggregation_strategy <- rlang::arg_match(aggregation_strategy)
-
   matrice_pval_asymm <- matrix(nrow = p, ncol = p)
   matrice_pval_asymm[p, ] <- pval[seq_len(p)]
   t0_2x <- c(t0, t0)
@@ -153,18 +172,8 @@ iwt2 <- function(
   corrected_pval_matrix <- pval_correct_cpp(matrice_pval_asymm)
   corrected_pval <- corrected_pval_matrix[1, ]
 
-  if (verbose) {
-    cli::cli_h1("Interval-Wise Testing completed")
-  }
-
-  out <- list(
-    data = data_eval,
-    group_labels = group_labels,
-    mu = mu_eval,
-    unadjusted_pvalues = pval,
+  list(
     adjusted_pvalues = corrected_pval,
     pvalue_matrix = matrice_pval_asymm
   )
-  class(out) <- "fts"
-  out
 }

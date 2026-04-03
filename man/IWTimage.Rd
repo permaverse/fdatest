@@ -13,8 +13,7 @@ IWTimage(
 )
 }
 \arguments{
-\item{IWT_result}{Results of the IWT, as created by \code{\link{IWT1}},
-\code{\link{IWT2}}, \code{\link{IWTaov}}, and \code{\link{IWTlm}}.}
+\item{IWT_result}{Results of the IWT, as created by \code{\link[=iwt1]{iwt1()}}, \code{\link[=iwt2]{iwt2()}} or \code{\link[=iwt_aov]{iwt_aov()}}.}
 
 \item{alpha}{Threshold for the interval-wise error rate used for the
 hypothesis test. The default is \code{alpha=0.05}.}

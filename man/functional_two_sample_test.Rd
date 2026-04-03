@@ -7,10 +7,10 @@
 functional_two_sample_test(
   data1,
   data2,
-  correction,
+  correction = c("Global", "IWT", "TWT", "PCT", "FDR"),
   mu = 0,
   dx = NULL,
-  B = 1000L,
+  n_perm = 1000L,
   paired = FALSE,
   alternative = c("two.sided", "less", "greater"),
   standardize = FALSE,
@@ -44,15 +44,12 @@ hypothesis. If \code{mu} is a constant, then a constant function is used. If
 difference function on the \strong{same} grid that has been used to evaluate the
 data samples. Defaults to \code{0}.}
 
-\item{dx}{A numeric value specifying the discretization step of the grid used
-to evaluate functional data when it is provided as objects of class
-\code{\link[fda:fd]{fda::fd}}. Defaults to \code{NULL}, in which case a default value of \code{0.01} is
-used which corresponds to a grid of size \code{100L}. Unused if functional data
-is provided in the form of matrices.}
+\item{dx}{A numeric value specifying the step of the uniform grid on which
+the data are evaluated. If \code{NULL}, the step is automatically inferred from
+the data. Defaults to \code{NULL}.}
 
-\item{B}{An integer value specifying the number of iterations of the MC
-algorithm to evaluate the p-value of the permutation tests. Defaults to
-\code{1000L}.}
+\item{n_perm}{An integer value specifying the number of permutations to use
+for the local testing procedure. Defaults to \code{1000L}.}
 
 \item{paired}{A boolean value specifying whether a paired test should be
 performed. Defaults to \code{FALSE}.}
@@ -71,9 +68,8 @@ the computation. Defaults to \code{FALSE}.}
 point-wise test statistics for the correction procedure. Possible values
 are \code{"integral"} and \code{"max"}. Defaults to \code{"integral"}.}
 
-\item{recycle}{A boolean value specifying whether the recycled version of the
-interval-wise testing procedure should be used. See Pini and Vantini (2017)
-for details. Defaults to \code{TRUE}.}
+\item{recycle}{A boolean value specifying whether to recycle the test statistic
+values across permutations for the IWT procedure. Defaults to \code{TRUE}.}
 
 \item{partition}{An integer vector of length \eqn{J} specifying the
 membership of each point of the domain to an element of the partition.
@@ -129,7 +125,7 @@ methods:
 # Performing the TWT for two populations
 TWT_result <- functional_two_sample_test(
   NASAtemp$paris, NASAtemp$milan,
-  correction = "TWT", B = 10L
+  correction = "TWT", n_perm = 10L
 )
 
 # Plotting the results of the TWT
@@ -145,7 +141,7 @@ which(TWT_result$adjusted_pval < 0.05)
 # Performing the IWT for two populations
 IWT_result <- functional_two_sample_test(
   NASAtemp$paris, NASAtemp$milan,
-  correction = "IWT", B = 10L
+  correction = "IWT", n_perm = 10L
 )
 
 # Plotting the results of the IWT

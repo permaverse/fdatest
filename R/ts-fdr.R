@@ -17,7 +17,7 @@
 #' @examples
 #' # Performing the fBH for two populations
 #'
-#' FDR_result <- FDR2(NASAtemp$paris, NASAtemp$milan)
+#' FDR_result <- fdr2(NASAtemp$paris, NASAtemp$milan)
 #'
 #' # Plotting the results of the fBH
 #' plot(
@@ -28,6 +28,44 @@
 #'
 #' # Selecting the significant components at 5% level
 #' which(FDR_result$adjusted_pvalues < 0.05)
+fdr2 <- function(
+  data1,
+  data2,
+  mu = 0,
+  dx = NULL,
+  n_perm = 1000L,
+  paired = FALSE,
+  alternative = c("two.sided", "less", "greater"),
+  standardize = FALSE,
+  verbose = FALSE
+) {
+  functional_two_sample_test(
+    data1 = data1,
+    data2 = data2,
+    mu = mu,
+    dx = dx,
+    n_perm = n_perm,
+    paired = paired,
+    alternative = alternative,
+    standardize = standardize,
+    correction = "FDR",
+    verbose = verbose
+  )
+}
+
+#' @param B An integer value specifying the number of permutations to use
+#'   for the local testing procedure. Defaults to `1000L`.
+#' @param statistic A string specifying the test statistic to use. Possible
+#'   values are:
+#'
+#'   - `"Integral"`: Integral of the squared sample mean difference.
+#'   - `"Max"`: Maximum of the squared sample mean difference.
+#'   - `"Integral_std"`: Integral of the squared t-test statistic.
+#'   - `"Max_std"`: Maximum of the squared t-test statistic.
+#'
+#'   Defaults to `"Integral"`.
+#' @rdname fdr2
+#' @export
 FDR2 <- # nolint: object_name_linter.
   function(
     data1,
@@ -37,9 +75,17 @@ FDR2 <- # nolint: object_name_linter.
     B = 1000L, # nolint: object_name_linter.
     paired = FALSE,
     alternative = c("two.sided", "less", "greater"),
-    standardize = FALSE,
+    statistic = c("Integral", "Integral_std"),
     verbose = FALSE
   ) {
+    statistic <- rlang::arg_match(statistic)
+    standardize <- statistic == "Integral_std"
+    lifecycle::deprecate_warn(
+      when = "0.2.0",
+      what = "FDR2()",
+      details = "Use fdr2() instead. Be mindful that the argument `statistic` has been replaced by `standardize`.",
+      id = "fdatest-deprecated-fdr2"
+    )
     fdr2(
       data1 = data1,
       data2 = data2,
@@ -53,58 +99,8 @@ FDR2 <- # nolint: object_name_linter.
     )
   }
 
-#' @param n_perm An integer value specifying the number of permutations for the
-#'   permutation tests. Defaults to `1000L`.
-#' @rdname FDR2
-#' @export
-fdr2 <- function(
-  data1,
-  data2,
-  mu = 0,
-  dx = NULL,
-  n_perm = 1000L,
-  paired = FALSE,
-  alternative = c("two.sided", "less", "greater"),
-  standardize = FALSE,
-  verbose = FALSE
-) {
-  if (verbose) {
-    cli::cli_h1("Data preparation and point-wise testing")
-  }
-
-  prepped_data <- ts_prepare_data(
-    data1 = data1,
-    data2 = data2,
-    mu = mu,
-    dx = dx,
-    n_perm = n_perm,
-    paired = paired,
-    alternative = alternative,
-    standardize = standardize
+ts_p_adjust_fdr <- function(pval) {
+  list(
+    adjusted_pvalues = stats::p.adjust(pval, method = "BH")
   )
-
-  data_eval <- prepped_data$data
-  mu_eval <- prepped_data$mu
-  group_labels <- prepped_data$group_labels
-  p <- prepped_data$p
-
-  t0 <- prepped_data$t0
-  t_coeff <- prepped_data$t_coeff
-  pval <- prepped_data$pval
-
-  if (verbose) {
-    cli::cli_h1("Benjamini-Hochberg FDR Testing")
-  }
-
-  adjusted_pval <- stats::p.adjust(pval, method = "BH")
-
-  out <- list(
-    data = data_eval,
-    group_labels = group_labels,
-    mu = mu_eval,
-    unadjusted_pvalues = pval,
-    adjusted_pvalues = adjusted_pval
-  )
-  class(out) <- "fts"
-  out
 }

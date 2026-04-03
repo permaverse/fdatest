@@ -8,8 +8,8 @@
 #' areas.
 #'
 #' @param object,x An object of class `fts`, usually a result of a call
-#'   to [`functional_two_sample_test()`], [`IWT2()`], [`TWT2()`], [`FDR2()`],
-#'   [`PCT2()`] or [`Global2()`].
+#'   to [`functional_two_sample_test()`], [`iwt2()`], [`twt2()`], [`fdr2()`],
+#'   [`pct2()`] or [`global2()`].
 #' @param xrange A length-2 numeric vector specifying the range of the x-axis
 #'   for the plots. Defaults to `c(0, 1)`. This should match the domain of the
 #'   functional data.
@@ -57,7 +57,7 @@
 #' # Performing the TWT for two populations
 #' TWT_result <- functional_two_sample_test(
 #'   NASAtemp$paris, NASAtemp$milan,
-#'   correction = "TWT", B = 10L
+#'   correction = "TWT", n_perm = 10L
 #' )
 #'
 #' # Plotting the results of the TWT
@@ -73,7 +73,7 @@
 #' # Performing the IWT for two populations
 #' IWT_result <- functional_two_sample_test(
 #'   NASAtemp$paris, NASAtemp$milan,
-#'   correction = "IWT", B = 10L
+#'   correction = "IWT", n_perm = 10L
 #' )
 #'
 #' # Plotting the results of the IWT
