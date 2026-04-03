@@ -342,6 +342,20 @@ for (alt in c("less", "greater")) {
 }
 
 # ===========================================================================
+# Mismatched grid sizes → error from ts_prepare_data()
+# Covers the `if (ncol(coeff2) != p)` branch in utils-ts.R
+# ===========================================================================
+expect_error(
+  iwt2(
+    data1 = NASAtemp$milan[1:4, 1:8],
+    data2 = NASAtemp$paris[1:4, 1:6], # 6 cols vs 8 cols
+    mu = 0,
+    n_perm = 5L
+  ),
+  pattern = "same number of columns"
+)
+
+# ===========================================================================
 # Deprecated wrappers
 # ===========================================================================
 set.seed(42)
