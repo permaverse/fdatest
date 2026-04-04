@@ -1,6 +1,6 @@
 # Tests for plot and autoplot methods:
-# plot-ftwosample.R: autoplot.ftwosample, plot.ftwosample
-# plot-fanova.R:     autoplot.fanova, plot.fanova
+# plot-fts.R: autoplot.fts, plot.fts
+# plot-faov.R:     autoplot.faov, plot.faov
 # plot-flm.R:        autoplot.flm, plot.flm
 # plot.IWT1.R:       plot.IWT1
 library(ggplot2)
@@ -50,7 +50,7 @@ set.seed(42)
 res_twtlm2 <- TWTlm(temperature ~ grp_a + grp_b, B = 5L)
 
 # ===========================================================================
-# autoplot.ftwosample, plot.ftwosample
+# autoplot.fts, plot.fts
 # ===========================================================================
 # autoplot returns a ggplot / patchwork object
 p_fts <- autoplot(res_iwt2)
@@ -59,11 +59,11 @@ expect_true(inherits(p_fts, "gg") || inherits(p_fts, "patchwork"))
 # Snapshot the default plot (IWT — has pvalue_matrix so heatmap is shown)
 expect_snapshot_plot(p_fts, "autoplot_ftwosample_iwt")
 
-# plot.ftwosample is an alias for autoplot
+# plot.fts is an alias for autoplot
 p_fts2 <- plot(res_iwt2)
 expect_true(inherits(p_fts2, "gg") || inherits(p_fts2, "patchwork"))
 
-# TWT result (no pvalue_matrix) — different branch inside autoplot.ftwosample
+# TWT result (no pvalue_matrix) — different branch inside autoplot.fts
 p_fts_twt <- autoplot(res_twt2)
 expect_true(inherits(p_fts_twt, "gg") || inherits(p_fts_twt, "patchwork"))
 expect_snapshot_plot(p_fts_twt, "autoplot_ftwosample_twt")
@@ -99,7 +99,7 @@ expect_error(
 )
 
 # ===========================================================================
-# autoplot.fanova, plot.fanova
+# autoplot.faov, plot.faov
 # ===========================================================================
 p_fa <- autoplot(res_fanova)
 expect_true(inherits(p_fa, "gg") || inherits(p_fa, "patchwork"))
@@ -110,7 +110,7 @@ p_fa_adj <- autoplot(res_fanova, plot_adjpval = TRUE)
 expect_true(inherits(p_fa_adj, "gg") || inherits(p_fa_adj, "patchwork"))
 expect_snapshot_plot(p_fa_adj, "autoplot_fanova_adjpval")
 
-# plot.fanova alias
+# plot.faov alias
 p_fa2 <- plot(res_fanova)
 expect_true(inherits(p_fa2, "gg") || inherits(p_fa2, "patchwork"))
 

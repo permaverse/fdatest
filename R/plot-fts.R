@@ -1,15 +1,15 @@
 #' Plot for Functional Two-Sample Test Results
 #'
-#' The `S3` methods `autoplot.ftwosample()` and `plot.ftwosample()` are methods
+#' The `S3` methods `autoplot.fts()` and `plot.fts()` are methods
 #' for plotting results of functional two-sample tests. They visualize the
 #' functional data and the adjusted p-values obtained from the testing
 #' procedures for mean comparison of two groups. The plots highlight significant
 #' effects at two levels of significance, `alpha1` and `alpha2`, using shaded
 #' areas.
 #'
-#' @param object,x An object of class `ftwosample`, usually a result of a call
-#'   to [`functional_two_sample_test()`], [`IWT2()`], [`TWT2()`], [`FDR2()`],
-#'   [`PCT2()`] or [`Global2()`].
+#' @param object,x An object of class `fts`, usually a result of a call
+#'   to [`functional_two_sample_test()`], [`iwt2()`], [`twt2()`], [`fdr2()`],
+#'   [`pct2()`] or [`global2()`].
 #' @param xrange A length-2 numeric vector specifying the range of the x-axis
 #'   for the plots. Defaults to `c(0, 1)`. This should match the domain of the
 #'   functional data.
@@ -28,10 +28,10 @@
 #' @param ... Other arguments passed to specific methods. Not used in this
 #'   function.
 #'
-#' @returns The `autoplot.ftwosample()` function creates a ggplot object that
+#' @returns The `autoplot.fts()` function creates a ggplot object that
 #'   displays the functional data and the adjusted p-values. The significant
 #'   intervals at levels `alpha1` and `alpha2` are highlighted in the plots. The
-#'   `plot.ftwosample()` function is a wrapper around `autoplot.ftwosample()`
+#'   `plot.fts()` function is a wrapper around `autoplot.fts()`
 #'   that prints the plot directly.
 #'
 #' @seealso [`IWTimage()`] for the plot of p-values heatmaps (for IWT).
@@ -51,13 +51,13 @@
 #' cruciate ligament. \emph{Scandinavian Journal of Statistics} 45(4),
 #' 1036-1061.
 #'
-#' @name plot.ftwosample
+#' @name plot.fts
 #'
 #' @examples
 #' # Performing the TWT for two populations
 #' TWT_result <- functional_two_sample_test(
 #'   NASAtemp$paris, NASAtemp$milan,
-#'   correction = "TWT", B = 10L
+#'   correction = "TWT", n_perm = 10L
 #' )
 #'
 #' # Plotting the results of the TWT
@@ -73,7 +73,7 @@
 #' # Performing the IWT for two populations
 #' IWT_result <- functional_two_sample_test(
 #'   NASAtemp$paris, NASAtemp$milan,
-#'   correction = "IWT", B = 10L
+#'   correction = "IWT", n_perm = 10L
 #' )
 #'
 #' # Plotting the results of the IWT
@@ -87,11 +87,11 @@
 #' which(IWT_result$adjusted_pval < 0.05)
 NULL
 
-#' @rdname plot.ftwosample
+#' @rdname plot.fts
 #' @importFrom ggplot2 autoplot
 #' @importFrom rlang .data
 #' @export
-autoplot.ftwosample <- function(
+autoplot.fts <- function(
   object,
   xrange = c(0, 1),
   alpha1 = 0.05,
@@ -237,10 +237,10 @@ autoplot.ftwosample <- function(
     )
 }
 
-#' @rdname plot.ftwosample
+#' @rdname plot.fts
 #' @importFrom graphics plot
 #' @export
-plot.ftwosample <- function(
+plot.fts <- function(
   x,
   xrange = c(0, 1),
   alpha1 = 0.05,

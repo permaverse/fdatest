@@ -1,5 +1,5 @@
 # Tests for fd-object paths in R/utils.R:
-#   onesample2coeffs(), twosamples2coeffs(), formula2coeff()
+#   os_to_coeffs(), ts_to_coeffs(), formula2coeff()
 # fda is in Imports so it is always available; no skip needed.
 
 # ---------------------------------------------------------------------------
@@ -24,41 +24,41 @@ fd_bad <- fda::fd(
 fd_mu <- fda::fd(matrix(stats::rnorm(6L), nrow = 6L, ncol = 1L), basis01)
 
 # ---------------------------------------------------------------------------
-# onesample2coeffs — fd data, scalar mu
+# os_to_coeffs — fd data, scalar mu
 # ---------------------------------------------------------------------------
-out <- fdatest:::onesample2coeffs(fd1, mu = 0)
+out <- fdatest:::os_to_coeffs(fd1, mu = 0)
 expect_true(is.matrix(out$coeff))
 # p columns: (rangeval[2] - rangeval[1]) / dx + 1 with default dx = 0.01
 expect_equal(nrow(out$coeff), n1)
 expect_equal(out$mu, 0)
 
 # explicit dx shrinks grid
-out_dx <- fdatest:::onesample2coeffs(fd1, mu = 0, dx = 0.1)
+out_dx <- fdatest:::os_to_coeffs(fd1, mu = 0, dx = 0.1)
 expect_true(is.matrix(out_dx$coeff))
 expect_equal(nrow(out_dx$coeff), n1)
 expect_true(ncol(out_dx$coeff) < ncol(out$coeff))
 
 # ---------------------------------------------------------------------------
-# onesample2coeffs — fd data, fd mu (same rangeval)
+# os_to_coeffs — fd data, fd mu (same rangeval)
 # ---------------------------------------------------------------------------
-out_fdmu <- fdatest:::onesample2coeffs(fd1, mu = fd_mu)
+out_fdmu <- fdatest:::os_to_coeffs(fd1, mu = fd_mu)
 expect_true(is.matrix(out_fdmu$coeff))
 expect_true(is.matrix(out_fdmu$mu))
 expect_equal(nrow(out_fdmu$coeff), n1)
 expect_equal(nrow(out_fdmu$mu), 1L) # 1 mu curve
 
 # ---------------------------------------------------------------------------
-# onesample2coeffs — fd mu with mismatched rangeval → error
+# os_to_coeffs — fd mu with mismatched rangeval → error
 # ---------------------------------------------------------------------------
 expect_error(
-  fdatest:::onesample2coeffs(fd1, mu = fd_bad),
+  fdatest:::os_to_coeffs(fd1, mu = fd_bad),
   "range"
 )
 
 # ---------------------------------------------------------------------------
-# twosamples2coeffs — both fd, scalar mu
+# ts_to_coeffs — both fd, scalar mu
 # ---------------------------------------------------------------------------
-out2 <- fdatest:::twosamples2coeffs(fd1, fd2, mu = 0)
+out2 <- fdatest:::ts_to_coeffs(fd1, fd2, mu = 0)
 expect_true(is.matrix(out2$coeff1))
 expect_true(is.matrix(out2$coeff2))
 expect_equal(nrow(out2$coeff1), n1)
@@ -66,28 +66,28 @@ expect_equal(nrow(out2$coeff2), n2)
 expect_equal(out2$mu, 0)
 
 # ---------------------------------------------------------------------------
-# twosamples2coeffs — both fd, fd mu (same rangeval)
+# ts_to_coeffs — both fd, fd mu (same rangeval)
 # ---------------------------------------------------------------------------
-out2_fdmu <- fdatest:::twosamples2coeffs(fd1, fd2, mu = fd_mu)
+out2_fdmu <- fdatest:::ts_to_coeffs(fd1, fd2, mu = fd_mu)
 expect_true(is.matrix(out2_fdmu$mu))
 
 # ---------------------------------------------------------------------------
-# twosamples2coeffs — mismatched data rangeval → error
+# ts_to_coeffs — mismatched data rangeval → error
 # ---------------------------------------------------------------------------
 expect_error(
-  fdatest:::twosamples2coeffs(fd1, fd_bad, mu = 0),
+  fdatest:::ts_to_coeffs(fd1, fd_bad, mu = 0),
   "range"
 )
 
 # ---------------------------------------------------------------------------
-# twosamples2coeffs — fd mu with mismatched rangeval → error
+# ts_to_coeffs — fd mu with mismatched rangeval → error
 # ---------------------------------------------------------------------------
 fd_mu_bad <- fda::fd(
   matrix(stats::rnorm(6L), nrow = 6L, ncol = 1L),
   basis02
 )
 expect_error(
-  fdatest:::twosamples2coeffs(fd1, fd2, mu = fd_mu_bad),
+  fdatest:::ts_to_coeffs(fd1, fd2, mu = fd_mu_bad),
   "range"
 )
 
@@ -117,7 +117,7 @@ grDevices::dev.off()
 
 set.seed(3L)
 res2 <- IWT2(fd1, fd2, B = 5L, verbose = FALSE)
-expect_true(inherits(res2, "ftwosample"))
+expect_true(inherits(res2, "fts"))
 p2 <- autoplot(res2)
 expect_true(inherits(p2, "gg") || inherits(p2, "patchwork"))
 

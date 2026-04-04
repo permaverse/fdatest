@@ -137,7 +137,7 @@ global_aov <- function(
     residuals_eval = residuals_t,
     R2_eval = r2_t
   )
-  class(out) <- "fanova"
+  class(out) <- "faov"
   out
 }
 

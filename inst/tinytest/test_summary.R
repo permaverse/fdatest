@@ -1,4 +1,4 @@
-# Tests for summary methods: R/summary.fanova.R, R/summary.flm.R
+# Tests for summary methods: R/summary.faov.R, R/summary.flm.R
 
 d1 <- NASAtemp$milan[1:4, 1:8]
 d2 <- NASAtemp$paris[1:4, 1:8]
@@ -6,7 +6,7 @@ temperature <- rbind(d1, d2)
 groups <- c(rep(0L, 4L), rep(1L, 4L))
 
 # ===========================================================================
-# summary.fanova — structure checks with a real IWTaov result
+# summary.faov — structure checks with a real IWTaov result
 # ===========================================================================
 set.seed(42)
 res_aov <- IWTaov(temperature ~ groups, B = 5L)
@@ -27,12 +27,12 @@ expect_true("Minimum p-value" %in% names(s_aov$ftest))
 expect_equal(ncol(s_aov$ftest), 2L) # min p-value + signif stars column
 
 # ===========================================================================
-# summary.fanova — significance code levels via mock objects
+# summary.faov — significance code levels via mock objects
 # The 5 levels: *** <0.001, ** <0.01, * <0.05, . <0.1, (space) >=0.1
 # ===========================================================================
 
 make_fanova <- function(p_factors, p_f) {
-  # Minimal fanova mock to exercise summary.fanova
+  # Minimal faov mock to exercise summary.faov
   n_pts <- length(p_f)
   obj <- list(
     call = quote(IWTaov(temperature ~ groups, B = 5L)),
@@ -52,7 +52,7 @@ make_fanova <- function(p_factors, p_f) {
     adjusted_pval_F = p_f,
     R2_eval = seq(0.2, 0.8, length.out = n_pts)
   )
-  class(obj) <- "fanova"
+  class(obj) <- "faov"
   obj
 }
 

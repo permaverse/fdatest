@@ -14,7 +14,7 @@ p <- ncol(d1)
 set.seed(42)
 res_iwt_r <- IWTaov(temperature ~ groups, B = 5L, method = "residuals")
 
-expect_inherits(res_iwt_r, "fanova")
+expect_inherits(res_iwt_r, "faov")
 expect_equal(length(res_iwt_r$adjusted_pval_F), p)
 expect_equal(length(res_iwt_r$unadjusted_pval_F), p)
 expect_true(all(
@@ -35,7 +35,7 @@ expect_equal(length(res_iwt_r$R2_eval), p)
 # ===========================================================================
 set.seed(42)
 res_iwt_resp <- IWTaov(temperature ~ groups, B = 5L, method = "responses")
-expect_inherits(res_iwt_resp, "fanova")
+expect_inherits(res_iwt_resp, "faov")
 expect_equal(length(res_iwt_resp$adjusted_pval_F), p)
 
 # ===========================================================================
@@ -43,7 +43,7 @@ expect_equal(length(res_iwt_resp$adjusted_pval_F), p)
 # ===========================================================================
 set.seed(42)
 res_iwt_nr <- IWTaov(temperature ~ groups, B = 5L, recycle = FALSE)
-expect_inherits(res_iwt_nr, "fanova")
+expect_inherits(res_iwt_nr, "faov")
 expect_true(is.na(res_iwt_nr$pval_matrix_F[1, p]))
 
 # ===========================================================================
@@ -51,7 +51,7 @@ expect_true(is.na(res_iwt_nr$pval_matrix_F[1, p]))
 # ===========================================================================
 set.seed(42)
 res_twt_r <- TWTaov(temperature ~ groups, B = 5L, method = "residuals")
-expect_inherits(res_twt_r, "fanova")
+expect_inherits(res_twt_r, "faov")
 expect_equal(length(res_twt_r$adjusted_pval_F), p)
 expect_equal(ncol(res_twt_r$adjusted_pval_factors), p)
 # No pval_matrix fields in TWT
@@ -62,7 +62,7 @@ expect_null(res_twt_r$pval_matrix_F)
 # ===========================================================================
 set.seed(42)
 res_twt_resp <- TWTaov(temperature ~ groups, B = 5L, method = "responses")
-expect_inherits(res_twt_resp, "fanova")
+expect_inherits(res_twt_resp, "faov")
 
 # ===========================================================================
 # Globalaov — stat = "Integral", method = "residuals"
@@ -74,7 +74,7 @@ res_g_r <- Globalaov(
   stat = "Integral",
   method = "residuals"
 )
-expect_inherits(res_g_r, "fanova")
+expect_inherits(res_g_r, "faov")
 expect_equal(length(res_g_r$adjusted_pval_F), p)
 expect_true(!is.null(res_g_r$Global_pval_F))
 expect_true(res_g_r$Global_pval_F >= 0 && res_g_r$Global_pval_F <= 1)
@@ -85,7 +85,7 @@ expect_true(!is.null(res_g_r$Global_pval_factors))
 # ===========================================================================
 set.seed(42)
 res_g_max <- Globalaov(temperature ~ groups, B = 5L, stat = "Max")
-expect_inherits(res_g_max, "fanova")
+expect_inherits(res_g_max, "faov")
 expect_true(!is.null(res_g_max$Global_pval_F))
 
 # ===========================================================================
@@ -93,7 +93,7 @@ expect_true(!is.null(res_g_max$Global_pval_F))
 # ===========================================================================
 set.seed(42)
 res_g_resp <- Globalaov(temperature ~ groups, B = 5L, method = "responses")
-expect_inherits(res_g_resp, "fanova")
+expect_inherits(res_g_resp, "faov")
 
 # ===========================================================================
 # functional_anova_test — all corrections
@@ -104,7 +104,7 @@ res_ft_iwt <- functional_anova_test(
   correction = "IWT",
   B = 5L
 )
-expect_inherits(res_ft_iwt, "fanova")
+expect_inherits(res_ft_iwt, "faov")
 expect_equal(res_ft_iwt$correction, "IWT")
 
 set.seed(42)
@@ -113,7 +113,7 @@ res_ft_twt <- functional_anova_test(
   correction = "TWT",
   B = 5L
 )
-expect_inherits(res_ft_twt, "fanova")
+expect_inherits(res_ft_twt, "faov")
 expect_equal(res_ft_twt$correction, "TWT")
 
 set.seed(42)
@@ -122,7 +122,7 @@ res_ft_g <- functional_anova_test(
   correction = "Global",
   B = 5L
 )
-expect_inherits(res_ft_g, "fanova")
+expect_inherits(res_ft_g, "faov")
 expect_equal(res_ft_g$correction, "Global")
 
 # ===========================================================================
@@ -138,7 +138,7 @@ res_iwt_rf <- IWTaov(
   B = 5L,
   method = "residuals"
 )
-expect_inherits(res_iwt_rf, "fanova")
+expect_inherits(res_iwt_rf, "faov")
 expect_equal(length(res_iwt_rf$adjusted_pval_F), p)
 
 # ===========================================================================
@@ -151,7 +151,7 @@ res_iwt_ia <- IWTaov(
   B = 5L,
   method = "residuals"
 )
-expect_inherits(res_iwt_ia, "fanova")
+expect_inherits(res_iwt_ia, "faov")
 expect_equal(length(res_iwt_ia$adjusted_pval_F), p)
 
 # ===========================================================================
@@ -161,13 +161,13 @@ expect_equal(length(res_iwt_ia$adjusted_pval_F), p)
 # ===========================================================================
 set.seed(42)
 res_iwt_int0 <- suppressWarnings(IWTaov(temperature ~ 1, B = 5L))
-expect_inherits(res_iwt_int0, "fanova")
+expect_inherits(res_iwt_int0, "faov")
 
 # ===========================================================================
 # Deprecated wrapper: ITPaovbspline
 # ===========================================================================
 set.seed(42)
 res_itp_aov <- suppressWarnings(ITPaovbspline(temperature ~ groups, B = 5L))
-expect_inherits(res_itp_aov, "fanova")
+expect_inherits(res_itp_aov, "faov")
 
 set.seed(NULL)

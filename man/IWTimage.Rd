@@ -13,8 +13,7 @@ IWTimage(
 )
 }
 \arguments{
-\item{IWT_result}{Results of the IWT, as created by \code{\link{IWT1}},
-\code{\link{IWT2}}, \code{\link{IWTaov}}, and \code{\link{IWTlm}}.}
+\item{IWT_result}{Results of the IWT, as created by \code{\link[=iwt1]{iwt1()}}, \code{\link[=iwt2]{iwt2()}} or \code{\link[=iwt_aov]{iwt_aov()}}.}
 
 \item{alpha}{Threshold for the interval-wise error rate used for the
 hypothesis test. The default is \code{alpha=0.05}.}
@@ -61,7 +60,7 @@ cruciate ligament. \emph{Scandinavian Journal of Statistics} 45(4),
 1036-1061.
 }
 \seealso{
-See \code{\link[=plot.IWT1]{plot.IWT1()}}, \code{\link[=plot.ftwosample]{plot.ftwosample()}}, \code{\link[=plot.flm]{plot.flm()}} and
-\code{\link[=plot.fanova]{plot.fanova()}} for the plot method applied to the IWT results of one-
+See \code{\link[=plot.IWT1]{plot.IWT1()}}, \code{\link[=plot.fts]{plot.fts()}}, \code{\link[=plot.flm]{plot.flm()}} and
+\code{\link[=plot.faov]{plot.faov()}} for the plot method applied to the IWT results of one-
 and two-population tests, linear models, and ANOVA, respectively.
 }

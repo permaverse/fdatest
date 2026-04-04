@@ -7,16 +7,17 @@
 functional_two_sample_test(
   data1,
   data2,
-  correction,
+  correction = c("Global", "IWT", "TWT", "PCT", "FDR"),
   mu = 0,
   dx = NULL,
-  B = 1000L,
+  n_perm = 1000L,
   paired = FALSE,
   alternative = c("two.sided", "less", "greater"),
-  statistic = c("Integral", "Max", "Integral_std", "Max_std"),
+  standardize = FALSE,
+  verbose = FALSE,
+  aggregation_strategy = c("integral", "max"),
   recycle = TRUE,
-  partition = NULL,
-  verbose = FALSE
+  partition = NULL
 )
 }
 \arguments{
@@ -43,15 +44,12 @@ hypothesis. If \code{mu} is a constant, then a constant function is used. If
 difference function on the \strong{same} grid that has been used to evaluate the
 data samples. Defaults to \code{0}.}
 
-\item{dx}{A numeric value specifying the discretization step of the grid used
-to evaluate functional data when it is provided as objects of class
-\code{\link[fda:fd]{fda::fd}}. Defaults to \code{NULL}, in which case a default value of \code{0.01} is
-used which corresponds to a grid of size \code{100L}. Unused if functional data
-is provided in the form of matrices.}
+\item{dx}{A numeric value specifying the step of the uniform grid on which
+the data are evaluated. If \code{NULL}, the step is automatically inferred from
+the data. Defaults to \code{NULL}.}
 
-\item{B}{An integer value specifying the number of iterations of the MC
-algorithm to evaluate the p-value of the permutation tests. Defaults to
-\code{1000L}.}
+\item{n_perm}{An integer value specifying the number of permutations to use
+for the local testing procedure. Defaults to \code{1000L}.}
 
 \item{paired}{A boolean value specifying whether a paired test should be
 performed. Defaults to \code{FALSE}.}
@@ -60,31 +58,26 @@ performed. Defaults to \code{FALSE}.}
 Choices are \code{"two.sided"}, \code{"less"} or \code{"greater"}. Defaults to
 \code{"two.sided"}.}
 
-\item{statistic}{A string specifying the test statistic to use. Possible
-values are:
-\itemize{
-\item \code{"Integral"}: Integral of the squared sample mean difference.
-\item \code{"Max"}: Maximum of the squared sample mean difference.
-\item \code{"Integral_std"}: Integral of the squared t-test statistic.
-\item \code{"Max_std"}: Maximum of the squared t-test statistic.
-}
+\item{standardize}{A boolean value specifying whether to standardize the test
+statistic. Defaults to \code{FALSE}.}
 
-Defaults to \code{"Integral"}.}
+\item{verbose}{A boolean value specifying whether to print the progress of
+the computation. Defaults to \code{FALSE}.}
 
-\item{recycle}{A boolean value specifying whether the recycled version of the
-interval-wise testing procedure should be used. See Pini and Vantini (2017)
-for details. Defaults to \code{TRUE}.}
+\item{aggregation_strategy}{A string specifying the strategy to aggregate the
+point-wise test statistics for the correction procedure. Possible values
+are \code{"integral"} and \code{"max"}. Defaults to \code{"integral"}.}
+
+\item{recycle}{A boolean value specifying whether to recycle the test statistic
+values across permutations for the IWT procedure. Defaults to \code{TRUE}.}
 
 \item{partition}{An integer vector of length \eqn{J} specifying the
 membership of each point of the domain to an element of the partition.
 Only used and \strong{must} be set if the \code{correction} argument is set to
 \code{"PCT"}.}
-
-\item{verbose}{A boolean value specifying whether to print the progress of
-the computation. Defaults to \code{FALSE}.}
 }
 \value{
-An object of class \code{ftwosample} containing the following components:
+An object of class \code{fts} containing the following components:
 \itemize{
 \item \code{data}: A numeric matrix of shape \eqn{n \times J} containing the
 evaluation of the \eqn{n = n_1 + n_2} functions on a \strong{common} uniform
@@ -100,6 +93,8 @@ used to evaluate the functional samples.
 \item \code{adjusted_pvalues}: A numeric vector of size \eqn{J} containing the
 evaluation of the adjusted p-value functione on the \strong{same} uniform grid
 used to evaluate the functional samples.
+\item \code{correction_method}: A string containing the correction method used to
+compute the adjusted p-value function.
 }
 
 Optionally, the list may contain the following components:
@@ -132,7 +127,7 @@ methods:
 # Performing the TWT for two populations
 TWT_result <- functional_two_sample_test(
   NASAtemp$paris, NASAtemp$milan,
-  correction = "TWT", B = 10L
+  correction = "TWT", n_perm = 10L
 )
 
 # Plotting the results of the TWT
@@ -148,7 +143,7 @@ which(TWT_result$adjusted_pval < 0.05)
 # Performing the IWT for two populations
 IWT_result <- functional_two_sample_test(
   NASAtemp$paris, NASAtemp$milan,
-  correction = "IWT", B = 10L
+  correction = "IWT", n_perm = 10L
 )
 
 # Plotting the results of the IWT
@@ -162,20 +157,59 @@ plot(
 which(IWT_result$adjusted_pval < 0.05)
 }
 \references{
-Abramowicz, K., Pini, A., Schelin, L., Stamm, A., & Vantini, S. (2022).
-“Domain selection and familywise error rate for functional data: A unified
-framework. \emph{Biometrics} 79(2), 1119-1132.
+For the global testing procedure:
+\itemize{
+\item Hall, Peter, and Nader Tajvidi. 2002. “Permutation Tests for Equality of
+Distributions in High-Dimensional Settings.” Biometrika 89 (2): 359–74.
+\item Pini, Alessia, Aymeric Stamm, and Simone Vantini. 2018. “Hotelling’s T2 in
+Separable Hilbert Spaces.” Journal of Multivariate Analysis 167: 284–305.
+}
 
-Pini, A., & Vantini, S. (2017). Interval-wise testing for functional data.
-\emph{Journal of Nonparametric Statistics}, 29(2), 407-424
+For the partition closed testing procedure:
+\itemize{
+\item Vsevolozhskaya, Olga A, Mark C Greenwood, GJ Bellante, Scott L Powell, Rick
+L Lawrence, and Kevin S Repasky. 2013. “Combining Functions and the Closure
+Principle for Performing Follow-up Tests in Functional Analysis of Variance.”
+Computational Statistics & Data Analysis 67: 175–84.
+\item Vsevolozhskaya, Olga, Mark Greenwood, and Dmitri Holodov. 2014. “Pairwise
+comparison of treatment levels in functional analysis of variance with
+application to erythrocyte hemolysis.” The Annals of Applied Statistics 8 (2):
+905–25. https://doi.org/10.1214/14-AOAS723.
+}
 
-A. Pini and S. Vantini (2017). The Interval Testing Procedure: Inference for
-Functional Data Controlling the Family Wise Error Rate on Intervals.
-Biometrics 73(3): 835–845.
+For the interval-wise testing procedure:
+\itemize{
+\item Pini, Alessia, and Simone Vantini. 2016. “The interval testing procedure: a
+general framework for inference in functional data analysis.” Biometrics 72 (3):
+835–845.
+\item Pini, Alessia, and Simone Vantini. 2017. “Interval-Wise Testing for Functional
+Data.” Journal of Nonparametric Statistics 29 (2): 407–24.
+\item Pini, Alessia, Simone Vantini, Bianca Maria Colosimo, and Marco Grasso. 2018.
+“Domain-Selective Functional Analysis of Variance for Supervised Statistical
+Profile Monitoring of Signal Data.” Journal of the Royal Statistical Society
+Series C: Applied Statistics 67 (1): 55–81.
+\item Abramowicz, Konrad, Charlotte K Häger, Alessia Pini, Lina Schelin, Sara
+Sjöstedt de Luna, and Simone Vantini. 2018. “Nonparametric Inference for
+Functional-on-Scalar Linear Models Applied to Knee Kinematic Hop Data After
+Injury of the Anterior Cruciate Ligament.” Scandinavian Journal of Statistics 45
+(4): 1036–61.
+}
 
-Lundtorp Olsen, N., Pini, A., & Vantini, S. (2021). False discovery rate for
-functional data \emph{TEST} 30, 784–809.
+For the threshold-wise testing procedure:
+\itemize{
+\item Abramowicz, Konrad, Alessia Pini, Lina Schelin, Sara Sjöstedt de Luna,
+Aymeric Stamm, and Simone Vantini. 2023. “Domain Selection and Familywise
+Error Rate for Functional Data: A Unified Framework.” Biometrics 79 (2):
+1119–32.
+}
+
+For the functional Benjamini-Hochberg procedure:
+\itemize{
+\item Lundtorp Olsen, Niels, Alessia Pini, and Simone Vantini. 2021. "False discovery
+rate for functional data." TEST 30, 784–809.
+}
 }
 \seealso{
-See also \code{\link[=plot.ftwosample]{plot.ftwosample()}} for plotting the results.
+\code{\link[=global2]{global2()}}, \code{\link[=iwt2]{iwt2()}}, \code{\link[=twt2]{twt2()}}, \code{\link[=pct2]{pct2()}}, \code{\link[=fdr2]{fdr2()}} for
+calling directly one specific test and \code{\link[=plot.fts]{plot.fts()}} for plotting the results.
 }

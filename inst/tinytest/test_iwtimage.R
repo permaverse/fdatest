@@ -2,7 +2,7 @@
 #
 # IWTimage dispatches on class:
 #   * "IWT1" or "IWT2" → branch 1 (only "IWT1" is reachable from the public API)
-#   * "IWTaov"         → branch 2 (dead code: IWTaov() now returns "fanova")
+#   * "IWTaov"         → branch 2 (dead code: IWTaov() now returns "faov")
 #
 # To achieve 100% line coverage we create minimal fake objects with the old
 # class names where the current public API can no longer produce them.
@@ -43,7 +43,7 @@ expect_true(TRUE)
 # IWTimage — fake "IWT2" object (exercises the 2-pop sub-branch of branch 1)
 #
 # This branch is dead code in the current codebase (IWT2() now sets class
-# "ftwosample", not "IWT2"), but the lines exist in IWTimage and must be
+# "fts", not "IWT2"), but the lines exist in IWTimage and must be
 # covered.  We create a minimal compatible list with the old class.
 # ===========================================================================
 fake_iwt2 <- list(
@@ -81,7 +81,7 @@ expect_true(TRUE)
 #
 # IWTimage branch 2 uses old field names: pval_matrix_F, pval_matrix_factor,
 # adjusted_pval_factor, unadjusted_pval_factor.  IWTaov() now stores
-# "factors" (with 's') and returns class "fanova".  We craft a fake object
+# "factors" (with 's') and returns class "faov".  We craft a fake object
 # with the exact fields that IWTimage expects.
 # ===========================================================================
 nvar <- 1L # one factor: "groups"

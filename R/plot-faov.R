@@ -1,13 +1,13 @@
 #' Plot for Functional ANOVA Test Results
 #'
-#' The `S3` methods `autoplot.fanova()` and `plot.fanova()` are methods
+#' The `S3` methods `autoplot.faov()` and `plot.faov()` are methods
 #' for plotting results of functional analysis of variance tests. They visualize the
 #' functional data and the adjusted p-values obtained from the testing
 #' procedures for mean comparison of multiple groups. The plots highlight significant
 #' effects at two levels of significance, `alpha1` and `alpha2`, using shaded
 #' areas.
 #'
-#' @param object,x An object of class `fanova`, usually a result of a call
+#' @param object,x An object of class `faov`, usually a result of a call
 #'   to [`functional_anova_test()`], [`iwt_aov()`], [`twt_aov()`] or [`global_aov()`].
 #' @param xrange A length-2 numeric vector specifying the range of the x-axis
 #'   for the plots. Defaults to `c(0, 1)`. This should match the domain of the
@@ -35,10 +35,10 @@
 #' @param ... Other arguments passed to specific methods. Not used in this
 #'   function.
 #'
-#' @returns The `autoplot.fanova()` function creates a ggplot object that
+#' @returns The `autoplot.faov()` function creates a ggplot object that
 #'   displays the functional data and the adjusted p-values. The significant
 #'   intervals at levels `alpha1` and `alpha2` are highlighted in the plots.
-#'   The `plot.fanova()` function is a wrapper around `autoplot.fanova()`
+#'   The `plot.faov()` function is a wrapper around `autoplot.faov()`
 #'   that prints the plot directly.
 #'
 #' @seealso [`IWTimage()`] for the plot of p-values heatmaps (for IWT).
@@ -58,7 +58,7 @@
 #' cruciate ligament. \emph{Scandinavian Journal of Statistics} 45(4),
 #' 1036-1061.
 #'
-#' @name plot.fanova
+#' @name plot.faov
 #'
 #' @examples
 #' temperature <- rbind(NASAtemp$milan, NASAtemp$paris)
@@ -79,11 +79,11 @@
 #' )
 NULL
 
-#' @rdname plot.fanova
+#' @rdname plot.faov
 #' @importFrom ggplot2 autoplot
 #' @importFrom rlang .data
 #' @export
-autoplot.fanova <- function(
+autoplot.faov <- function(
   object,
   xrange = c(0, 1),
   alpha1 = 0.05,
@@ -98,7 +98,9 @@ autoplot.fanova <- function(
   ...
 ) {
   if (length(alpha1) != 1L || length(alpha2) != 1L) {
-    cli::cli_abort("{.arg alpha1} and {.arg alpha2} must each be a single numeric value.")
+    cli::cli_abort(
+      "{.arg alpha1} and {.arg alpha2} must each be a single numeric value."
+    )
   }
   if (alpha1 < alpha2) {
     temp <- alpha1
@@ -373,10 +375,10 @@ autoplot.fanova <- function(
   }
 }
 
-#' @rdname plot.fanova
+#' @rdname plot.faov
 #' @importFrom graphics plot
 #' @export
-plot.fanova <- function(
+plot.faov <- function(
   x,
   xrange = c(0, 1),
   alpha1 = 0.05,
