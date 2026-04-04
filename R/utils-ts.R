@@ -1,3 +1,52 @@
+ts_to_coeffs <- function(data1, data2, mu, dx = NULL) {
+  if (fda::is.fd(data1) && fda::is.fd(data2)) {
+    rangeval1 <- data1$basis$rangeval
+    rangeval2 <- data2$basis$rangeval
+    if (sum(rangeval1 == rangeval2) != 2) {
+      cli::cli_abort(
+        "The range of values of {.arg data1} must be the same as the range of
+        values of {.arg data2}."
+      )
+    }
+    if (is.null(dx)) {
+      dx <- (rangeval1[2] - rangeval1[1]) * 0.01
+    }
+    abscissa <- seq(rangeval1[1], rangeval1[2], by = dx)
+    coeff1 <- t(fda::eval.fd(fdobj = data1, evalarg = abscissa))
+    coeff2 <- t(fda::eval.fd(fdobj = data2, evalarg = abscissa))
+  } else if (is.matrix(data1) && is.matrix(data2)) {
+    coeff1 <- data1
+    coeff2 <- data2
+  } else {
+    cli::cli_abort(
+      "Both {.arg data1} and {.arg data2} must be either functional data objects
+      of class {.cls fd} or matrices."
+    )
+  }
+
+  if (fda::is.fd(mu)) {
+    # mu is a functional data
+    rangeval_mu <- mu$basis$rangeval
+    if (sum(rangeval_mu == rangeval1) != 2) {
+      cli::cli_abort(
+        "The range of values of {.arg mu} must be the same as the range of
+        values of {.arg data1}."
+      )
+    }
+    abscissa <- seq(rangeval_mu[1], rangeval_mu[2], by = dx)
+    mu_eval <- t(fda::eval.fd(fdobj = mu, evalarg = abscissa))
+  } else if (is.vector(mu)) {
+    mu_eval <- mu
+  } else {
+    cli::cli_abort(
+      "The {.arg mu} argument must be either a functional dataobject of class
+      {.cls fd} or a numeric vector."
+    )
+  }
+
+  list(coeff1 = coeff1, coeff2 = coeff2, mu = mu_eval)
+}
+
 ts_pointwise_stat <- function(coeff, n1, alternative, standardize) {
   n <- nrow(coeff)
 
@@ -35,7 +84,7 @@ ts_pointwise_stat <- function(coeff, n1, alternative, standardize) {
 
 # Internal helper: one permutation iteration for ts_permtest.
 # Returns a numeric vector of length p (the permuted test statistic row).
-.ts_one_perm <- function(coeff, n1, alternative, paired, standardize) {
+ts_single_perm <- function(coeff, n1, alternative, paired, standardize) {
   n <- nrow(coeff)
   if (paired) {
     if_perm <- stats::rbinom(n1, 1, 0.5)
@@ -76,12 +125,12 @@ ts_permtest <- function(coeff, n1, n_perm, alternative, paired, standardize) {
 
   if (mirai::daemons_set()) {
     perm_tasks <- mirai::mirai_map(seq_len(n_perm), function(.x) {
-      rlang::inject(.ts_one_perm(!!!perm_args))
+      rlang::inject(ts_single_perm(!!!perm_args))
     })
     perm_results <- perm_tasks[.progress]
   } else {
     perm_results <- lapply(seq_len(n_perm), function(.x) {
-      rlang::inject(.ts_one_perm(!!!perm_args))
+      rlang::inject(ts_single_perm(!!!perm_args))
     })
   }
   t_coeff <- do.call(rbind, perm_results)
@@ -104,7 +153,7 @@ ts_prepare_data <- function(
   alternative,
   standardize
 ) {
-  inputs <- twosamples2coeffs(data1, data2, mu, dx = dx)
+  inputs <- ts_to_coeffs(data1, data2, mu, dx = dx)
   coeff1 <- inputs$coeff1
   coeff2 <- inputs$coeff2
   mu_eval <- inputs$mu

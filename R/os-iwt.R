@@ -88,7 +88,7 @@ iwt1 <- function(
   dx = NULL,
   recycle = TRUE
 ) {
-  inputs <- onesample2coeffs(data, mu, dx = dx)
+  inputs <- os_to_coeffs(data, mu, dx = dx)
   coeff <- inputs$coeff
   mu_eval <- inputs$mu
 
