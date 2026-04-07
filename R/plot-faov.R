@@ -222,7 +222,7 @@ autoplot.faov <- function(
 
   # --- Per-factor functional data plots ---
   names_all <- colnames(object$design_matrix)
-  interaz <- grep(":", names_all)
+  interaz <- grep(":", names_all, fixed = TRUE)
 
   for (var in seq_len(nvar)) {
     var_name <- rownames(object$adjusted_pval_factors)[var]
@@ -232,7 +232,7 @@ autoplot.faov <- function(
       paste("Factor", var_name)
     }
 
-    if (length(grep(":", var_name)) > 0) {
+    if (length(grep(":", var_name, fixed = TRUE)) > 0) {
       var12 <- strsplit(var_name, ":")
       var1 <- var12[[1]][1]
       var2 <- var12[[1]][2]
