@@ -67,7 +67,7 @@ ITPlmbspline <- function(
   order = 2,
   nknots = dim(stats::model.response(stats::model.frame(formula)))[2],
   B = 10000,
-  method = 'residuals'
+  method = "residuals"
 ) {
   lifecycle::deprecate_soft(
     when = "2.2.0",

@@ -6,7 +6,7 @@ p_adjust_pct <- function(
   aggregation_strategy
 ) {
   partition <- factor(partition)
-  nintervals <- length(levels(partition))
+  nintervals <- nlevels(partition)
   ntests <- 2^nintervals - 1L
   all_combs <- matrix(nrow = ntests, ncol = p)
   labels <- levels(partition)
