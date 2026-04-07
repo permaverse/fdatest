@@ -68,6 +68,17 @@ res_fos2 <- functional_one_sample_test(data = d1, mu = 0, n_perm = 5L)
 expect_inherits(res_fos2, "fos")
 expect_equal(length(res_fos2$adjusted_pvalues), p)
 
+# verbose = TRUE (exercises both cli_h1 progress paths)
+set.seed(42)
+res_fos2_v <- functional_one_sample_test(
+  data = d1,
+  mu = 0,
+  n_perm = 5L,
+  verbose = TRUE
+)
+expect_inherits(res_fos2_v, "fos")
+expect_equal(length(res_fos2_v$adjusted_pvalues), p)
+
 # recycle = FALSE
 set.seed(42)
 res_fos_nr <- iwt1(data = d1, mu = 0, n_perm = 5L, recycle = FALSE)
