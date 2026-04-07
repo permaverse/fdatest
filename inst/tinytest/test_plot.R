@@ -1,8 +1,9 @@
 # Tests for plot and autoplot methods:
-# plot-fts.R: autoplot.fts, plot.fts
-# plot-faov.R:     autoplot.faov, plot.faov
-# plot-flm.R:        autoplot.flm, plot.flm
-# plot-fos.R:        autoplot.fos, plot.fos
+# plot-fts.R:       autoplot.fts, plot.fts
+# plot-faov.R:      autoplot.faov, plot.faov
+# plot-flm.R:       autoplot.flm, plot.flm
+# plot-fos.R:       autoplot.fos, plot.fos
+# plot-iwt-image.R: IWTimage (see test_iwtimage.R)
 library(ggplot2)
 library(tinysnapshot)
 using(tinysnapshot)
