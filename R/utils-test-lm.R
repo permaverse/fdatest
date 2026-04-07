@@ -1,5 +1,38 @@
-# Internal helper: one permutation for lm_permtest.
-.lm_one_perm <- function(
+# Internal helper: compute the pointwise test statistics for LM.
+# Returns list(t_glob, t_part) where t_glob is a numeric vector of length p
+# (global F-statistic) and t_part is a ((nvar+1) x p) matrix (per-coefficient
+# t^2-statistics).
+lm_pointwise_stat <- function(
+  coeff_fit,
+  coeff_regr,
+  n,
+  p,
+  nvar,
+  sigma,
+  resvar
+) {
+  t_glob <- if (nvar > 0) {
+    colSums(
+      (coeff_fit -
+        matrix(colMeans(coeff_fit), nrow = n, ncol = p, byrow = TRUE))^2
+    ) /
+      (nvar * resvar)
+  } else {
+    numeric(p)
+  }
+
+  se <- sqrt(
+    matrix(diag(sigma), nrow = nvar + 1L, ncol = p, byrow = FALSE) *
+      matrix(resvar, nrow = nvar + 1L, ncol = p, byrow = TRUE)
+  )
+  t_part <- abs(coeff_regr / se)^2
+
+  list(t_glob = t_glob, t_part = t_part)
+}
+
+# Internal helper: one permutation iteration for lm_permtest.
+# Returns list(t_glob_row, t_part_row) — same shape as lm_pointwise_stat().
+lm_single_perm <- function(
   coeff,
   n,
   p,
@@ -17,26 +50,17 @@
   sigma_perm <- chol2inv(regr_perm$qr$qr)
   resvar <- colSums(regr_perm$residuals^2) / regr_perm$df.residual
 
-  t_glob_row <- if (nvar > 0) {
-    colSums(
-      (regr_perm$fitted -
-        matrix(colMeans(regr_perm$fitted), nrow = n, ncol = p, byrow = TRUE))^2
-    ) /
-      (nvar * resvar)
-  } else {
-    numeric(p)
-  }
+  stat <- lm_pointwise_stat(
+    coeff_fit = regr_perm$fitted,
+    coeff_regr = regr_perm$coeff,
+    n = n,
+    p = p,
+    nvar = nvar,
+    sigma = sigma_perm,
+    resvar = resvar
+  )
 
-  # (nvar+1) x p matrix
-  t_part_row <- matrix(nrow = nvar + 1L, ncol = p)
-
-  if (method == "responses") {
-    se <- sqrt(
-      matrix(diag(sigma_perm), nrow = nvar + 1L, ncol = p, byrow = FALSE) *
-        matrix(resvar, nrow = nvar + 1L, ncol = p, byrow = TRUE)
-    )
-    t_part_row <- abs(regr_perm$coeff / se)^2
-  } else {
+  if (method != "responses") {
     residui_perm <- residui[, permutazioni, ]
     for (ii in seq_len(nvar + 1L)) {
       coeff_perm_ii <- fitted_part[ii, , ] + residui_perm[ii, , ]
@@ -52,17 +76,103 @@
         ) *
           matrix(resvar_ii, nrow = nvar + 1L, ncol = p, byrow = TRUE)
       )
-      t_part_row[ii, ] <- abs(regr_perm_ii$coeff / se_ii)[ii, ]^2
+      stat$t_part[ii, ] <- abs(regr_perm_ii$coeff / se_ii)[ii, ]^2
     }
   }
 
-  list(t_glob_row = t_glob_row, t_part_row = t_part_row)
+  list(t_glob_row = stat$t_glob, t_part_row = stat$t_part)
 }
 
 # Internal helper: shared pointwise permutation test for LM functions
 # (global_lm, iwt_lm, twt_lm).
-# Returns a list with all computed quantities needed by the combination step.
-lm_permtest <- function(formula, dx, n_perm, method) {
+# Returns list(t0_glob, t0_part, t_glob, t_part, pval_glob, pval_part).
+lm_permtest <- function(
+  coeff,
+  n,
+  p,
+  nvar,
+  design_matrix,
+  regr0,
+  method,
+  residui,
+  fitted_part,
+  n_perm
+) {
+  sigma <- chol2inv(regr0$qr$qr)
+  resvar <- colSums(regr0$residuals^2) / regr0$df.residual
+
+  stat0 <- lm_pointwise_stat(
+    coeff_fit = regr0$fitted,
+    coeff_regr = regr0$coeff,
+    n = n,
+    p = p,
+    nvar = nvar,
+    sigma = sigma,
+    resvar = resvar
+  )
+  t0_glob <- stat0$t_glob
+  t0_part <- stat0$t_part
+
+  perm_args <- list(
+    coeff = coeff,
+    n = n,
+    p = p,
+    nvar = nvar,
+    design_matrix = design_matrix,
+    regr0_df_residual = regr0$df.residual,
+    method = method,
+    residui = residui,
+    fitted_part = fitted_part
+  )
+
+  # Run permutations in parallel via mirai_map().
+  # Each task returns list(t_glob_row, t_part_row).
+  if (mirai::daemons_set()) {
+    perm_tasks <- mirai::mirai_map(seq_len(n_perm), function(.x) {
+      rlang::inject(lm_single_perm(!!!perm_args))
+    })
+    perm_results <- perm_tasks[.progress]
+  } else {
+    perm_results <- lapply(seq_len(n_perm), function(.x) {
+      rlang::inject(lm_single_perm(!!!perm_args))
+    })
+  }
+
+  t_glob <- do.call(rbind, lapply(perm_results, `[[`, "t_glob_row"))
+  # t_part: array dim c(n_perm, nvar+1, p)
+  t_part <- array(dim = c(n_perm, nvar + 1L, p), data = NA_real_)
+  for (i in seq_len(n_perm)) {
+    t_part[i, , ] <- perm_results[[i]]$t_part_row
+  }
+
+  pval_glob <- colSums(
+    t_glob >= matrix(t0_glob, nrow = n_perm, ncol = p, byrow = TRUE)
+  ) /
+    n_perm
+  pval_part <- matrix(nrow = nvar + 1L, ncol = p)
+  for (i in seq_len(p)) {
+    pval_part[, i] <- colSums(
+      t_part[,, i] >=
+        matrix(t0_part[, i], nrow = n_perm, ncol = nvar + 1L, byrow = TRUE)
+    ) /
+      n_perm
+  }
+
+  list(
+    t0_glob = t0_glob,
+    t0_part = t0_part,
+    t_glob = t_glob,
+    t_part = t_part,
+    pval_glob = pval_glob,
+    pval_part = pval_part
+  )
+}
+
+# Internal helper: data preparation + pointwise permutation test for
+# LM functions (global_lm, iwt_lm, twt_lm). Parses formula, builds
+# design matrix and model quantities, then calls lm_permtest(). Returns
+# a list with all computed quantities needed by the p-value adjustment step.
+lm_prepare_data <- function(formula, dx, n_perm, method) {
   coeff <- formula2coeff(formula, dx = dx)
   design_matrix <- formula2design_matrix(formula, coeff)
 
@@ -72,21 +182,9 @@ lm_permtest <- function(formula, dx, n_perm, method) {
   n <- dim(coeff)[1]
 
   regr0 <- stats::lm.fit(design_matrix, coeff)
-  sigma <- chol2inv(regr0$qr$qr)
-  resvar <- colSums(regr0$residuals^2) / regr0$df.residual
-  se <- sqrt(
-    matrix(diag(sigma), nrow = nvar + 1, ncol = p, byrow = FALSE) *
-      matrix(resvar, nrow = nvar + 1, ncol = p, byrow = TRUE)
-  )
-  t0_part <- abs(regr0$coeff / se)^2
 
-  if (nvar > 0) {
-    mu_fit <- matrix(colMeans(regr0$fitted), nrow = n, ncol = p, byrow = TRUE)
-    t0_glob <- colSums((regr0$fitted - mu_fit)^2) / (nvar * resvar)
-  } else {
+  if (nvar == 0) {
     method <- "responses"
-    t0_glob <- numeric(p)
-    t0_part <- matrix(t0_part, nrow = 1L, ncol = p)
   }
 
   residui <- fitted_part <- NULL
@@ -94,17 +192,10 @@ lm_permtest <- function(formula, dx, n_perm, method) {
     formula_const <- deparse(formula[[3]], width.cutoff = 500L)
     var_names2 <- var_names
     coeffnames <- paste0("coeff[,", as.character(seq_len(p)), "]")
-    formula_temp_dm <- coeff ~ design_matrix
-    mf_temp_raw <- stats::model.frame(formula_temp_dm)[
-      -((p + 1):(p + nvar + 1))
-    ]
-    mf_temp_cov <- as.data.frame(design_matrix[, -1, drop = FALSE])
-    colnames(mf_temp_cov) <- var_names[-1]
-    mf_temp <- cbind(mf_temp_raw, mf_temp_cov)
 
     design_matrix_names2 <- design_matrix
-    if (length(grep("factor", formula_const)) > 0) {
-      index_factor <- grep("factor", var_names)
+    if (length(grep("factor", formula_const, fixed = TRUE)) > 0) {
+      index_factor <- grep("factor", var_names, fixed = TRUE)
       replace_names <- paste0("group", seq_along(index_factor))
       var_names2[index_factor] <- replace_names
       colnames(design_matrix_names2) <- var_names2
@@ -172,49 +263,18 @@ lm_permtest <- function(formula, dx, n_perm, method) {
     )
   }
 
-  perm_args <- list(
+  perm_out <- lm_permtest(
     coeff = coeff,
     n = n,
     p = p,
     nvar = nvar,
     design_matrix = design_matrix,
-    regr0_df_residual = regr0$df.residual,
+    regr0 = regr0,
     method = method,
     residui = residui,
-    fitted_part = fitted_part
+    fitted_part = fitted_part,
+    n_perm = n_perm
   )
-
-  # Run permutations in parallel via mirai_map().
-  if (mirai::daemons_set()) {
-    perm_tasks <- mirai::mirai_map(seq_len(n_perm), function(i) {
-      rlang::inject(.lm_one_perm(!!!perm_args))
-    })
-    perm_results <- perm_tasks[.progress]
-  } else {
-    perm_results <- lapply(seq_len(n_perm), function(i) {
-      rlang::inject(.lm_one_perm(!!!perm_args))
-    })
-  }
-
-  t_glob <- do.call(rbind, lapply(perm_results, `[[`, "t_glob_row"))
-  # t_part: array dim c(n_perm, nvar+1, p)
-  t_part <- array(dim = c(n_perm, nvar + 1L, p), data = NA_real_)
-  for (i in seq_len(n_perm)) {
-    t_part[i, , ] <- perm_results[[i]]$t_part_row
-  }
-
-  pval_glob <- colSums(
-    t_glob >= matrix(t0_glob, nrow = n_perm, ncol = p, byrow = TRUE)
-  ) /
-    n_perm
-  pval_part <- matrix(nrow = nvar + 1L, ncol = p)
-  for (i in seq_len(p)) {
-    pval_part[, i] <- colSums(
-      t_part[,, i] >=
-        matrix(t0_part[, i], nrow = n_perm, ncol = nvar + 1L, byrow = TRUE)
-    ) /
-      n_perm
-  }
 
   list(
     coeff = coeff,
@@ -224,92 +284,12 @@ lm_permtest <- function(formula, dx, n_perm, method) {
     var_names = var_names,
     design_matrix = design_matrix,
     regr0 = regr0,
-    t0_part = t0_part,
-    t0_glob = t0_glob,
-    t_glob = t_glob,
-    t_part = t_part,
-    pval_glob = pval_glob,
-    pval_part = pval_part,
+    t0_part = perm_out$t0_part,
+    t0_glob = perm_out$t0_glob,
+    t_glob = perm_out$t_glob,
+    t_part = perm_out$t_part,
+    pval_glob = perm_out$pval_glob,
+    pval_part = perm_out$pval_part,
     method = method
-  )
-}
-
-compute_row_lm <- function(
-  i,
-  t0_2x_glob,
-  t_2x_glob,
-  t0_2x_part,
-  t_2x_part,
-  n_perm,
-  p,
-  nvar,
-  recycle
-) {
-  js <- if (recycle) seq_len(p) else seq_len(i)
-  glob_vals <- numeric(length(js))
-  part_vals <- matrix(nrow = nvar + 1L, ncol = length(js))
-  for (k in seq_along(js)) {
-    j <- js[k]
-    inf <- j
-    sup <- (p - i) + j
-    t0_temp <- sum(t0_2x_glob[inf:sup])
-    t_temp <- rowSums(t_2x_glob[, inf:sup, drop = FALSE])
-    glob_vals[k] <- sum(t_temp >= t0_temp) / n_perm
-    for (ii in seq_len(nvar + 1L)) {
-      t0_temp <- sum(t0_2x_part[ii, inf:sup])
-      t_temp <- rowSums(t_2x_part[, ii, inf:sup, drop = FALSE])
-      part_vals[ii, k] <- sum(t_temp >= t0_temp) / n_perm
-    }
-  }
-  list(glob = glob_vals, part = part_vals)
-}
-
-compute_row_pair_lm <- function(
-  i,
-  t0_2x_glob,
-  t_2x_glob,
-  t0_2x_part,
-  t_2x_part,
-  n_perm,
-  p,
-  nvar,
-  recycle
-) {
-  if (i == p - i) {
-    return(list(compute_row_lm(
-      i = i,
-      t0_2x_glob = t0_2x_glob,
-      t_2x_glob = t_2x_glob,
-      t0_2x_part = t0_2x_part,
-      t_2x_part = t_2x_part,
-      n_perm = n_perm,
-      p = p,
-      nvar = nvar,
-      recycle = recycle
-    )))
-  }
-  list(
-    compute_row_lm(
-      i = i,
-      t0_2x_glob = t0_2x_glob,
-      t_2x_glob = t_2x_glob,
-      t0_2x_part = t0_2x_part,
-      t_2x_part = t_2x_part,
-      n_perm = n_perm,
-      p = p,
-      nvar = nvar,
-      recycle = recycle
-    ),
-    compute_row_lm(
-      i = p - i,
-      t0_2x_glob = t0_2x_glob,
-      t_2x_glob = t_2x_glob,
-      t0_2x_part = t0_2x_part,
-      t_2x_part = t_2x_part,
-      n_perm = n_perm,
-      p = p,
-      nvar = nvar,
-      recycle = recycle
-    )
   )
 }

@@ -100,37 +100,161 @@
 #' summary(TWT_result)
 functional_lm_test <- function(
   formula,
-  correction,
+  correction = c("IWT", "TWT", "Global"),
   dx = NULL,
   B = 1000L, # nolint: object_name_linter.
   method = c("residuals", "responses"),
   recycle = TRUE,
   stat = c("Integral", "Max")
 ) {
-  out <- switch(
+  correction <- rlang::arg_match(correction)
+  method <- rlang::arg_match(method)
+  stat <- rlang::arg_match(stat)
+  cl <- match.call()
+
+  aggregation_strategy <- switch(stat, Integral = "integral", Max = "max")
+
+  cli::cli_h1("Point-wise tests")
+  res <- lm_prepare_data(formula, dx, B, method)
+
+  coeff <- res$coeff
+  n <- res$n
+  p <- res$p
+  nvar <- res$nvar
+  var_names <- res$var_names
+  design_matrix <- res$design_matrix
+  regr0 <- res$regr0
+  t0_glob <- res$t0_glob
+  t_glob <- res$t_glob
+  pval_glob <- res$pval_glob
+  t0_part <- res$t0_part
+  t_part <- res$t_part
+  pval_part <- res$pval_part
+
+  cli::cli_h1(switch(
     correction,
-    IWT = iwt_lm(
-      formula = formula,
-      dx = dx,
+    IWT = "Interval-wise tests",
+    TWT = "Threshold-wise tests",
+    Global = "Global test"
+  ))
+
+  # Adjust global F-test p-values
+  adj_glob <- switch(
+    correction,
+    IWT = p_adjust_iwt(
+      p = p,
+      pval = pval_glob,
+      t0 = t0_glob,
+      t_coeff = t_glob,
       n_perm = B,
-      method = method,
-      recycle = recycle
+      recycle = recycle,
+      aggregation_strategy = aggregation_strategy
     ),
-    TWT = twt_lm(
-      formula = formula,
-      dx = dx,
-      n_perm = B,
-      method = method
+    TWT = p_adjust_twt(
+      pval = pval_glob,
+      p = p,
+      t0 = t0_glob,
+      t_coeff = t_glob,
+      aggregation_strategy = aggregation_strategy
     ),
-    Global = global_lm(
-      formula = formula,
-      dx = dx,
-      n_perm = B,
-      method = method,
-      stat = stat
+    Global = p_adjust_global(
+      aggregation_strategy = aggregation_strategy,
+      t0 = t0_glob,
+      t_coeff = t_glob,
+      p = p
     )
   )
 
-  out$correction <- correction
+  # Adjust per-variable p-values — one call to p_adjust_xx() per variable
+  # (nvar + 1: intercept plus each predictor)
+  adj_part_list <- lapply(seq_len(nvar + 1L), function(ii) {
+    switch(
+      correction,
+      IWT = p_adjust_iwt(
+        p = p,
+        pval = pval_part[ii, ],
+        t0 = t0_part[ii, ],
+        t_coeff = t_part[, ii, ],
+        n_perm = B,
+        recycle = recycle,
+        aggregation_strategy = aggregation_strategy
+      ),
+      TWT = p_adjust_twt(
+        pval = pval_part[ii, ],
+        p = p,
+        t0 = t0_part[ii, ],
+        t_coeff = t_part[, ii, ],
+        aggregation_strategy = aggregation_strategy
+      ),
+      Global = p_adjust_global(
+        aggregation_strategy = aggregation_strategy,
+        t0 = t0_part[ii, ],
+        t_coeff = t_part[, ii, ],
+        p = p
+      )
+    )
+  })
+
+  adjusted_pval_part <- matrix(nrow = nvar + 1L, ncol = p)
+  for (ii in seq_len(nvar + 1L)) {
+    adjusted_pval_part[ii, ] <- adj_part_list[[ii]]$adjusted_pvalues
+  }
+  rownames(adjusted_pval_part) <- var_names
+  rownames(pval_part) <- var_names
+
+  coeff_t <- regr0$coeff
+  fitted_t <- regr0$fitted
+  rownames(coeff_t) <- var_names
+
+  residuals_t <- coeff - fitted_t
+  ybar_t <- colMeans(coeff)
+  r2_t <- colSums(
+    (fitted_t - matrix(ybar_t, nrow = n, ncol = p, byrow = TRUE))^2
+  ) /
+    colSums(
+      (coeff - matrix(ybar_t, nrow = n, ncol = p, byrow = TRUE))^2
+    )
+
+  cli::cli_h1(switch(
+    correction,
+    IWT = "Interval-Wise Testing completed",
+    TWT = "Threshold-Wise Testing completed",
+    Global = "Global Testing completed"
+  ))
+
+  out <- list(
+    call = cl,
+    design_matrix = design_matrix,
+    unadjusted_pval_F = pval_glob,
+    adjusted_pval_F = adj_glob$adjusted_pvalues,
+    unadjusted_pval_part = pval_part,
+    adjusted_pval_part = adjusted_pval_part,
+    data_eval = coeff,
+    coeff_regr_eval = coeff_t,
+    fitted_eval = fitted_t,
+    residuals_eval = residuals_t,
+    R2_eval = r2_t,
+    correction = correction
+  )
+
+  if (correction == "IWT") {
+    out$pval_matrix_F <- adj_glob$pvalue_matrix
+    pval_matrix_part <- array(dim = c(nvar + 1L, p, p))
+    for (ii in seq_len(nvar + 1L)) {
+      pval_matrix_part[ii, , ] <- adj_part_list[[ii]]$pvalue_matrix
+    }
+    out$pval_matrix_part <- pval_matrix_part
+  }
+
+  if (correction == "Global") {
+    out$Global_pval_F <- adj_glob$adjusted_pvalues[1]
+    out$Global_pval_part <- vapply(
+      adj_part_list,
+      function(x) x$adjusted_pvalues[1],
+      numeric(1L)
+    )
+  }
+
+  class(out) <- "flm"
   out
 }

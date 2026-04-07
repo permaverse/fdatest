@@ -6,7 +6,7 @@
 \usage{
 functional_anova_test(
   formula,
-  correction,
+  correction = c("IWT", "TWT", "Global"),
   dx = NULL,
   B = 1000L,
   method = c("residuals", "responses"),
