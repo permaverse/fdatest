@@ -111,7 +111,7 @@ which(IWT_result$adjusted_pvalues < 0.05)
 IWT_result <- IWT1(NASAtemp$paris, mu = 4, B = 10L)
 
 # Plotting the results of the IWT
-plot(IWT_result, xrange = c(0, 12), main = 'Paris temperatures')
+plot(IWT_result, xrange = c(0, 12), main = "Paris temperatures")
 
 # Plotting the p-value heatmap
 IWTimage(IWT_result, abscissa_range = c(0, 12))

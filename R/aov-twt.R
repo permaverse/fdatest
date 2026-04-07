@@ -40,9 +40,9 @@
 #' layout(matrix(1:4, nrow = 2, byrow = FALSE))
 #' plot(
 #'   TWT_result,
-#'   main = 'NASA data',
+#'   main = "NASA data",
 #'   plot_adjpval = TRUE,
-#'   xlab = 'Day',
+#'   xlab = "Day",
 #'   xrange = c(1, 365)
 #' )
 TWTaov <- # nolint: object_name_linter.

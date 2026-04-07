@@ -116,9 +116,9 @@ plot(Global_result)
 layout(matrix(1:4, nrow = 2, byrow = FALSE))
 plot(
   Global_result,
-  main = 'NASA data',
+  main = "NASA data",
   plot_adjpval = TRUE,
-  xlab = 'Day',
+  xlab = "Day",
   xrange = c(1, 365)
 )
 }

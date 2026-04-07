@@ -63,7 +63,7 @@ plot(
   ITP_result,
   main = "NASA data",
   plot_adjpval = TRUE,
-  xlab = 'Day',
+  xlab = "Day",
   xrange = c(1, 365)
 )
 

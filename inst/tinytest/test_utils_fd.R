@@ -1,6 +1,7 @@
 # Tests for fd-object paths in R/utils.R:
 #   os_to_coeffs(), ts_to_coeffs(), formula2coeff()
 # fda is in Imports so it is always available; no skip needed.
+# jarl-ignore-file internal_function: test files legitimately access internal functions via :::
 
 # ---------------------------------------------------------------------------
 # Shared fd fixtures

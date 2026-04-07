@@ -1,4 +1,5 @@
 # Tests for utility functions in R/utils.R
+# jarl-ignore-file internal_function: test files legitimately access internal functions via :::
 
 d1 <- NASAtemp$milan[1:4, 1:8]
 d2 <- NASAtemp$paris[1:4, 1:8]

@@ -111,9 +111,9 @@ summary(Global_result)
 # Plot of the Global test results
 plot(
   Global_result,
-  main = 'NASA data',
+  main = "NASA data",
   plot_adjpval = TRUE,
-  xlab = 'Day',
+  xlab = "Day",
   xrange = c(1, 365)
 )
 }

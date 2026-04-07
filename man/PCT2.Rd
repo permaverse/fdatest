@@ -152,7 +152,7 @@ PCT_result <- PCT2(NASAtemp$paris, NASAtemp$milan, partition = partition)
 plot(
   PCT_result,
   xrange = c(0, 12),
-  title = 'PCT results for testing mean differences'
+  title = "PCT results for testing mean differences"
 )
 
 # Selecting the significant components at 5\% level

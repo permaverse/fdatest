@@ -134,7 +134,7 @@ TWT_result <- functional_two_sample_test(
 plot(
   TWT_result,
   xrange = c(0, 12),
-  title = 'TWT results for testing mean differences'
+  title = "TWT results for testing mean differences"
 )
 
 # Selecting the significant components at 5\% level
@@ -150,7 +150,7 @@ IWT_result <- functional_two_sample_test(
 plot(
   IWT_result,
   xrange = c(0, 12),
-  title = 'IWT results for testing mean differences'
+  title = "IWT results for testing mean differences"
 )
 
 # Selecting the significant components at 5\% level

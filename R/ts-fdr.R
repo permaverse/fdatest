@@ -27,7 +27,7 @@
 #' plot(
 #'   FDR_result,
 #'   xrange = c(0, 12),
-#'   title = 'FDR results for testing mean differences'
+#'   title = "FDR results for testing mean differences"
 #' )
 #'
 #' # Selecting the significant components at 5% level

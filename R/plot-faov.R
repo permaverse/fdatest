@@ -75,7 +75,7 @@
 #' plot(
 #'   TWT_result,
 #'   xrange = c(0, 12),
-#'   main = 'TWT results for testing mean differences'
+#'   main = "TWT results for testing mean differences"
 #' )
 NULL
 

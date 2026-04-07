@@ -50,9 +50,9 @@
 #' graphics::layout(matrix(1:4, nrow = 2, byrow = FALSE))
 #' plot(
 #'   IWT_result,
-#'   main = 'NASA data',
+#'   main = "NASA data",
 #'   plot.adjpval = TRUE,
-#'   xlab = 'Day',
+#'   xlab = "Day",
 #'   xrange = c(1, 365)
 #' )
 IWTaov <- # nolint: object_name_linter.

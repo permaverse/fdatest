@@ -118,7 +118,7 @@ TWT_result <- functional_anova_test(
 plot(
   TWT_result,
   xrange = c(0, 12),
-  main = 'TWT results for testing mean differences'
+  main = "TWT results for testing mean differences"
 )
 
 # Selecting the significant components at 5\% level
@@ -135,7 +135,7 @@ IWT_result <- functional_anova_test(
 plot(
   IWT_result,
   xrange = c(0, 12),
-  main = 'IWT results for testing mean differences'
+  main = "IWT results for testing mean differences"
 )
 
 # Selecting the significant components at 5\% level

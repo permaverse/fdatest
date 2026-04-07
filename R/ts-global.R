@@ -27,7 +27,7 @@
 #' plot(
 #'   Global_result,
 #'   xrange = c(0, 12),
-#'   title = 'Global results for testing mean differences'
+#'   title = "Global results for testing mean differences"
 #' )
 #'
 #' # Selecting the significant components at 5% level

@@ -37,7 +37,7 @@
 #' plot(
 #'   IWT_result,
 #'   xrange = c(0, 12),
-#'   title = 'IWT results for testing mean differences'
+#'   title = "IWT results for testing mean differences"
 #' )
 #'
 #' # Plotting the p-value heatmap
