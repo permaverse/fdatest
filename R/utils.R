@@ -1,21 +1,3 @@
-stat_lm_glob <- function(anova) {
-  stats::summary.lm(anova)$f[1]
-}
-
-stat_aov_part <- function(anova) {
-  out <- summary(anova)[[1]][, 4]
-  out <- out[-length(out)]
-  out
-}
-
-extract_residuals <- function(x) {
-  x$residuals
-}
-
-extract_fitted <- function(x) {
-  x$fitted
-}
-
 # Use index mapping (modulo) instead of building a 2x duplicated matrix.
 pval_correct <- function(pval_matrix) {
   p <- ncol(pval_matrix)

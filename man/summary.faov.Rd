@@ -13,24 +13,24 @@ call to \code{\link[=functional_anova_test]{functional_anova_test()}}.}
 \item{...}{Further arguments passed to or from other methods.}
 }
 \value{
-No value returned. The function \code{\link[=summary.faov]{summary.faov()}} computes and
-returns a list of summary statistics of the fitted functional analysis of
-variance given in \code{object}, using the component \code{call} from its
-arguments, plus:
+A list of summary statistics of the fitted functional analysis of
+variance given in \code{object}, using the component \code{call} from its arguments,
+plus:
 \itemize{
-\item \code{factors}: A \eqn{L \times 1} matrix with columns for the factors of ANOVA,
-and corresponding (two-sided) IWT-adjusted minimum p-values of the
-corresponding tests of significance (i.e., the minimum p-value over all
-\code{p} basis components used to describe functional data).
-\item \code{R2}: Range of the functional R-squared.
-\item \code{ftest}: IWT-adjusted minimum p-value of functional F-test.
+\item \code{factors}: A \eqn{L \times 2} data frame with one row per factor
+reporting the minimum adjusted p-value of the corresponding F-test and a
+significance code.
+\item \code{R2}: A \eqn{2 \times 1} matrix giving the range of the functional
+R-squared.
+\item \code{ftest}: A \eqn{1 \times 2} data frame reporting the minimum adjusted
+p-value of the global F-test and a significance code.
 }
 }
 \description{
-\code{summary} method for class \code{faov}. Function returning a summary
-of the results of IWT for the test on a functional analysis of variance:
-minimum IWT-adjusted p-values of the F-tests on the whole model and on each
-factor are reported.
+\code{summary} method for class \code{faov}. Returns a summary of the results of the
+local testing procedure for functional analysis of variance: the minimum
+adjusted p-values of the F-test on the whole model and on each factor are
+reported.
 }
 \examples{
 temperature <- rbind(NASAtemp$milan, NASAtemp$paris)
@@ -62,6 +62,6 @@ cruciate ligament. \emph{Scandinavian Journal of Statistics} 45(4),
 1036-1061.
 }
 \seealso{
-\code{\link[=IWTimage]{IWTimage()}} for the plot of p-values heatmaps and \code{\link[=plot.faov]{plot.faov()}}
+\code{\link[=IWTimage]{IWTimage()}} for the plot of p-value heatmaps and \code{\link[=plot.faov]{plot.faov()}}
 for the plot of analysis of variance results.
 }

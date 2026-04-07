@@ -1,14 +1,14 @@
-#' Plot for Functional Regression Test Results
+#' Plot for Functional Linear Model Test Results
 #'
-#' The `S3` methods `autoplot.faov()` and `plot.faov()` are methods
-#' for plotting results of functional analysis of variance tests. They visualize the
-#' functional data and the adjusted p-values obtained from the testing
-#' procedures for mean comparison of multiple groups. The plots highlight significant
+#' The `S3` methods `autoplot.flm()` and `plot.flm()` are methods
+#' for plotting results of functional-on-scalar linear model tests. They
+#' visualize the functional regression coefficients and the adjusted p-values
+#' obtained from the testing procedures. The plots highlight significant
 #' effects at two levels of significance, `alpha1` and `alpha2`, using shaded
 #' areas.
 #'
-#' @param object,x  The object to be plotted. An object of class "\code{IWTlm}",
-#'   usually, a result of a call to \code{\link{IWTlm}}.
+#' @param object,x An object of class `flm`, usually a result of a call
+#'   to [`functional_lm_test()`], [`iwt_lm()`], [`twt_lm()`] or [`global_lm()`].
 #' @inherit plot.faov params seealso
 #'
 #' @returns The `autoplot.flm()` function creates a ggplot object that

@@ -4,29 +4,6 @@ d1 <- NASAtemp$milan[1:4, 1:8]
 d2 <- NASAtemp$paris[1:4, 1:8]
 
 # ---------------------------------------------------------------------------
-# stat_lm_glob
-# ---------------------------------------------------------------------------
-fit_lm <- stats::lm(d1[, 1] ~ seq_len(nrow(d1)))
-f_stat <- fdatest:::stat_lm_glob(fit_lm)
-expect_true(is.numeric(f_stat))
-expect_true(f_stat >= 0)
-
-# ---------------------------------------------------------------------------
-# stat_aov_part
-# ---------------------------------------------------------------------------
-groups <- c(0, 0, 1, 1)
-fit_aov <- stats::aov(d1[, 1] ~ factor(groups))
-aov_stats <- fdatest:::stat_aov_part(fit_aov)
-expect_true(is.numeric(aov_stats))
-expect_true(length(aov_stats) == 1L) # one factor
-
-# ---------------------------------------------------------------------------
-# extract_residuals, extract_fitted
-# ---------------------------------------------------------------------------
-expect_equal(fdatest:::extract_residuals(fit_lm), stats::residuals(fit_lm))
-expect_equal(fdatest:::extract_fitted(fit_lm), stats::fitted(fit_lm))
-
-# ---------------------------------------------------------------------------
 # pval_correct — monotone correction
 # ---------------------------------------------------------------------------
 set.seed(1)

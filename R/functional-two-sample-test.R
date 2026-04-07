@@ -25,7 +25,7 @@
 #'   evaluation of each function on a **same** uniform grid of size \eqn{J}.
 #' @param correction A string specifying the correction method to perform the
 #'   local functional testing procedure and adjust the p-value function. Choices
-#'   are `"Global`, `"IWT"`, `"TWT"`, `"PCT"` or `"FDR"`.
+#'   are `"Global"`, `"IWT"`, `"TWT"`, `"PCT"` or `"FDR"`.
 #' @param mu Either a numeric value or a numeric vector or an object of class
 #'   [`fda::fd`] specifying the functional mean difference under the null
 #'   hypothesis. If `mu` is a constant, then a constant function is used. If
@@ -147,7 +147,7 @@
 #' )
 #'
 #' # Selecting the significant components at 5% level
-#' which(TWT_result$adjusted_pval < 0.05)
+#' which(TWT_result$adjusted_pvalues < 0.05)
 #'
 #' # Performing the IWT for two populations
 #' IWT_result <- functional_two_sample_test(
@@ -163,7 +163,7 @@
 #' )
 #'
 #' # Selecting the significant components at 5% level
-#' which(IWT_result$adjusted_pval < 0.05)
+#' which(IWT_result$adjusted_pvalues < 0.05)
 functional_two_sample_test <- function(
   data1,
   data2,

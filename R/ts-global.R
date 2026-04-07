@@ -2,9 +2,9 @@
 #'
 #' The function implements the Global Testing procedure for testing mean
 #' differences between two functional populations. Functional data are tested
-#' locally and unadjusted and adjusted p-value functions are provided. The
-#' unadjusted p-value function controls the point-wise error rate. The adjusted
-#' p-value function controls the interval-wise error rate.
+#' globally and a global p-value and a constant adjusted p-value function are
+#' provided. The adjusted p-value function controls the family-wise error rate
+#' weakly.
 #'
 #' @inherit functional_two_sample_test params return
 #'

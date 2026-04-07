@@ -35,7 +35,7 @@ evaluation of each function on a \strong{same} uniform grid of size \eqn{J}.}
 
 \item{correction}{A string specifying the correction method to perform the
 local functional testing procedure and adjust the p-value function. Choices
-are \verb{"Global}, \code{"IWT"}, \code{"TWT"}, \code{"PCT"} or \code{"FDR"}.}
+are \code{"Global"}, \code{"IWT"}, \code{"TWT"}, \code{"PCT"} or \code{"FDR"}.}
 
 \item{mu}{Either a numeric value or a numeric vector or an object of class
 \code{\link[fda:fd]{fda::fd}} specifying the functional mean difference under the null
@@ -138,7 +138,7 @@ plot(
 )
 
 # Selecting the significant components at 5\% level
-which(TWT_result$adjusted_pval < 0.05)
+which(TWT_result$adjusted_pvalues < 0.05)
 
 # Performing the IWT for two populations
 IWT_result <- functional_two_sample_test(
@@ -154,7 +154,7 @@ plot(
 )
 
 # Selecting the significant components at 5\% level
-which(IWT_result$adjusted_pval < 0.05)
+which(IWT_result$adjusted_pvalues < 0.05)
 }
 \references{
 For the global testing procedure:

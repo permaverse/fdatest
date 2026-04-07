@@ -39,14 +39,6 @@
 #'   xlab = 'Day',
 #'   xrange = c(1, 365)
 #' )
-#'
-#' plot(
-#'   TWT_result,
-#'   main = 'NASA data',
-#'   plot_adjpval = TRUE,
-#'   xlab = 'Day',
-#'   xrange = c(1, 365)
-#' )
 TWTlm <- # nolint: object_name_linter.
   function(
     formula,

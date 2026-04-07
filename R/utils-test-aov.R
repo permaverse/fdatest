@@ -289,10 +289,10 @@ aov_prepare_data <- function(formula, dx, n_perm, method) {
       )
       regr0_part[[ii]] <- lapply(formula_coeff_part[[ii]], stats::lm)
       residui[ii, , ] <- simplify2array(
-        lapply(regr0_part[[ii]], extract_residuals)
+        lapply(regr0_part[[ii]], function(.x) .x$residuals)
       )
       fitted_part[ii, , ] <- simplify2array(
-        lapply(regr0_part[[ii]], extract_fitted)
+        lapply(regr0_part[[ii]], function(.x) .x$fitted.values)
       )
     }
   }

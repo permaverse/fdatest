@@ -17,10 +17,9 @@ twt_aov(
 \arguments{
 \item{formula}{An object of class \code{\link[stats:formula]{stats::formula}} (or one that can be
 coerced to that class) specifying the model to be fitted in a symbolic
-fashion. The output variable (left-hand side) of the formula can be either
-a matrix of dimension \eqn{n \times J} containing the pointwise evaluations
-of \eqn{n} functions on the \strong{same} grid of \eqn{J} points, or an object
-of class \code{\link[fda:fd]{fda::fd}}.}
+fashion. The response (left-hand side) can be either a matrix of dimension
+\eqn{n \times J} containing the pointwise evaluations of \eqn{n} functions
+on the \strong{same} grid of \eqn{J} points, or an object of class \code{\link[fda:fd]{fda::fd}}.}
 
 \item{dx}{A numeric value specifying the discretization step of the grid used
 to evaluate functional data when it is provided as objects of class
@@ -28,15 +27,14 @@ to evaluate functional data when it is provided as objects of class
 used which corresponds to a grid of size \code{100L}. Unused if functional data
 is provided in the form of matrices.}
 
-\item{B}{An integer value specifying the number of iterations of the MC
-algorithm to evaluate the p-value of the permutation tests. Defaults to
-\code{1000L}.}
+\item{B}{An integer value specifying the number of permutations used to
+evaluate the p-values of the permutation tests. Defaults to \code{1000L}.
+Passed as \code{n_perm} in \code{\link[=iwt_aov]{iwt_aov()}}, \code{\link[=twt_aov]{twt_aov()}} and \code{\link[=global_aov]{global_aov()}}.}
 
-\item{method}{A string specifying the method used to calculate the p-value of
-permutation tests. Choices are either \code{"residuals"} which performs
-permutation of residuals under the reduced model according to the Freedman
-and Lane scheme or \code{"responses"}, which performs permutation of the
-responses, according to the Manly scheme. Defaults to \code{"residuals"}.}
+\item{method}{A string specifying the permutation scheme. \code{"residuals"}
+permutes residuals under the reduced model (Freedman-Lane scheme);
+\code{"responses"} permutes the responses (Manly scheme). Defaults to
+\code{"residuals"}.}
 
 \item{n_perm}{An integer value specifying the number of permutations for the
 permutation tests. Defaults to \code{1000L}.}
@@ -45,51 +43,41 @@ permutation tests. Defaults to \code{1000L}.}
 An object of class \code{faov} containing the following components:
 \itemize{
 \item \code{call}: The matched call.
-\item \code{design_matrix}: The design matrix of the functional-on-scalar linear
-model.
-\item \code{unadjusted_pval_F}: Evaluation on a grid of the unadjusted p-value
-function of the functional F-test.
-\item \code{adjusted_pval_F}: Evaluation on a grid of the adjusted p-value function
-of the functional F-test.
-\item \code{unadjusted_pval_factors}: Evaluation on a grid of the unadjusted p-value
-function of the functional F-tests on each factor of the analysis of
-variance (rows).
-\item \code{adjusted_pval_factors}: Adjusted p-values of the functional F-tests on
-each factor of the analysis of variance (rows) and each basis coefficient
-(columns).
-\item \code{data_eval}: Evaluation on a fine uniform grid of the functional data
-obtained through the basis expansion.
-\item \code{coeff_regr_eval}: Evaluation on a fine uniform grid of the functional
-regression coefficients.
-\item \code{fitted_eval}: Evaluation on a fine uniform grid of the fitted values of
-the functional regression.
-\item \code{residuals_eval}: Evaluation on a fine uniform grid of the residuals of
-the functional regression.
-\item \code{R2_eval}: Evaluation on a fine uniform grid of the functional R-squared
-of the regression.
+\item \code{design_matrix}: The design matrix of the functional ANOVA model.
+\item \code{unadjusted_pval_F}: A numeric vector of length \eqn{J} containing the
+unadjusted p-value function of the global F-test evaluated on the grid.
+\item \code{adjusted_pval_F}: A numeric vector of length \eqn{J} containing the
+adjusted p-value function of the global F-test evaluated on the grid.
+\item \code{unadjusted_pval_factors}: A numeric matrix with one row per factor
+containing the unadjusted p-value functions of the per-factor F-tests.
+\item \code{adjusted_pval_factors}: A numeric matrix with one row per factor
+containing the adjusted p-value functions of the per-factor F-tests.
+\item \code{data_eval}: A numeric matrix containing the functional data evaluated
+on the grid.
+\item \code{coeff_regr_eval}: A numeric matrix containing the functional regression
+coefficients evaluated on the grid.
+\item \code{fitted_eval}: A numeric matrix containing the fitted values of the
+functional regression evaluated on the grid.
+\item \code{residuals_eval}: A numeric matrix containing the residuals of the
+functional regression evaluated on the grid.
+\item \code{R2_eval}: A numeric vector containing the functional R-squared evaluated
+on the grid.
 }
 
 Optionally, the list may contain the following components:
 \itemize{
-\item \code{pval_matrix_F}: Matrix of dimensions \code{c(p,p)} of the p-values of
-the intervalwise F-tests. The element \eqn{(i,j)} of matrix \code{pval_matrix}
-contains the p-value of the test of interval indexed by
-\eqn{(j,j+1,...,j+(p-i))}; this component is present only if \code{correction}
-is set to \code{"IWT"}.
-\item \code{pval_matrix_factors}: Array of dimensions \code{c(L+1,p,p)} of the p-values
-of the multivariate F-tests on factors. The element \eqn{(l,i,j)} of array
-\code{pval_matrix} contains the p-value of the joint NPC test on factor \code{l} of
-the components \eqn{(j,j+1,...,j+(p-i))}; this component is present only if
-\code{correction} is set to \code{"IWT"}.
-\item \code{heatmap_matrix_F}: Heatmap matrix of p-values of functional F-test (used
-only for plots); this component is present only if \code{correction} is set to \code{"IWT"}.
-\item \code{heatmap_matrix_factors}: Heatmap matrix of p-values of functional
-F-tests on each factor of the analysis of variance (used only for plots); this
-component is present only if \code{correction} is set to \code{"IWT"}.
-\item \code{Global_pval_F}: Global p-value of the overall test F; this component is
-present only if \code{correction} is set to \code{"Global"}.
-\item \code{Global_pval_factors}: Global p-value of test F involving each factor
-separately; this component is present only if \code{correction} is set to \code{"Global"}.
+\item \code{pval_matrix_F}: A matrix of dimensions \eqn{p \times p} of p-values of
+the interval-wise F-tests. Element \eqn{(i,j)} contains the p-value of the
+test on the interval \eqn{(j, j+1, \ldots, j+(p-i))}. Present only if
+\code{correction} is \code{"IWT"}.
+\item \code{pval_matrix_factors}: An array of dimensions \eqn{L \times p \times p}
+of p-values of the per-factor interval-wise F-tests. Element \eqn{(l,i,j)}
+contains the p-value of the joint test on factor \eqn{l} and interval
+\eqn{(j, j+1, \ldots, j+(p-i))}. Present only if \code{correction} is \code{"IWT"}.
+\item \code{global_pval_F}: Global p-value of the overall F-test. Present only if
+\code{correction} is \code{"Global"}.
+\item \code{global_pval_factors}: A numeric vector of global p-values of the
+per-factor F-tests. Present only if \code{correction} is \code{"Global"}.
 }
 }
 \description{
@@ -137,6 +125,7 @@ B. F. J. Manly (2006). Randomization, \emph{Bootstrap and Monte Carlo Methods
 in Biology}. Vol. 70. CRC Press.
 }
 \seealso{
-See also \code{\link[=plot.faov]{plot.faov()}} for plotting the results and \code{\link[=summary.faov]{summary.faov()}}
-for summarizing the results of the functional analysis of variance.
+\code{\link[=iwt_aov]{iwt_aov()}}, \code{\link[=twt_aov]{twt_aov()}} and \code{\link[=global_aov]{global_aov()}} for calling a
+specific correction directly. \code{\link[=plot.faov]{plot.faov()}} for plotting the results and
+\code{\link[=summary.faov]{summary.faov()}} for summarizing the results.
 }

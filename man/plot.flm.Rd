@@ -3,7 +3,7 @@
 \name{plot.flm}
 \alias{plot.flm}
 \alias{autoplot.flm}
-\title{Plot for Functional Regression Test Results}
+\title{Plot for Functional Linear Model Test Results}
 \usage{
 \method{autoplot}{flm}(
   object,
@@ -36,8 +36,8 @@
 )
 }
 \arguments{
-\item{object, x}{The object to be plotted. An object of class "\code{IWTlm}",
-usually, a result of a call to \code{\link{IWTlm}}.}
+\item{object, x}{An object of class \code{flm}, usually a result of a call
+to \code{\link[=functional_lm_test]{functional_lm_test()}}, \code{\link[=iwt_lm]{iwt_lm()}}, \code{\link[=twt_lm]{twt_lm()}} or \code{\link[=global_lm]{global_lm()}}.}
 
 \item{xrange}{A length-2 numeric vector specifying the range of the x-axis
 for the plots. Defaults to \code{c(0, 1)}. This should match the domain of the
@@ -82,10 +82,10 @@ The \code{plot.flm()} function is a wrapper around \code{autoplot.flm()}
 that prints the plot directly.
 }
 \description{
-The \code{S3} methods \code{autoplot.faov()} and \code{plot.faov()} are methods
-for plotting results of functional analysis of variance tests. They visualize the
-functional data and the adjusted p-values obtained from the testing
-procedures for mean comparison of multiple groups. The plots highlight significant
+The \code{S3} methods \code{autoplot.flm()} and \code{plot.flm()} are methods
+for plotting results of functional-on-scalar linear model tests. They
+visualize the functional regression coefficients and the adjusted p-values
+obtained from the testing procedures. The plots highlight significant
 effects at two levels of significance, \code{alpha1} and \code{alpha2}, using shaded
 areas.
 }

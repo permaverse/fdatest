@@ -76,9 +76,9 @@ res_g_r <- Globalaov(
 )
 expect_inherits(res_g_r, "faov")
 expect_equal(length(res_g_r$adjusted_pval_F), p)
-expect_true(!is.null(res_g_r$Global_pval_F))
-expect_true(res_g_r$Global_pval_F >= 0 && res_g_r$Global_pval_F <= 1)
-expect_true(!is.null(res_g_r$Global_pval_factors))
+expect_true(!is.null(res_g_r$global_pval_F))
+expect_true(res_g_r$global_pval_F >= 0 && res_g_r$global_pval_F <= 1)
+expect_true(!is.null(res_g_r$global_pval_factors))
 
 # ===========================================================================
 # Globalaov — stat = "Max"
@@ -86,7 +86,7 @@ expect_true(!is.null(res_g_r$Global_pval_factors))
 set.seed(42)
 res_g_max <- Globalaov(temperature ~ groups, B = 5L, stat = "Max")
 expect_inherits(res_g_max, "faov")
-expect_true(!is.null(res_g_max$Global_pval_F))
+expect_true(!is.null(res_g_max$global_pval_F))
 
 # ===========================================================================
 # Globalaov — method = "responses"

@@ -1,17 +1,15 @@
 #' Local testing procedures for functional-on-scalar linear models
 #'
-#' @description The function implements local testing procedures for testing
-#'   mean differences between multiple functional populations. Functional data are
-#'   tested locally and unadjusted and adjusted p-value functions are provided.
-#'   The unadjusted p-value function controls the point-wise error rate. The
-#'   adjusted p-value function can be computed according to the following
-#'   methods:
+#' @description Implements local testing procedures for testing the
+#'   significance of the effects of scalar covariates on a functional response
+#'   in a functional-on-scalar linear model. Functional data are tested locally
+#'   and unadjusted and adjusted p-value functions are provided. The unadjusted
+#'   p-value function controls the point-wise error rate. The adjusted p-value
+#'   function can be computed according to the following methods:
 #'
 #'   - global testing (controlling the FWER weakly)
 #'   - interval-wise testing (controlling the interval-wise error rate)
 #'   - threshold-wise testing (controlling the FWER asymptotically)
-#'   - partition closed testing (controlling the FWER on a partition)
-#'   - functional Benjamini Hochberg (controlling the FDR)
 #'
 #' @inheritParams functional_anova_test
 #'
@@ -20,47 +18,43 @@
 #'   - `call`: The matched call.
 #'   - `design_matrix`: The design matrix of the functional-on-scalar linear
 #'   model.
-#'   - `unadjusted_pval_F`: Evaluation on a grid of the unadjusted p-value
-#'   function of the functional F-test.
-#'   - `adjusted_pval_F`: Evaluation on a grid of the adjusted p-value function
-#'   of the functional F-test.
-#'   - `unadjusted_pval_part`: Evaluation on a grid of the unadjusted p-value
-#'   function of the functional F-tests on each factor of the analysis of
-#'   variance (rows).
-#'   - `adjusted_pval_part`: Adjusted p-values of the functional F-tests on
-#'   each factor of the analysis of variance (rows) and each basis coefficient
-#'   (columns).
-#'   - `data_eval`: Evaluation on a fine uniform grid of the functional data
-#'   obtained through the basis expansion.
-#'   - `coeff_regr_eval`: Evaluation on a fine uniform grid of the functional
-#'   regression coefficients.
-#'   - `fitted_eval`: Evaluation on a fine uniform grid of the fitted values of
-#'   the functional regression.
-#'   - `residuals_eval`: Evaluation on a fine uniform grid of the residuals of
-#'   the functional regression.
-#'   - `R2_eval`: Evaluation on a fine uniform grid of the functional R-squared
-#'   of the regression.
+#'   - `unadjusted_pval_F`: A numeric vector of length \eqn{J} containing the
+#'   unadjusted p-value function of the global F-test evaluated on the grid.
+#'   - `adjusted_pval_F`: A numeric vector of length \eqn{J} containing the
+#'   adjusted p-value function of the global F-test evaluated on the grid.
+#'   - `unadjusted_pval_part`: A numeric matrix with one row per model term
+#'   containing the unadjusted p-value functions of the per-term t-tests.
+#'   - `adjusted_pval_part`: A numeric matrix with one row per model term
+#'   containing the adjusted p-value functions of the per-term t-tests.
+#'   - `data_eval`: A numeric matrix containing the functional response
+#'   evaluated on the grid.
+#'   - `coeff_regr_eval`: A numeric matrix containing the functional regression
+#'   coefficients evaluated on the grid.
+#'   - `fitted_eval`: A numeric matrix containing the fitted values of the
+#'   functional regression evaluated on the grid.
+#'   - `residuals_eval`: A numeric matrix containing the residuals of the
+#'   functional regression evaluated on the grid.
+#'   - `R2_eval`: A numeric vector containing the functional R-squared evaluated
+#'   on the grid.
 #'
 #'   Optionally, the list may contain the following components:
 #'
-#'   - `pval_matrix_F`: Matrix of dimensions \code{c(p,p)} of the p-values of
-#'   the intervalwise F-tests. The element \eqn{(i,j)} of matrix `pval_matrix`
-#'   contains the p-value of the test of interval indexed by
-#'   \eqn{(j,j+1,...,j+(p-i))}; this component is present only if `correction`
-#'   is set to `"IWT"`.
-#'   - `pval_matrix_part`: Array of dimensions `c(L+1,p,p)` of the p-values
-#'   of the multivariate F-tests on factors. The element \eqn{(l,i,j)} of array
-#'   `pval_matrix_part` contains the p-value of the joint NPC test on factor `l` of
-#'   the components \eqn{(j,j+1,...,j+(p-i))}; this component is present only if
-#'   `correction` is set to `"IWT"`.
-#'   - `Global_pval_F`: Global p-value of the overall test F; this component is
-#'   present only if `correction` is set to `"Global"`.
-#'   - `Global_pval_part`: Global p-value of test F involving each factor
-#'   separately; this component is present only if `correction` is set to `"Global"`.
+#'   - `pval_matrix_F`: A matrix of dimensions \eqn{p \times p} of p-values of
+#'   the interval-wise F-tests. Element \eqn{(i,j)} contains the p-value of the
+#'   test on the interval \eqn{(j, j+1, \ldots, j+(p-i))}. Present only if
+#'   `correction` is `"IWT"`.
+#'   - `pval_matrix_part`: An array of dimensions \eqn{(L+1) \times p \times p}
+#'   of p-values of the per-term interval-wise t-tests. Element \eqn{(l,i,j)}
+#'   contains the p-value of the joint test on term \eqn{l} and interval
+#'   \eqn{(j, j+1, \ldots, j+(p-i))}. Present only if `correction` is `"IWT"`.
+#'   - `global_pval_F`: Global p-value of the overall F-test. Present only if
+#'   `correction` is `"Global"`.
+#'   - `global_pval_part`: A numeric vector of global p-values of the per-term
+#'   t-tests. Present only if `correction` is `"Global"`.
 #'
-#' @seealso See also [`plot.flm()`] for plotting the results and
-#'  [`summary.flm()`] for summarizing the results of the functional analysis
-#'  of variance.
+#' @seealso [`iwt_lm()`], [`twt_lm()`] and [`global_lm()`] for calling a
+#'   specific correction directly. [`plot.flm()`] for plotting the results and
+#'   [`summary.flm()`] for summarizing the results.
 #'
 #' @references
 #' Abramowicz, K., Pini, A., Schelin, L., Stamm, A., & Vantini, S. (2022).
@@ -95,7 +89,11 @@
 #' groups <- c(rep(0, 22), rep(1, 22))
 #'
 #' # Performing the TWT
-#' TWT_result <- TWTlm(temperature ~ groups, B = 100L)
+#' TWT_result <- functional_lm_test(
+#'   temperature ~ groups,
+#'   correction = "TWT",
+#'   B = 10L
+#' )
 #' # Summary of the TWT results
 #' summary(TWT_result)
 functional_lm_test <- function(
@@ -247,8 +245,8 @@ functional_lm_test <- function(
   }
 
   if (correction == "Global") {
-    out$Global_pval_F <- adj_glob$adjusted_pvalues[1]
-    out$Global_pval_part <- vapply(
+    out$global_pval_F <- adj_glob$adjusted_pvalues[1]
+    out$global_pval_part <- vapply(
       adj_part_list,
       function(x) x$adjusted_pvalues[1],
       numeric(1L)

@@ -25,20 +25,12 @@
 #' temperature <- rbind(NASAtemp$milan, NASAtemp$paris)
 #' groups <- c(rep(0, 22), rep(1, 22))
 #'
-#' # Performing the IWT
+#' # Performing the Global test
 #' Global_result <- Globallm(temperature ~ groups, B = 1000)
-#' # Summary of the IWT results
+#' # Summary of the Global test results
 #' summary(Global_result)
 #'
-#' # Plot of the IWT results
-#' plot(
-#'   Global_result,
-#'   main = 'NASA data',
-#'   plot_adjpval = TRUE,
-#'   xlab = 'Day',
-#'   xrange = c(1, 365)
-#' )
-#'
+#' # Plot of the Global test results
 #' plot(
 #'   Global_result,
 #'   main = 'NASA data',

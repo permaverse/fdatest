@@ -237,10 +237,10 @@ lm_prepare_data <- function(formula, dx, n_perm, method) {
         data = mf_temp2
       )
       residui[ii, , ] <- simplify2array(
-        lapply(regr0_part[[ii]], extract_residuals)
+        lapply(regr0_part[[ii]], function(.x) .x$residuals)
       )
       fitted_part[ii, , ] <- simplify2array(
-        lapply(regr0_part[[ii]], extract_fitted)
+        lapply(regr0_part[[ii]], function(.x) .x$fitted.values)
       )
     }
 
@@ -256,10 +256,10 @@ lm_prepare_data <- function(formula, dx, n_perm, method) {
       data = mf_temp2
     )
     residui[ii, , ] <- simplify2array(
-      lapply(regr0_part[[ii]], extract_residuals)
+      lapply(regr0_part[[ii]], function(.x) .x$residuals)
     )
     fitted_part[ii, , ] <- simplify2array(
-      lapply(regr0_part[[ii]], extract_fitted)
+      lapply(regr0_part[[ii]], function(.x) .x$fitted.values)
     )
   }
 

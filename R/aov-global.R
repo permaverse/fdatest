@@ -1,12 +1,10 @@
 #' Global testing procedure for testing functional analysis of variance
 #'
-#' The function implements the Global Testing procedure for testing mean
-#' differences between several functional populations in a one-way or multi-way
-#' functional analysis of variance framework. Functional data are tested
-#' globally and unadjusted and adjusted p-value functions are provided. The
-#' unadjusted p-value function controls the point-wise error rate. The adjusted
-#' p-value function controls the family-wise error rate weakly. Since this is a
-#' global test, the adjusted p-value function is constant.
+#' @description Implements the Global Testing procedure for comparing the mean
+#'   functions of several functional populations in a one-way or multi-way
+#'   functional analysis of variance framework. Functional data are tested
+#'   globally. The adjusted p-value function is constant and controls the
+#'   family-wise error rate weakly.
 #'
 #' @inherit functional_anova_test params return seealso
 #'
@@ -42,7 +40,7 @@
 #' plot(
 #'   Global_result,
 #'   main = 'NASA data',
-#'   plot.adjpval = TRUE,
+#'   plot_adjpval = TRUE,
 #'   xlab = 'Day',
 #'   xrange = c(1, 365)
 #' )

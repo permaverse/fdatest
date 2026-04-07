@@ -13,23 +13,23 @@ call to \code{\link[=functional_lm_test]{functional_lm_test()}}.}
 \item{...}{Further arguments passed to or from other methods.}
 }
 \value{
-No value returned. The function \code{\link[=summary.faov]{summary.faov()}} computes and
-returns a list of summary statistics of the fitted functional linear model
+A list of summary statistics of the fitted functional linear model
 given in \code{object}, using the component \code{call} from its arguments, plus:
 \itemize{
-\item \code{ttest}: A \eqn{(L+1) \times 1} matrix with columns for the functional
-regression coefficients, and corresponding (two-sided) IWT-adjusted minimum
-p-values of t-tests (i.e., the minimum p-value over all \eqn{p} basis
-components used to describe functional data).
-\item \code{R2}: Range of the functional R-squared.
-\item \code{ftest}: IWT-adjusted minimum p-value of functional F-test.
+\item \code{ttest}: A \eqn{(L+1) \times 2} data frame with one row per model term
+(intercept plus each predictor) reporting the minimum adjusted p-value of
+the corresponding t-test and a significance code.
+\item \code{R2}: A \eqn{2 \times 1} matrix giving the range of the functional
+R-squared.
+\item \code{ftest}: A \eqn{1 \times 2} data frame reporting the minimum adjusted
+p-value of the functional F-test and a significance code.
 }
 }
 \description{
-\code{summary} method for class \code{flm}. Function returning a summary
-of the results of IWT for the test on a functional analysis of variance:
-minimum IWT-adjusted p-values of the F-tests on the whole model and on each
-factor are reported.
+\code{summary} method for class \code{flm}. Returns a summary of the results of the
+local testing procedure for a functional-on-scalar linear model: the minimum
+adjusted p-values of the F-test on the whole model and the t-tests on each
+covariate are reported.
 }
 \examples{
 temperature <- rbind(NASAtemp$milan[, 1:100], NASAtemp$paris[, 1:100])
@@ -61,6 +61,6 @@ cruciate ligament. \emph{Scandinavian Journal of Statistics} 45(4),
 1036-1061.
 }
 \seealso{
-\code{\link[=IWTimage]{IWTimage()}} for the plot of p-values heatmaps and \code{\link[=plot.faov]{plot.faov()}}
-for the plot of analysis of variance results.
+\code{\link[=IWTimage]{IWTimage()}} for the plot of p-value heatmaps and \code{\link[=plot.flm]{plot.flm()}}
+for the plot of functional linear model results.
 }
