@@ -2,7 +2,7 @@
 # plot-fts.R: autoplot.fts, plot.fts
 # plot-faov.R:     autoplot.faov, plot.faov
 # plot-flm.R:        autoplot.flm, plot.flm
-# plot.IWT1.R:       plot.IWT1
+# plot-fos.R:        autoplot.fos, plot.fos
 library(ggplot2)
 library(tinysnapshot)
 using(tinysnapshot)
@@ -295,42 +295,72 @@ expect_error(
 )
 
 # ===========================================================================
-# plot.IWT1 — base graphics; redirect to null device to avoid interactive prompt
+# autoplot.fos, plot.fos
 # ===========================================================================
-tmp_pdf <- tempfile(fileext = ".pdf")
-grDevices::pdf(tmp_pdf)
-plot(res_iwt1, xrange = c(0, 1)) # default: mu is zero
-grDevices::dev.off()
-expect_true(file.exists(tmp_pdf))
-
-# vector mu — exercises the else branch (lines 184-185) of the mu length check
 set.seed(42)
-res_iwt1_vmu <- IWT1(d1, mu = colMeans(d1), B = 5L)
-grDevices::pdf(tempfile(fileext = ".pdf"))
-plot(res_iwt1_vmu, xrange = c(0, 1))
-grDevices::dev.off()
+res_fos <- iwt1(d1, n_perm = 5L)
+
+# autoplot returns a ggplot / patchwork object
+p_fos <- autoplot(res_fos)
+expect_true(inherits(p_fos, "gg") || inherits(p_fos, "patchwork"))
+expect_snapshot_plot(p_fos, "autoplot_fonesample_default")
+
+# plot.fos is an alias for autoplot
+p_fos2 <- plot(res_fos)
+expect_true(inherits(p_fos2, "gg") || inherits(p_fos2, "patchwork"))
+
+# vector mu — exercises the mu vector branch
+set.seed(42)
+res_fos_vmu <- iwt1(d1, mu = colMeans(d1), n_perm = 5L)
+p_fos_vmu <- autoplot(res_fos_vmu)
+expect_true(inherits(p_fos_vmu, "gg") || inherits(p_fos_vmu, "patchwork"))
+expect_snapshot_plot(p_fos_vmu, "autoplot_fonesample_vecmu")
 
 # Swapped alpha (alpha1 < alpha2 triggers internal swap)
-grDevices::pdf(tempfile(fileext = ".pdf"))
-plot(res_iwt1, xrange = c(0, 1), alpha1 = 0.01, alpha2 = 0.05)
-grDevices::dev.off()
+p_fos_swap <- autoplot(res_fos, alpha1 = 0.01, alpha2 = 0.05)
+expect_true(inherits(p_fos_swap, "gg") || inherits(p_fos_swap, "patchwork"))
 
-# alpha1 > all p-values triggers difference1/difference2 rectangle drawing
-grDevices::pdf(tempfile(fileext = ".pdf"))
-plot(res_iwt1, xrange = c(0, 1), alpha1 = 1.1, alpha2 = 0.9)
-grDevices::dev.off()
+# alpha1 > all p-values triggers significance ribbons
+p_fos_sig <- autoplot(res_fos, alpha1 = 1.1, alpha2 = 0.9)
+expect_true(inherits(p_fos_sig, "gg") || inherits(p_fos_sig, "patchwork"))
+expect_snapshot_plot(p_fos_sig, "autoplot_fonesample_sig")
+
+# Custom arguments
+p_fos_custom <- autoplot(
+  res_fos,
+  alpha1 = 0.1,
+  alpha2 = 0.05,
+  xrange = c(0, 1),
+  ylabel = "Temperature",
+  title = "IWT one-sample",
+  linewidth = 0.5
+)
+expect_true(inherits(p_fos_custom, "gg") || inherits(p_fos_custom, "patchwork"))
 
 # alpha1 / alpha2 of length > 1 must error
 expect_error(
-  plot(res_iwt1, xrange = c(0, 1), alpha1 = c(0.05, 0.1), alpha2 = 0.01),
+  autoplot(res_fos, alpha1 = c(0.05, 0.1), alpha2 = 0.01),
   "single numeric value"
 )
 expect_error(
-  plot(res_iwt1, xrange = c(0, 1), alpha1 = 0.05, alpha2 = c(0.01, 0.02)),
+  autoplot(res_fos, alpha1 = 0.05, alpha2 = c(0.01, 0.02)),
   "single numeric value"
 )
 
-# Clean up
-unlink(tmp_pdf)
+# Legacy plot.IWT1 — dispatches to autoplot.fos() internally
+p_iwt1_legacy <- plot(res_iwt1)
+expect_true(
+  inherits(p_iwt1_legacy, "gg") || inherits(p_iwt1_legacy, "patchwork")
+)
+
+# Legacy error checks still work (alpha validation is inside autoplot.fos)
+expect_error(
+  plot(res_iwt1, alpha1 = c(0.05, 0.1), alpha2 = 0.01),
+  "single numeric value"
+)
+expect_error(
+  plot(res_iwt1, alpha1 = 0.05, alpha2 = c(0.01, 0.02)),
+  "single numeric value"
+)
 
 set.seed(NULL)

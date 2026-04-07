@@ -2,10 +2,12 @@
 
 S3method(autoplot,faov)
 S3method(autoplot,flm)
+S3method(autoplot,fos)
 S3method(autoplot,fts)
 S3method(plot,IWT1)
 S3method(plot,faov)
 S3method(plot,flm)
+S3method(plot,fos)
 S3method(plot,fts)
 S3method(summary,faov)
 S3method(summary,flm)

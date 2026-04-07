@@ -62,7 +62,7 @@
 #'   is set to `"IWT"`.
 #'
 #' @seealso [`iwt1()`] for calling directly the IWT test and
-#'   [`plot.IWT1()`] for plotting the results.
+#'   [`plot.fos()`] and [`autoplot.fos()`] for plotting the results.
 #'
 #' @references
 #' For the interval-wise testing procedure:

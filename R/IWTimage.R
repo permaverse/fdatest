@@ -15,7 +15,7 @@
 #'
 #' @return No value returned.
 #'
-#' @seealso See [`plot.IWT1()`], [`plot.fts()`], [`plot.flm()`] and
+#' @seealso See [`plot.fos()`], [`plot.fts()`], [`plot.flm()`] and
 #'   [`plot.faov()`] for the plot method applied to the IWT results of one-
 #'   and two-population tests, linear models, and ANOVA, respectively.
 #'

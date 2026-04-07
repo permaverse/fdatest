@@ -130,5 +130,5 @@ Data." Journal of Nonparametric Statistics 29 (2): 407–24.
 }
 \seealso{
 \code{\link[=functional_one_sample_test]{functional_one_sample_test()}} for the interface function and
-\code{\link[=plot.IWT1]{plot.IWT1()}} and \code{\link[=IWTimage]{IWTimage()}} for plotting the results.
+\code{\link[=plot.fos]{plot.fos()}} and \code{\link[=IWTimage]{IWTimage()}} for plotting the results.
 }

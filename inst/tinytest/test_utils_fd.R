@@ -110,10 +110,9 @@ expect_true(ncol(coeff_fd_dx) < ncol(coeff_fd))
 set.seed(2L)
 res1 <- IWT1(fd1, mu = 0, B = 5L)
 expect_true(inherits(res1, "IWT1"))
-# IWT1 uses base graphics via plot.IWT1 — redirect to a temp device
-grDevices::pdf(tempfile(fileext = ".pdf"))
-plot(res1)
-grDevices::dev.off()
+# plot.IWT1 now delegates to autoplot.fos — returns a ggplot/patchwork object
+p_r1 <- plot(res1)
+expect_true(inherits(p_r1, "gg") || inherits(p_r1, "patchwork"))
 
 set.seed(3L)
 res2 <- IWT2(fd1, fd2, B = 5L, verbose = FALSE)

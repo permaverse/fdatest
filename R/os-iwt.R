@@ -9,7 +9,7 @@
 #' @inherit functional_one_sample_test params return
 #'
 #' @seealso [`functional_one_sample_test()`] for the interface function and
-#'   [`plot.IWT1()`] and [`IWTimage()`] for plotting the results.
+#'   [`plot.fos()`] and [`IWTimage()`] for plotting the results.
 #'
 #' @references
 #' - Pini, Alessia, and Simone Vantini. 2016. "The interval testing procedure: a

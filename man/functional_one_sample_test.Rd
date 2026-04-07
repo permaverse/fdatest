@@ -113,5 +113,5 @@ Data." Journal of Nonparametric Statistics 29 (2): 407–24.
 }
 \seealso{
 \code{\link[=iwt1]{iwt1()}} for calling directly the IWT test and
-\code{\link[=plot.IWT1]{plot.IWT1()}} for plotting the results.
+\code{\link[=plot.fos]{plot.fos()}} and \code{\link[=autoplot.fos]{autoplot.fos()}} for plotting the results.
 }
