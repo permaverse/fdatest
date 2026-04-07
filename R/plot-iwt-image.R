@@ -6,9 +6,8 @@
 #'
 #' @param IWT_result Results of the IWT, as created by
 #'   [`functional_one_sample_test()`], [`iwt1()`], [`functional_two_sample_test()`],
-#'   [`iwt2()`], or the legacy functions [`IWT1()`] and [`IWT2()`] and
-#'   [`IWTaov()`]. When using [`functional_two_sample_test()`] or [`iwt2()`],
-#'   `correction` must be `"IWT"`.
+#'   [`iwt2()`], or the legacy functions [`IWT1()`] and [`IWTaov()`]. When using
+#'   [`functional_two_sample_test()`] or [`iwt2()`], `correction` must be `"IWT"`.
 #' @param alpha Threshold for the interval-wise error rate used for the
 #'   hypothesis test. Regions where the adjusted p-value is below `alpha` are
 #'   highlighted. The default is `alpha = 0.05`.
@@ -99,20 +98,14 @@ IWTimage <- function(
       nlevel = nlevel,
       plot_unadjusted = plot_unadjusted
     )
-  } else if (inherits(IWT_result, "IWT1") || inherits(IWT_result, "IWT2")) {
-    group_colors <- if (IWT_result$test == "2pop") {
-      IWT_result$ord_labels
-    } else {
-      rep(1L, nrow(IWT_result$data_eval))
-    }
-    mu <- if (IWT_result$test == "1pop") IWT_result$mu else NULL
+  } else if (inherits(IWT_result, "IWT1")) {
     .iwt_image_one(
       pval_matrix = IWT_result$pval_matrix,
       adjusted_pval = IWT_result$adjusted_pval,
       unadjusted_pval = IWT_result$unadjusted_pval,
       data_eval = IWT_result$data_eval,
-      group_colors = group_colors,
-      mu = mu,
+      group_colors = rep(1L, nrow(IWT_result$data_eval)),
+      mu = IWT_result$mu,
       alpha = alpha,
       abscissa_range = abscissa_range,
       nlevel = nlevel,
@@ -130,7 +123,7 @@ IWTimage <- function(
     cli::cli_abort(
       "Unsupported class {.cls {class(IWT_result)}}. \\
        {.fn IWTimage} accepts objects of class {.cls fos}, {.cls fts}, \\
-       {.cls IWT1}, {.cls IWT2}, or {.cls IWTaov}."
+       {.cls IWT1}, or {.cls IWTaov}."
     )
   }
 

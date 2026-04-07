@@ -15,9 +15,8 @@ IWTimage(
 \arguments{
 \item{IWT_result}{Results of the IWT, as created by
 \code{\link[=functional_one_sample_test]{functional_one_sample_test()}}, \code{\link[=iwt1]{iwt1()}}, \code{\link[=functional_two_sample_test]{functional_two_sample_test()}},
-\code{\link[=iwt2]{iwt2()}}, or the legacy functions \code{\link[=iwt1]{IWT1()}} and \code{\link[=iwt2]{IWT2()}} and
-\code{\link[=IWTaov]{IWTaov()}}. When using \code{\link[=functional_two_sample_test]{functional_two_sample_test()}} or \code{\link[=iwt2]{iwt2()}},
-\code{correction} must be \code{"IWT"}.}
+\code{\link[=iwt2]{iwt2()}}, or the legacy functions \code{\link[=iwt1]{IWT1()}} and \code{\link[=IWTaov]{IWTaov()}}. When using
+\code{\link[=functional_two_sample_test]{functional_two_sample_test()}} or \code{\link[=iwt2]{iwt2()}}, \code{correction} must be \code{"IWT"}.}
 
 \item{alpha}{Threshold for the interval-wise error rate used for the
 hypothesis test. Regions where the adjusted p-value is below \code{alpha} are
