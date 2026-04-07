@@ -1,4 +1,4 @@
-#' @rdname IWT1
+#' @rdname iwt1
 #'
 #' @param order Order of the B-spline basis expansion. Defaults to `2L`.
 #' @param nknots Number of knots of the B-spline basis expansion. Defaults to

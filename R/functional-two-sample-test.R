@@ -226,37 +226,36 @@ functional_two_sample_test <- function(
   aggregation_strategy <- rlang::arg_match(aggregation_strategy)
   adjustment_results <- switch(
     correction,
-    IWT = ts_p_adjust_iwt(
+    IWT = p_adjust_iwt(
       p = p,
       pval = pval,
       t0 = t0,
       t_coeff = t_coeff,
       n_perm = n_perm,
       recycle = recycle,
-      verbose = verbose,
       aggregation_strategy = aggregation_strategy
     ),
-    TWT = ts_p_adjust_twt(
+    TWT = p_adjust_twt(
       pval = pval,
       p = p,
       t0 = t0,
       t_coeff = t_coeff,
       aggregation_strategy = aggregation_strategy
     ),
-    PCT = ts_p_adjust_pct(
+    PCT = p_adjust_pct(
       partition = partition,
       p = p,
       t0 = t0,
       t_coeff = t_coeff,
       aggregation_strategy = aggregation_strategy
     ),
-    Global = ts_p_adjust_global(
+    Global = p_adjust_global(
       aggregation_strategy = aggregation_strategy,
       t0 = t0,
       t_coeff = t_coeff,
       p = p
     ),
-    FDR = ts_p_adjust_fdr(pval = pval)
+    FDR = p_adjust_fdr(pval = pval)
   )
 
   out <- list(
