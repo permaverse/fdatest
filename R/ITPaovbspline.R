@@ -49,7 +49,7 @@
 #'   ITP_result,
 #'   main = "NASA data",
 #'   plot_adjpval = TRUE,
-#'   xlab = 'Day',
+#'   xlab = "Day",
 #'   xrange = c(1, 365)
 #' )
 #'
@@ -73,7 +73,7 @@ ITPaovbspline <- function(
   order = 2,
   nknots = dim(stats::model.response(stats::model.frame(formula)))[2],
   B = 1000,
-  method = 'residuals'
+  method = "residuals"
 ) {
   lifecycle::deprecate_soft(
     when = "2.2.0",

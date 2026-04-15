@@ -1,15 +1,14 @@
-#' Plot for Functional Two-Sample Test Results
+#' Plot for Functional One-Sample Test Results
 #'
-#' The `S3` methods `autoplot.ftwosample()` and `plot.ftwosample()` are methods
-#' for plotting results of functional two-sample tests. They visualize the
-#' functional data and the adjusted p-values obtained from the testing
-#' procedures for mean comparison of two groups. The plots highlight significant
-#' effects at two levels of significance, `alpha1` and `alpha2`, using shaded
-#' areas.
+#' The `S3` methods `autoplot.fos()` and `plot.fos()` are methods for plotting
+#' results of functional one-sample tests. They visualize the functional data
+#' and the adjusted p-values obtained from the testing procedures for testing
+#' the center of symmetry of a functional population. The plots highlight
+#' significant effects at two levels of significance, `alpha1` and `alpha2`,
+#' using shaded areas.
 #'
-#' @param object,x An object of class `ftwosample`, usually a result of a call
-#'   to [`functional_two_sample_test()`], [`IWT2()`], [`TWT2()`], [`FDR2()`],
-#'   [`PCT2()`] or [`Global2()`].
+#' @param object,x An object of class `fos`, usually a result of a call to
+#'   [`functional_one_sample_test()`] or [`iwt1()`].
 #' @param xrange A length-2 numeric vector specifying the range of the x-axis
 #'   for the plots. Defaults to `c(0, 1)`. This should match the domain of the
 #'   functional data.
@@ -20,21 +19,22 @@
 #'   0.01`.
 #' @param ylabel A string specifying the label of the y-axis of the functional
 #'   data plot. Defaults to `"Functional Data"`.
-#' @param title A string specifying the title of the functional data plot.
-#'   Defaults to `NULL` in which case no title is displayed.
+#' @param title A string specifying the title of the plots. Defaults to `NULL`
+#'   in which case no title is displayed.
 #' @param linewidth A numeric value specifying the width of the line for the
 #'   functional data plot. Note that the line width for the adjusted p-value
 #'   plot will be twice this value. Defaults to `linewidth = 0.5`.
 #' @param ... Other arguments passed to specific methods. Not used in this
 #'   function.
 #'
-#' @returns The `autoplot.ftwosample()` function creates a ggplot object that
-#'   displays the functional data and the adjusted p-values. The significant
-#'   intervals at levels `alpha1` and `alpha2` are highlighted in the plots. The
-#'   `plot.ftwosample()` function is a wrapper around `autoplot.ftwosample()`
-#'   that prints the plot directly.
+#' @returns The `autoplot.fos()` function creates a ggplot object that displays
+#'   the functional data (with the null mean function `mu` overlaid as a dashed
+#'   reference line) and the adjusted p-values. The significant intervals at
+#'   levels `alpha1` and `alpha2` are highlighted in both panels. The
+#'   `plot.fos()` function is a wrapper around `autoplot.fos()` that prints the
+#'   plot directly.
 #'
-#' @seealso [`IWTimage()`] for the plot of p-values heatmaps (for IWT).
+#' @seealso [`IWTimage()`] for the plot of p-value heatmaps (for IWT).
 #'
 #' @references
 #' Pini, A., & Vantini, S. (2017). Interval-wise testing for functional data.
@@ -51,47 +51,26 @@
 #' cruciate ligament. \emph{Scandinavian Journal of Statistics} 45(4),
 #' 1036-1061.
 #'
-#' @name plot.ftwosample
+#' @name plot.fos
 #'
 #' @examples
-#' # Performing the TWT for two populations
-#' TWT_result <- functional_two_sample_test(
-#'   NASAtemp$paris, NASAtemp$milan,
-#'   correction = "TWT", B = 10L
+#' # Performing the IWT for one population
+#' IWT_result <- functional_one_sample_test(
+#'   NASAtemp$paris, mu = 4, n_perm = 10L
 #' )
 #'
-#' # Plotting the results of the TWT
-#' plot(
-#'   TWT_result,
-#'   xrange = c(0, 12),
-#'   title = 'TWT results for testing mean differences'
-#' )
+#' # Plotting the results
+#' plot(IWT_result, xrange = c(0, 12), title = "Paris temperatures")
 #'
 #' # Selecting the significant components at 5% level
-#' which(TWT_result$adjusted_pval < 0.05)
-#'
-#' # Performing the IWT for two populations
-#' IWT_result <- functional_two_sample_test(
-#'   NASAtemp$paris, NASAtemp$milan,
-#'   correction = "IWT", B = 10L
-#' )
-#'
-#' # Plotting the results of the IWT
-#' plot(
-#'   IWT_result,
-#'   xrange = c(0, 12),
-#'   title = 'IWT results for testing mean differences'
-#' )
-#'
-#' # Selecting the significant components at 5% level
-#' which(IWT_result$adjusted_pval < 0.05)
+#' which(IWT_result$adjusted_pvalues < 0.05)
 NULL
 
-#' @rdname plot.ftwosample
+#' @rdname plot.fos
 #' @importFrom ggplot2 autoplot
 #' @importFrom rlang .data
 #' @export
-autoplot.ftwosample <- function(
+autoplot.fos <- function(
   object,
   xrange = c(0, 1),
   alpha1 = 0.05,
@@ -111,33 +90,21 @@ autoplot.ftwosample <- function(
     alpha1 <- alpha2
     alpha2 <- temp
   }
-  abscissa_pval <- seq(
-    xrange[1],
-    xrange[2],
-    length.out = length(object$adjusted_pvalues)
-  )
 
-  # Create data frame for functional data plot
-  data_long <- data.frame(
-    x = rep(
-      seq(xrange[1], xrange[2], length.out = ncol(object$data)),
-      nrow(object$data)
-    ),
-    y = as.vector(t(object$data)),
-    group = as.factor(rep(object$group_labels, each = ncol(object$data))),
-    id = as.factor(rep(seq_len(nrow(object$data)), each = ncol(object$data)))
-  )
+  p <- length(object$adjusted_pvalues)
+  abscissa_pval <- seq(xrange[1], xrange[2], length.out = p)
+  step <- if (p > 1L) abscissa_pval[2L] - abscissa_pval[1L] else 0
 
-  # Add significance regions
+  # Significance regions
   sig_idx1 <- which(object$adjusted_pvalues < alpha1)
   sig_regions <- data.frame(
     xmin = if (length(sig_idx1) > 0) {
-      abscissa_pval[sig_idx1] - (abscissa_pval[2] - abscissa_pval[1]) / 2
+      abscissa_pval[sig_idx1] - step / 2
     } else {
       numeric(0)
     },
     xmax = if (length(sig_idx1) > 0) {
-      abscissa_pval[sig_idx1] + (abscissa_pval[2] - abscissa_pval[1]) / 2
+      abscissa_pval[sig_idx1] + step / 2
     } else {
       numeric(0)
     },
@@ -149,10 +116,8 @@ autoplot.ftwosample <- function(
     sig_regions <- rbind(
       sig_regions,
       data.frame(
-        xmin = abscissa_pval[sig_idx2] -
-          (abscissa_pval[2] - abscissa_pval[1]) / 2,
-        xmax = abscissa_pval[sig_idx2] +
-          (abscissa_pval[2] - abscissa_pval[1]) / 2,
+        xmin = abscissa_pval[sig_idx2] - step / 2,
+        xmax = abscissa_pval[sig_idx2] + step / 2,
         alpha_level = "alpha2"
       )
     )
@@ -188,30 +153,45 @@ autoplot.ftwosample <- function(
     NULL
   }
 
-  # Functional data plot
+  # Functional data in long format
+  data_long <- data.frame(
+    x = rep(abscissa_pval, nrow(object$data)),
+    y = as.vector(t(object$data)),
+    id = as.factor(rep(seq_len(nrow(object$data)), each = p))
+  )
+
+  # mu reference line
+  mu_eval <- if (length(object$mu) == 1L) rep(object$mu, p) else object$mu
+  mu_data <- data.frame(x = abscissa_pval, y = mu_eval)
+
+  # Functional data panel
   p1 <- ggplot2::ggplot(
     data_long,
-    ggplot2::aes(
-      x = .data$x,
-      y = .data$y,
-      group = .data$id,
-      color = .data$group
-    )
+    ggplot2::aes(x = .data$x, y = .data$y, group = .data$id)
   ) +
     sig_layer +
     sig_layer_scale +
-    ggplot2::geom_line(linewidth = linewidth) +
-    ggplot2::scale_color_viridis_d(name = "Group") +
+    ggplot2::geom_line(linewidth = linewidth, color = "gray30", alpha = 0.6) +
+    ggplot2::geom_line(
+      data = mu_data,
+      ggplot2::aes(x = .data$x, y = .data$y, group = NULL),
+      linewidth = linewidth * 2,
+      color = "steelblue",
+      linetype = "dashed"
+    ) +
     ggplot2::labs(subtitle = "Functional Data", x = "Domain", y = ylabel) +
     ggplot2::theme_minimal()
 
-  # P-values plot
+  # Adjusted p-values panel
   pval_data <- data.frame(
-    x = seq(xrange[1], xrange[2], length.out = length(object$adjusted_pvalues)),
+    x = abscissa_pval,
     pval = object$adjusted_pvalues
   )
 
-  p2 <- ggplot2::ggplot(pval_data, ggplot2::aes(x = .data$x, y = .data$pval)) +
+  p2 <- ggplot2::ggplot(
+    pval_data,
+    ggplot2::aes(x = .data$x, y = .data$pval)
+  ) +
     sig_layer +
     sig_layer_scale +
     ggplot2::geom_hline(
@@ -237,10 +217,10 @@ autoplot.ftwosample <- function(
     )
 }
 
-#' @rdname plot.ftwosample
+#' @rdname plot.fos
 #' @importFrom graphics plot
 #' @export
-plot.ftwosample <- function(
+plot.fos <- function(
   x,
   xrange = c(0, 1),
   alpha1 = 0.05,
@@ -259,5 +239,53 @@ plot.ftwosample <- function(
     title = title,
     linewidth = linewidth,
     ...
+  ))
+}
+
+# --------------------------------------------------------------------------
+# Backward-compatible plot.IWT1 — delegates to autoplot.fos().
+# The legacy parameter names (ylab, main, lwd) are preserved so that
+# existing user code continues to work unchanged.
+# --------------------------------------------------------------------------
+#' @rdname plot.fos
+#' @param ylab Label of the y-axis (legacy alias for `ylabel`). Defaults to
+#'   `"Functional Data"`.
+#' @param main Plot title (legacy alias for `title`). Defaults to `NULL`.
+#' @param lwd Line width (legacy alias for `linewidth`; divided by 2 for
+#'   ggplot2 scaling). Defaults to `1`.
+#' @param col,ylim,type Ignored; retained for backward compatibility only.
+#' @export
+plot.IWT1 <- function(
+  x,
+  xrange = c(0, 1),
+  alpha1 = 0.05,
+  alpha2 = 0.01,
+  ylab = "Functional Data",
+  main = NULL,
+  lwd = 1,
+  col = 1,
+  ylim = NULL,
+  type = "l",
+  ...
+) {
+  fos_obj <- structure(
+    list(
+      data = x$data_eval,
+      mu = x$mu,
+      unadjusted_pvalues = x$unadjusted_pval,
+      adjusted_pvalues = x$adjusted_pval,
+      correction_method = "IWT",
+      pvalue_matrix = x$pval_matrix
+    ),
+    class = "fos"
+  )
+  print(autoplot.fos(
+    fos_obj,
+    xrange = xrange,
+    alpha1 = alpha1,
+    alpha2 = alpha2,
+    ylabel = ylab,
+    title = main,
+    linewidth = lwd / 2
   ))
 }

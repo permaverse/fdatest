@@ -4,7 +4,7 @@
 # local daemon before each function call and tearing it down afterwards:
 #
 #   R/one-iwt.R   – iwt1  point-wise permutation path
-#   R/utils-ts.R  – twosample_alt_permtest point-wise path
+#   R/utils-ts.R  – ts_permtest point-wise path
 #                   (shared by IWT2, TWT2, FDR2, PCT2, Global2)
 #   R/two-iwt.R   – iwt2  interval-wise row-computation path
 #   R/utils-aov.R – aov_permtest point-wise path
@@ -65,7 +65,7 @@ expect_inherits(res_iwt1_mu, "IWT1")
 expect_equal(length(res_iwt1_mu$mu), p)
 
 # ===========================================================================
-# R/utils-ts.R — twosample_alt_permtest point-wise path (mirai_map over perms)
+# R/utils-ts.R — ts_permtest point-wise path (mirai_map over perms)
 # R/two-iwt.R  — iwt2 interval-wise row-computation path (mirai_map over rows)
 # ===========================================================================
 
@@ -74,7 +74,7 @@ mirai::daemons(1L, seed = 42L, dispatcher = FALSE)
 res_iwt2 <- IWT2(data1 = d1, data2 = d2, mu = 0, B = 5L, verbose = FALSE)
 mirai::daemons(0)
 
-expect_inherits(res_iwt2, "ftwosample")
+expect_inherits(res_iwt2, "fts")
 expect_equal(length(res_iwt2$adjusted_pvalues), p)
 expect_equal(length(res_iwt2$unadjusted_pvalues), p)
 expect_true(all(
@@ -98,7 +98,7 @@ res_iwt2_nr <- IWT2(
 )
 mirai::daemons(0)
 
-expect_inherits(res_iwt2_nr, "ftwosample")
+expect_inherits(res_iwt2_nr, "fts")
 expect_true(is.na(res_iwt2_nr$pvalue_matrix[1, p]))
 
 # TWT2 — exercises only the utils-ts.R point-wise mirai branch
@@ -107,7 +107,7 @@ mirai::daemons(1L, seed = 42L, dispatcher = FALSE)
 res_twt2 <- TWT2(data1 = d1, data2 = d2, mu = 0, B = 5L, verbose = FALSE)
 mirai::daemons(0)
 
-expect_inherits(res_twt2, "ftwosample")
+expect_inherits(res_twt2, "fts")
 expect_equal(length(res_twt2$adjusted_pvalues), p)
 
 # FDR2 — same utils-ts.R mirai path via a different entry point
@@ -115,7 +115,7 @@ mirai::daemons(1L, seed = 42L, dispatcher = FALSE)
 res_fdr2 <- FDR2(data1 = d1, data2 = d2, mu = 0, B = 5L)
 mirai::daemons(0)
 
-expect_inherits(res_fdr2, "ftwosample")
+expect_inherits(res_fdr2, "fts")
 expect_equal(length(res_fdr2$adjusted_pvalues), p)
 
 # alternative = "greater" — exercises the alternative switch inside the
@@ -130,7 +130,7 @@ res_iwt2_gr <- IWT2(
 )
 mirai::daemons(0)
 
-expect_inherits(res_iwt2_gr, "ftwosample")
+expect_inherits(res_iwt2_gr, "fts")
 
 # alternative = "less"
 mirai::daemons(1L, seed = 42L, dispatcher = FALSE)
@@ -143,7 +143,7 @@ res_iwt2_lt <- IWT2(
 )
 mirai::daemons(0)
 
-expect_inherits(res_iwt2_lt, "ftwosample")
+expect_inherits(res_iwt2_lt, "fts")
 
 # paired = TRUE — exercises the paired-permutation branch inside the parallel
 # lambda (utils-ts.R line 7–14)
@@ -157,7 +157,7 @@ res_iwt2_p <- IWT2(
 )
 mirai::daemons(0)
 
-expect_inherits(res_iwt2_p, "ftwosample")
+expect_inherits(res_iwt2_p, "fts")
 
 # ===========================================================================
 # R/utils-aov.R — aov_permtest point-wise path
@@ -169,7 +169,7 @@ mirai::daemons(1L, seed = 42L, dispatcher = FALSE)
 res_iwt_aov <- IWTaov(temperature ~ groups, B = 5L, method = "residuals")
 mirai::daemons(0)
 
-expect_inherits(res_iwt_aov, "fanova")
+expect_inherits(res_iwt_aov, "faov")
 expect_equal(length(res_iwt_aov$adjusted_pval_F), p)
 expect_equal(length(res_iwt_aov$unadjusted_pval_F), p)
 expect_true(all(
@@ -188,7 +188,7 @@ res_iwt_aov_resp <- IWTaov(
 )
 mirai::daemons(0)
 
-expect_inherits(res_iwt_aov_resp, "fanova")
+expect_inherits(res_iwt_aov_resp, "faov")
 expect_equal(length(res_iwt_aov_resp$adjusted_pval_F), p)
 
 # recycle = FALSE — exercises the non-recycled row loop in iwt_aov via mirai
@@ -200,7 +200,7 @@ res_iwt_aov_nr <- IWTaov(
 )
 mirai::daemons(0)
 
-expect_inherits(res_iwt_aov_nr, "fanova")
+expect_inherits(res_iwt_aov_nr, "faov")
 expect_true(is.na(res_iwt_aov_nr$pval_matrix_F[1, p]))
 
 # nvar > 1 (multi-factor) — exercises more iterations of the parallel row loop
@@ -213,7 +213,7 @@ res_iwt_aov_2f <- IWTaov(
 )
 mirai::daemons(0)
 
-expect_inherits(res_iwt_aov_2f, "fanova")
+expect_inherits(res_iwt_aov_2f, "faov")
 expect_equal(length(res_iwt_aov_2f$adjusted_pval_F), p)
 
 # nvar > 1 + factor() in formula — exercises the factor-renaming branch inside
@@ -226,14 +226,14 @@ res_iwt_aov_fac <- IWTaov(
 )
 mirai::daemons(0)
 
-expect_inherits(res_iwt_aov_fac, "fanova")
+expect_inherits(res_iwt_aov_fac, "faov")
 
 # TWTaov — exercises only the utils-aov.R point-wise mirai branch
 mirai::daemons(1L, seed = 42L, dispatcher = FALSE)
 res_twt_aov <- TWTaov(temperature ~ groups, B = 5L, method = "residuals")
 mirai::daemons(0)
 
-expect_inherits(res_twt_aov, "fanova")
+expect_inherits(res_twt_aov, "faov")
 expect_equal(length(res_twt_aov$adjusted_pval_F), p)
 
 # TWTaov method = "responses"
@@ -241,7 +241,7 @@ mirai::daemons(1L, seed = 42L, dispatcher = FALSE)
 res_twt_aov_resp <- TWTaov(temperature ~ groups, B = 5L, method = "responses")
 mirai::daemons(0)
 
-expect_inherits(res_twt_aov_resp, "fanova")
+expect_inherits(res_twt_aov_resp, "faov")
 
 # ===========================================================================
 # R/utils-lm.R — lm_permtest point-wise path

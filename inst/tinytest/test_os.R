@@ -42,6 +42,50 @@ expect_equal(length(res_nr$adjusted_pval), p)
 expect_true(is.na(res_nr$pval_matrix[1, p]))
 
 # ---------------------------------------------------------------------------
+# iwt1() — new API returning fos class
+# ---------------------------------------------------------------------------
+set.seed(42)
+res_fos <- iwt1(data = d1, mu = 0, n_perm = 5L)
+
+expect_inherits(res_fos, "fos")
+expect_equal(length(res_fos$adjusted_pvalues), p)
+expect_equal(length(res_fos$unadjusted_pvalues), p)
+expect_true(all(res_fos$adjusted_pvalues >= 0 & res_fos$adjusted_pvalues <= 1))
+expect_true(all(
+  res_fos$unadjusted_pvalues >= 0 & res_fos$unadjusted_pvalues <= 1
+))
+expect_equal(dim(res_fos$pvalue_matrix), c(p, p))
+expect_equal(dim(res_fos$data), dim(d1))
+expect_equal(res_fos$mu, 0)
+expect_equal(res_fos$correction_method, "IWT")
+expect_true(all(res_fos$adjusted_pvalues >= res_fos$unadjusted_pvalues))
+
+# ---------------------------------------------------------------------------
+# functional_one_sample_test() — interface returning fos class
+# ---------------------------------------------------------------------------
+set.seed(42)
+res_fos2 <- functional_one_sample_test(data = d1, mu = 0, n_perm = 5L)
+expect_inherits(res_fos2, "fos")
+expect_equal(length(res_fos2$adjusted_pvalues), p)
+
+# verbose = TRUE (exercises both cli_h1 progress paths)
+set.seed(42)
+res_fos2_v <- functional_one_sample_test(
+  data = d1,
+  mu = 0,
+  n_perm = 5L,
+  verbose = TRUE
+)
+expect_inherits(res_fos2_v, "fos")
+expect_equal(length(res_fos2_v$adjusted_pvalues), p)
+
+# recycle = FALSE
+set.seed(42)
+res_fos_nr <- iwt1(data = d1, mu = 0, n_perm = 5L, recycle = FALSE)
+expect_inherits(res_fos_nr, "fos")
+expect_true(is.na(res_fos_nr$pvalue_matrix[1, p]))
+
+# ---------------------------------------------------------------------------
 # Deprecated wrapper: ITP1bspline
 # ---------------------------------------------------------------------------
 set.seed(42)

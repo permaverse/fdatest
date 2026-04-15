@@ -126,9 +126,9 @@ res_g_r <- Globallm(
 )
 expect_inherits(res_g_r, "flm")
 expect_equal(length(res_g_r$adjusted_pval_F), p)
-expect_true(!is.null(res_g_r$Global_pval_F))
-expect_true(res_g_r$Global_pval_F >= 0 && res_g_r$Global_pval_F <= 1)
-expect_true(!is.null(res_g_r$Global_pval_part))
+expect_true(!is.null(res_g_r$global_pval_F))
+expect_true(res_g_r$global_pval_F >= 0 && res_g_r$global_pval_F <= 1)
+expect_true(!is.null(res_g_r$global_pval_part))
 
 # Globallm — method = "residuals", nvar > 1
 set.seed(42)
@@ -157,7 +157,7 @@ expect_equal(length(res_g_rf$adjusted_pval_F), p)
 set.seed(42)
 res_g_max <- Globallm(temperature ~ groups, B = 5L, stat = "Max")
 expect_inherits(res_g_max, "flm")
-expect_true(!is.null(res_g_max$Global_pval_F))
+expect_true(!is.null(res_g_max$global_pval_F))
 
 # ===========================================================================
 # Globallm — method = "responses"

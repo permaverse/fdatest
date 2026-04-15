@@ -1,4 +1,4 @@
-#' @rdname IWT1
+#' @rdname iwt1
 #'
 #' @param maxfrequency The maximum frequency to be used in the Fourier basis
 #'   expansion of data. Defaults to `floor(dim(data)[2] / 2)`, leading to an

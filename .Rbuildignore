@@ -9,4 +9,5 @@
 ^codecov\.yml$
 ^\.lintr$
 ^[.]?air[.]toml$
+^[.]?jarl[.]toml$
 ^\.vscode$
