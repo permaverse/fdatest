@@ -28,11 +28,10 @@ twt_aov(
   An object of class
   [`stats::formula`](https://rdrr.io/r/stats/formula.html) (or one that
   can be coerced to that class) specifying the model to be fitted in a
-  symbolic fashion. The output variable (left-hand side) of the formula
-  can be either a matrix of dimension \\n \times J\\ containing the
-  pointwise evaluations of \\n\\ functions on the **same** grid of \\J\\
-  points, or an object of class
-  [`fda::fd`](https://rdrr.io/pkg/fda/man/fd.html).
+  symbolic fashion. The response (left-hand side) can be either a matrix
+  of dimension \\n \times J\\ containing the pointwise evaluations of
+  \\n\\ functions on the **same** grid of \\J\\ points, or an object of
+  class [`fda::fd`](https://rdrr.io/pkg/fda/man/fd.html).
 
 - dx:
 
@@ -45,17 +44,18 @@ twt_aov(
 
 - B:
 
-  An integer value specifying the number of iterations of the MC
-  algorithm to evaluate the p-value of the permutation tests. Defaults
-  to `1000L`.
+  An integer value specifying the number of permutations used to
+  evaluate the p-values of the permutation tests. Defaults to `1000L`.
+  Passed as `n_perm` in
+  [`iwt_aov()`](https://permaverse.github.io/fdatest/reference/IWTaov.md),
+  `twt_aov()` and
+  [`global_aov()`](https://permaverse.github.io/fdatest/reference/global_aov.md).
 
 - method:
 
-  A string specifying the method used to calculate the p-value of
-  permutation tests. Choices are either `"residuals"` which performs
-  permutation of residuals under the reduced model according to the
-  Freedman and Lane scheme or `"responses"`, which performs permutation
-  of the responses, according to the Manly scheme. Defaults to
+  A string specifying the permutation scheme. `"residuals"` permutes
+  residuals under the reduced model (Freedman-Lane scheme);
+  `"responses"` permutes the responses (Manly scheme). Defaults to
   `"residuals"`.
 
 - n_perm:
@@ -65,71 +65,58 @@ twt_aov(
 
 ## Value
 
-An object of class `fanova` containing the following components:
+An object of class `faov` containing the following components:
 
 - `call`: The matched call.
 
-- `design_matrix`: The design matrix of the functional-on-scalar linear
-  model.
+- `design_matrix`: The design matrix of the functional ANOVA model.
 
-- `unadjusted_pval_F`: Evaluation on a grid of the unadjusted p-value
-  function of the functional F-test.
+- `unadjusted_pval_F`: A numeric vector of length \\J\\ containing the
+  unadjusted p-value function of the global F-test evaluated on the
+  grid.
 
-- `adjusted_pval_F`: Evaluation on a grid of the adjusted p-value
-  function of the functional F-test.
+- `adjusted_pval_F`: A numeric vector of length \\J\\ containing the
+  adjusted p-value function of the global F-test evaluated on the grid.
 
-- `unadjusted_pval_factors`: Evaluation on a grid of the unadjusted
-  p-value function of the functional F-tests on each factor of the
-  analysis of variance (rows).
+- `unadjusted_pval_factors`: A numeric matrix with one row per factor
+  containing the unadjusted p-value functions of the per-factor F-tests.
 
-- `adjusted_pval_factors`: Adjusted p-values of the functional F-tests
-  on each factor of the analysis of variance (rows) and each basis
-  coefficient (columns).
+- `adjusted_pval_factors`: A numeric matrix with one row per factor
+  containing the adjusted p-value functions of the per-factor F-tests.
 
-- `data_eval`: Evaluation on a fine uniform grid of the functional data
-  obtained through the basis expansion.
+- `data_eval`: A numeric matrix containing the functional data evaluated
+  on the grid.
 
-- `coeff_regr_eval`: Evaluation on a fine uniform grid of the functional
-  regression coefficients.
+- `coeff_regr_eval`: A numeric matrix containing the functional
+  regression coefficients evaluated on the grid.
 
-- `fitted_eval`: Evaluation on a fine uniform grid of the fitted values
-  of the functional regression.
+- `fitted_eval`: A numeric matrix containing the fitted values of the
+  functional regression evaluated on the grid.
 
-- `residuals_eval`: Evaluation on a fine uniform grid of the residuals
-  of the functional regression.
+- `residuals_eval`: A numeric matrix containing the residuals of the
+  functional regression evaluated on the grid.
 
-- `R2_eval`: Evaluation on a fine uniform grid of the functional
-  R-squared of the regression.
+- `R2_eval`: A numeric vector containing the functional R-squared
+  evaluated on the grid.
 
 Optionally, the list may contain the following components:
 
-- `pval_matrix_F`: Matrix of dimensions `c(p,p)` of the p-values of the
-  intervalwise F-tests. The element \\(i,j)\\ of matrix `pval_matrix`
-  contains the p-value of the test of interval indexed by
-  \\(j,j+1,...,j+(p-i))\\; this component is present only if
-  `correction` is set to `"IWT"`.
+- `pval_matrix_F`: A matrix of dimensions \\p \times p\\ of p-values of
+  the interval-wise F-tests. Element \\(i,j)\\ contains the p-value of
+  the test on the interval \\(j, j+1, \ldots, j+(p-i))\\. Present only
+  if `correction` is `"IWT"`.
 
-- `pval_matrix_factors`: Array of dimensions `c(L+1,p,p)` of the
-  p-values of the multivariate F-tests on factors. The element
-  \\(l,i,j)\\ of array `pval_matrix` contains the p-value of the joint
-  NPC test on factor `l` of the components \\(j,j+1,...,j+(p-i))\\; this
-  component is present only if `correction` is set to `"IWT"`.
+- `pval_matrix_factors`: An array of dimensions \\L \times p \times p\\
+  of p-values of the per-factor interval-wise F-tests. Element
+  \\(l,i,j)\\ contains the p-value of the joint test on factor \\l\\ and
+  interval \\(j, j+1, \ldots, j+(p-i))\\. Present only if `correction`
+  is `"IWT"`.
 
-- `heatmap_matrix_F`: Heatmap matrix of p-values of functional F-test
-  (used only for plots); this component is present only if `correction`
-  is set to `"IWT"`.
+- `global_pval_F`: Global p-value of the overall F-test. Present only if
+  `correction` is `"Global"`.
 
-- `heatmap_matrix_factors`: Heatmap matrix of p-values of functional
-  F-tests on each factor of the analysis of variance (used only for
-  plots); this component is present only if `correction` is set to
-  `"IWT"`.
-
-- `Global_pval_F`: Global p-value of the overall test F; this component
-  is present only if `correction` is set to `"Global"`.
-
-- `Global_pval_factors`: Global p-value of test F involving each factor
-  separately; this component is present only if `correction` is set to
-  `"Global"`.
+- `global_pval_factors`: A numeric vector of global p-values of the
+  per-factor F-tests. Present only if `correction` is `"Global"`.
 
 ## References
 
@@ -146,11 +133,14 @@ in Biology*. Vol. 70. CRC Press.
 
 ## See also
 
-See also
-[`plot.fanova()`](https://permaverse.github.io/fdatest/reference/plot.fanova.md)
+[`iwt_aov()`](https://permaverse.github.io/fdatest/reference/IWTaov.md),
+`twt_aov()` and
+[`global_aov()`](https://permaverse.github.io/fdatest/reference/global_aov.md)
+for calling a specific correction directly.
+[`plot.faov()`](https://permaverse.github.io/fdatest/reference/plot.faov.md)
 for plotting the results and
-[`summary.fanova()`](https://permaverse.github.io/fdatest/reference/summary.fanova.md)
-for summarizing the results of the functional analysis of variance.
+[`summary.faov()`](https://permaverse.github.io/fdatest/reference/summary.faov.md)
+for summarizing the results.
 
 ## Examples
 
@@ -170,7 +160,8 @@ TWT_result <- TWTaov(temperature ~ groups, B = 100L)
 # Summary of the TWT results
 summary(TWT_result)
 #> $call
-#> twt_aov(formula = formula, dx = dx, n_perm = B, method = method)
+#> functional_anova_test(formula = formula, correction = "TWT", 
+#>     dx = dx, B = n_perm, method = method)
 #> 
 #> $factors
 #>        Minimum p-value    
@@ -195,9 +186,9 @@ plot(TWT_result)
 layout(matrix(1:4, nrow = 2, byrow = FALSE))
 plot(
   TWT_result,
-  main = 'NASA data',
+  main = "NASA data",
   plot_adjpval = TRUE,
-  xlab = 'Day',
+  xlab = "Day",
   xrange = c(1, 365)
 )
 ```

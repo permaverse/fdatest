@@ -78,18 +78,6 @@ p-value function controls the interval-wise error rate.</p>
 <span>  maxfrequency <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">floor</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">data1</span><span class="op">)</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span><span class="op">/</span><span class="fl">2</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu">IWT2</span><span class="op">(</span></span>
-<span>  <span class="va">data1</span>,</span>
-<span>  <span class="va">data2</span>,</span>
-<span>  mu <span class="op">=</span> <span class="fl">0</span>,</span>
-<span>  dx <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  B <span class="op">=</span> <span class="fl">1000L</span>,</span>
-<span>  paired <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>  alternative <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"two.sided"</span>, <span class="st">"less"</span>, <span class="st">"greater"</span><span class="op">)</span>,</span>
-<span>  verbose <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>  recycle <span class="op">=</span> <span class="cn">TRUE</span></span>
-<span><span class="op">)</span></span>
-<span></span>
 <span><span class="fu">iwt2</span><span class="op">(</span></span>
 <span>  <span class="va">data1</span>,</span>
 <span>  <span class="va">data2</span>,</span>
@@ -98,6 +86,21 @@ p-value function controls the interval-wise error rate.</p>
 <span>  n_perm <span class="op">=</span> <span class="fl">1000L</span>,</span>
 <span>  paired <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  alternative <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"two.sided"</span>, <span class="st">"less"</span>, <span class="st">"greater"</span><span class="op">)</span>,</span>
+<span>  standardize <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  verbose <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  aggregation_strategy <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"integral"</span>, <span class="st">"max"</span><span class="op">)</span>,</span>
+<span>  recycle <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">IWT2</span><span class="op">(</span></span>
+<span>  <span class="va">data1</span>,</span>
+<span>  <span class="va">data2</span>,</span>
+<span>  mu <span class="op">=</span> <span class="fl">0</span>,</span>
+<span>  dx <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  B <span class="op">=</span> <span class="fl">1000L</span>,</span>
+<span>  paired <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  alternative <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"two.sided"</span>, <span class="st">"less"</span>, <span class="st">"greater"</span><span class="op">)</span>,</span>
+<span>  statistic <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Integral"</span>, <span class="st">"Max"</span>, <span class="st">"Integral_std"</span>, <span class="st">"Max_std"</span><span class="op">)</span>,</span>
 <span>  verbose <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  recycle <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
@@ -133,9 +136,8 @@ data samples. Defaults to <code>0</code>.</p></dd>
 
 
 <dt id="arg-b">B<a class="anchor" aria-label="anchor" href="#arg-b"></a></dt>
-<dd><p>An integer value specifying the number of iterations of the MC
-algorithm to evaluate the p-value of the permutation tests. Defaults to
-<code>1000L</code>.</p></dd>
+<dd><p>An integer value specifying the number of permutations to use
+for the local testing procedure. Defaults to <code>1000L</code>.</p></dd>
 
 
 <dt id="arg-paired">paired<a class="anchor" aria-label="anchor" href="#arg-paired"></a></dt>
@@ -159,11 +161,14 @@ interpolating expansion.</p></dd>
 
 
 <dt id="arg-dx">dx<a class="anchor" aria-label="anchor" href="#arg-dx"></a></dt>
-<dd><p>A numeric value specifying the discretization step of the grid used
-to evaluate functional data when it is provided as objects of class
-<code><a href="https://rdrr.io/pkg/fda/man/fd.html" class="external-link">fda::fd</a></code>. Defaults to <code>NULL</code>, in which case a default value of <code>0.01</code> is
-used which corresponds to a grid of size <code>100L</code>. Unused if functional data
-is provided in the form of matrices.</p></dd>
+<dd><p>A numeric value specifying the step of the uniform grid on which
+the data are evaluated. If <code>NULL</code>, the step is automatically inferred from
+the data. Defaults to <code>NULL</code>.</p></dd>
+
+
+<dt id="arg-n-perm">n_perm<a class="anchor" aria-label="anchor" href="#arg-n-perm"></a></dt>
+<dd><p>An integer value specifying the number of permutations to use
+for the local testing procedure. Defaults to <code>1000L</code>.</p></dd>
 
 
 <dt id="arg-alternative">alternative<a class="anchor" aria-label="anchor" href="#arg-alternative"></a></dt>
@@ -172,25 +177,39 @@ Choices are <code>"two.sided"</code>, <code>"less"</code> or <code>"greater"</co
 <code>"two.sided"</code>.</p></dd>
 
 
+<dt id="arg-standardize">standardize<a class="anchor" aria-label="anchor" href="#arg-standardize"></a></dt>
+<dd><p>A boolean value specifying whether to standardize the test
+statistic. Defaults to <code>FALSE</code>.</p></dd>
+
+
 <dt id="arg-verbose">verbose<a class="anchor" aria-label="anchor" href="#arg-verbose"></a></dt>
 <dd><p>A boolean value specifying whether to print the progress of
 the computation. Defaults to <code>FALSE</code>.</p></dd>
 
 
+<dt id="arg-aggregation-strategy">aggregation_strategy<a class="anchor" aria-label="anchor" href="#arg-aggregation-strategy"></a></dt>
+<dd><p>A string specifying the strategy to aggregate the
+point-wise test statistics for the correction procedure. Possible values
+are <code>"integral"</code> and <code>"max"</code>. Defaults to <code>"integral"</code>.</p></dd>
+
+
 <dt id="arg-recycle">recycle<a class="anchor" aria-label="anchor" href="#arg-recycle"></a></dt>
-<dd><p>A boolean value specifying whether the recycled version of the
-interval-wise testing procedure should be used. See Pini and Vantini (2017)
-for details. Defaults to <code>TRUE</code>.</p></dd>
+<dd><p>A boolean value specifying whether to recycle the test statistic
+values across permutations for the IWT procedure. Defaults to <code>TRUE</code>.</p></dd>
 
 
-<dt id="arg-n-perm">n_perm<a class="anchor" aria-label="anchor" href="#arg-n-perm"></a></dt>
-<dd><p>An integer value specifying the number of permutations for the
-permutation tests. Defaults to <code>1000L</code>.</p></dd>
+<dt id="arg-statistic">statistic<a class="anchor" aria-label="anchor" href="#arg-statistic"></a></dt>
+<dd><p>A string specifying the test statistic to use. Possible
+values are:</p><ul><li><p><code>"Integral"</code>: Integral of the squared sample mean difference.</p></li>
+<li><p><code>"Max"</code>: Maximum of the squared sample mean difference.</p></li>
+<li><p><code>"Integral_std"</code>: Integral of the squared t-test statistic.</p></li>
+<li><p><code>"Max_std"</code>: Maximum of the squared t-test statistic.</p></li>
+</ul><p>Defaults to <code>"Integral"</code>.</p></dd>
 
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>An object of class <code>ftwosample</code> containing the following components:</p><ul><li><p><code>data</code>: A numeric matrix of shape \(n \times J\) containing the
+    <p>An object of class <code>fts</code> containing the following components:</p><ul><li><p><code>data</code>: A numeric matrix of shape \(n \times J\) containing the
 evaluation of the \(n = n_1 + n_2\) functions on a <strong>common</strong> uniform
 grid of size \(p\).</p></li>
 <li><p><code>group_labels</code>: An integer vector of size \(n = n_1 + n_2\) containing
@@ -204,6 +223,8 @@ used to evaluate the functional samples.</p></li>
 <li><p><code>adjusted_pvalues</code>: A numeric vector of size \(J\) containing the
 evaluation of the adjusted p-value functione on the <strong>same</strong> uniform grid
 used to evaluate the functional samples.</p></li>
+<li><p><code>correction_method</code>: A string containing the correction method used to
+compute the adjusted p-value function.</p></li>
 </ul><p>Optionally, the list may contain the following components:</p><ul><li><p><code>global_pvalue</code>: A numeric value containing the global p-value. Only
 present if the <code>correction</code> argument is set to <code>"Global"</code>.</p></li>
 <li><p><code>pvalue_matrix</code>: A numeric matrix of shape \(p \times p\) containing
@@ -214,45 +235,59 @@ set to <code>"IWT"</code>.</p></li>
 </ul></div>
     <div class="section level2">
     <h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a></h2>
-    <p>A. Pini and S. Vantini (2017). The Interval Testing Procedure: Inference
-for Functional Data Controlling the Family Wise Error Rate on Intervals.
-<em>Biometrics</em>, 73(3): 835–845.</p>
-<p>A. Pini and S. Vantini (2017). Interval-wise testing for functional data.
-<em>Journal of Nonparametric Statistics</em>, 29(2), 407-424.</p>
-    </div>
+
+<ul><li><p>Pini, Alessia, and Simone Vantini. 2016. “The interval testing procedure: a
+general framework for inference in functional data analysis.” Biometrics 72 (3):
+835–845.</p></li>
+<li><p>Pini, Alessia, and Simone Vantini. 2017. “Interval-Wise Testing for Functional
+Data.” Journal of Nonparametric Statistics 29 (2): 407–24.</p></li>
+<li><p>Pini, Alessia, Simone Vantini, Bianca Maria Colosimo, and Marco Grasso. 2018.
+“Domain-Selective Functional Analysis of Variance for Supervised Statistical
+Profile Monitoring of Signal Data.” Journal of the Royal Statistical Society
+Series C: Applied Statistics 67 (1): 55–81.</p></li>
+<li><p>Abramowicz, Konrad, Charlotte K Häger, Alessia Pini, Lina Schelin, Sara
+Sjöstedt de Luna, and Simone Vantini. 2018. “Nonparametric Inference for
+Functional-on-Scalar Linear Models Applied to Knee Kinematic Hop Data After
+Injury of the Anterior Cruciate Ligament.” Scandinavian Journal of Statistics 45
+(4): 1036–61.</p></li>
+</ul></div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
-    <div class="dont-index"><p>See also <code><a href="plot.ftwosample.html">plot.ftwosample()</a></code> for plotting the results.</p></div>
+    <div class="dont-index"><p><code><a href="Global2.html">global2()</a></code>, <code><a href="TWT2.html">twt2()</a></code>, <code><a href="PCT2.html">pct2()</a></code>, <code><a href="FDR2.html">fdr2()</a></code> for calling directly
+one of the other tests, <code><a href="functional_two_sample_test.html">functional_two_sample_test()</a></code> for calling the
+interface test and <code><a href="plot.fts.html">plot.fts()</a></code> for plotting the results.</p></div>
     </div>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># Performing the IWT for two populations</span></span></span>
-<span class="r-in"><span><span class="va">IWT_result</span> <span class="op">&lt;-</span> <span class="fu">IWT2</span><span class="op">(</span><span class="va">NASAtemp</span><span class="op">$</span><span class="va">paris</span>, <span class="va">NASAtemp</span><span class="op">$</span><span class="va">milan</span>, B <span class="op">=</span> <span class="fl">10L</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">IWT_result</span> <span class="op">&lt;-</span> <span class="fu">iwt2</span><span class="op">(</span><span class="va">NASAtemp</span><span class="op">$</span><span class="va">paris</span>, <span class="va">NASAtemp</span><span class="op">$</span><span class="va">milan</span>, n_perm <span class="op">=</span> <span class="fl">10L</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Plotting the results of the IWT</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">IWT_result</span>,</span></span>
 <span class="r-in"><span>  xrange <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">12</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>  title <span class="op">=</span> <span class="st">'IWT results for testing mean differences'</span></span></span>
+<span class="r-in"><span>  title <span class="op">=</span> <span class="st">"IWT results for testing mean differences"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="IWT2-1.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Plotting the p-value heatmap</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="IWTimage.html">IWTimage</a></span><span class="op">(</span><span class="va">IWT_result</span>, abscissa_range <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">12</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-plt img"><img src="IWT2-2.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Selecting the significant components at 5% level</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/which.html" class="external-link">which</a></span><span class="op">(</span><span class="va">IWT_result</span><span class="op">$</span><span class="va">adjusted_pvalues</span> <span class="op">&lt;</span> <span class="fl">0.05</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   [1]  82  83  87  88  89  90  91  92  93  94  95 101 102 103 104 105 106 107</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [19] 108 109 110 111 112 113 114 115 116 117 118 119 120 121 122 123 124 125</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [37] 126 127 128 129 130 131 132 133 134 135 136 137 138 139 140 141 142 143</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [55] 144 145 146 147 148 149 150 151 152 153 154 155 156 157 158 159 160 161</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [73] 162 163 164 165 166 167 168 169 170 171 172 173 174 175 176 177 178 179</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [91] 180 181 182 183 184 185 186 187 188 189 190 191 192 193 194 195 196 197</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [109] 198 199 200 201 202 203 204 205 206 207 208 209 210 211 212 213 214 215</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [127] 216 217 218 219 220 221 222 223 224 225 226 227 228 229 230 231 232 233</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [145] 234 235 236 237 238 239 240 241 242 243 244 245 247 248 249 250 255 257</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [163] 258 259 260 261 262 264 266 267 268 269 270 271 272 273 274 275</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   [1]  87  88  89  90  91  92  93  94  95  96  97  98  99 100 101 102 103 104</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [19] 105 106 107 108 109 110 111 112 113 114 115 116 117 118 119 120 121 122</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [37] 123 124 125 126 127 128 129 130 131 132 133 134 135 136 137 138 139 140</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [55] 141 142 143 144 145 146 147 148 149 150 151 152 153 154 155 156 157 158</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [73] 159 160 161 162 163 164 165 166 167 168 169 170 171 172 173 174 175 176</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [91] 177 178 179 180 181 182 183 184 185 186 187 188 189 190 191 192 193 194</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [109] 195 196 197 198 199 200 201 202 203 204 205 206 207 208 209 210 211 212</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [127] 213 214 215 216 217 218 219 220 221 222 223 224 225 226 227 228 229 230</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [145] 231 232 233 234 235 236 237 238 239 240 241 242 243 244 245 246 247 248</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [163] 249 254 255 256 257 258 259 260 261 262 263 264 265 266 267 268 269 270</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [181] 271 272 273 274 275 276 277 281 282 283 284 285</span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

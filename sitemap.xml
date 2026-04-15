@@ -22,14 +22,15 @@
 <url><loc>https://permaverse.github.io/fdatest/reference/fdatest-package.html</loc></url>
 <url><loc>https://permaverse.github.io/fdatest/reference/functional_anova_test.html</loc></url>
 <url><loc>https://permaverse.github.io/fdatest/reference/functional_lm_test.html</loc></url>
+<url><loc>https://permaverse.github.io/fdatest/reference/functional_one_sample_test.html</loc></url>
 <url><loc>https://permaverse.github.io/fdatest/reference/functional_two_sample_test.html</loc></url>
 <url><loc>https://permaverse.github.io/fdatest/reference/global_aov.html</loc></url>
 <url><loc>https://permaverse.github.io/fdatest/reference/index.html</loc></url>
-<url><loc>https://permaverse.github.io/fdatest/reference/plot.IWT1.html</loc></url>
-<url><loc>https://permaverse.github.io/fdatest/reference/plot.fanova.html</loc></url>
+<url><loc>https://permaverse.github.io/fdatest/reference/plot.faov.html</loc></url>
 <url><loc>https://permaverse.github.io/fdatest/reference/plot.flm.html</loc></url>
-<url><loc>https://permaverse.github.io/fdatest/reference/plot.ftwosample.html</loc></url>
-<url><loc>https://permaverse.github.io/fdatest/reference/summary.fanova.html</loc></url>
+<url><loc>https://permaverse.github.io/fdatest/reference/plot.fos.html</loc></url>
+<url><loc>https://permaverse.github.io/fdatest/reference/plot.fts.html</loc></url>
+<url><loc>https://permaverse.github.io/fdatest/reference/summary.faov.html</loc></url>
 <url><loc>https://permaverse.github.io/fdatest/reference/summary.flm.html</loc></url>
 </urlset>
 

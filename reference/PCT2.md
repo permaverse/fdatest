@@ -10,17 +10,6 @@ rate asymptotically.
 ## Usage
 
 ``` r
-PCT2(
-  data1,
-  data2,
-  partition,
-  mu = 0,
-  dx = NULL,
-  B = 1000L,
-  paired = FALSE,
-  alternative = c("two.sided", "less", "greater")
-)
-
 pct2(
   data1,
   data2,
@@ -29,7 +18,23 @@ pct2(
   dx = NULL,
   n_perm = 1000L,
   paired = FALSE,
-  alternative = c("two.sided", "less", "greater")
+  alternative = c("two.sided", "less", "greater"),
+  standardize = FALSE,
+  verbose = FALSE,
+  aggregation_strategy = c("integral", "max")
+)
+
+PCT2(
+  data1,
+  data2,
+  partition,
+  mu = 0,
+  dx = NULL,
+  B = 1000L,
+  paired = FALSE,
+  alternative = c("two.sided", "less", "greater"),
+  statistic = c("Integral", "Max", "Integral_std", "Max_std"),
+  verbose = FALSE
 )
 ```
 
@@ -71,18 +76,14 @@ pct2(
 
 - dx:
 
-  A numeric value specifying the discretization step of the grid used to
-  evaluate functional data when it is provided as objects of class
-  [`fda::fd`](https://rdrr.io/pkg/fda/man/fd.html). Defaults to `NULL`,
-  in which case a default value of `0.01` is used which corresponds to a
-  grid of size `100L`. Unused if functional data is provided in the form
-  of matrices.
+  A numeric value specifying the step of the uniform grid on which the
+  data are evaluated. If `NULL`, the step is automatically inferred from
+  the data. Defaults to `NULL`.
 
-- B:
+- n_perm:
 
-  An integer value specifying the number of iterations of the MC
-  algorithm to evaluate the p-value of the permutation tests. Defaults
-  to `1000L`.
+  An integer value specifying the number of permutations to use for the
+  local testing procedure. Defaults to `1000L`.
 
 - paired:
 
@@ -94,14 +95,44 @@ pct2(
   A string specifying the type of alternative hypothesis. Choices are
   `"two.sided"`, `"less"` or `"greater"`. Defaults to `"two.sided"`.
 
-- n_perm:
+- standardize:
 
-  An integer value specifying the number of permutations for the
-  permutation tests. Defaults to `1000L`.
+  A boolean value specifying whether to standardize the test statistic.
+  Defaults to `FALSE`.
+
+- verbose:
+
+  A boolean value specifying whether to print the progress of the
+  computation. Defaults to `FALSE`.
+
+- aggregation_strategy:
+
+  A string specifying the strategy to aggregate the point-wise test
+  statistics for the correction procedure. Possible values are
+  `"integral"` and `"max"`. Defaults to `"integral"`.
+
+- B:
+
+  An integer value specifying the number of permutations to use for the
+  local testing procedure. Defaults to `1000L`.
+
+- statistic:
+
+  A string specifying the test statistic to use. Possible values are:
+
+  - `"Integral"`: Integral of the squared sample mean difference.
+
+  - `"Max"`: Maximum of the squared sample mean difference.
+
+  - `"Integral_std"`: Integral of the squared t-test statistic.
+
+  - `"Max_std"`: Maximum of the squared t-test statistic.
+
+  Defaults to `"Integral"`.
 
 ## Value
 
-An object of class `ftwosample` containing the following components:
+An object of class `fts` containing the following components:
 
 - `data`: A numeric matrix of shape \\n \times J\\ containing the
   evaluation of the \\n = n_1 + n_2\\ functions on a **common** uniform
@@ -122,6 +153,9 @@ An object of class `ftwosample` containing the following components:
   evaluation of the adjusted p-value functione on the **same** uniform
   grid used to evaluate the functional samples.
 
+- `correction_method`: A string containing the correction method used to
+  compute the adjusted p-value function.
+
 Optionally, the list may contain the following components:
 
 - `global_pvalue`: A numeric value containing the global p-value. Only
@@ -135,17 +169,27 @@ Optionally, the list may contain the following components:
 
 ## References
 
-Abramowicz, K., Pini, A., Schelin, L., Stamm, A., & Vantini, S. (2022).
-“Domain selection and familywise error rate for functional data: A
-unified framework. *Biometrics* 79(2), 1119-1132.
+- Vsevolozhskaya, Olga A, Mark C Greenwood, GJ Bellante, Scott L Powell,
+  Rick L Lawrence, and Kevin S Repasky. 2013. “Combining Functions and
+  the Closure Principle for Performing Follow-up Tests in Functional
+  Analysis of Variance.” Computational Statistics & Data Analysis 67:
+  175–84.
 
-Pini, A., & Vantini, S. (2017). Interval-wise testing for functional
-data. *Journal of Nonparametric Statistics*, 29(2), 407-424.
+- Vsevolozhskaya, Olga, Mark Greenwood, and Dmitri Holodov. 2014.
+  “Pairwise comparison of treatment levels in functional analysis of
+  variance with application to erythrocyte hemolysis.” The Annals of
+  Applied Statistics 8 (2): 905–25. https://doi.org/10.1214/14-AOAS723.
 
 ## See also
 
-See also
-[`plot.ftwosample()`](https://permaverse.github.io/fdatest/reference/plot.ftwosample.md)
+[`global2()`](https://permaverse.github.io/fdatest/reference/Global2.md),
+[`twt2()`](https://permaverse.github.io/fdatest/reference/TWT2.md),
+[`iwt2()`](https://permaverse.github.io/fdatest/reference/IWT2.md),
+[`fdr2()`](https://permaverse.github.io/fdatest/reference/FDR2.md) for
+calling directly one of the other tests,
+[`functional_two_sample_test()`](https://permaverse.github.io/fdatest/reference/functional_two_sample_test.md)
+for calling the interface test and
+[`plot.fts()`](https://permaverse.github.io/fdatest/reference/plot.fts.md)
 for plotting the results.
 
 ## Examples
@@ -163,12 +207,15 @@ partition <- c(
 partition <- factor(partition)
 
 PCT_result <- PCT2(NASAtemp$paris, NASAtemp$milan, partition = partition)
+#> Warning: `PCT2()` was deprecated in fdatest 0.2.0.
+#> ℹ Use pct2() instead. Be mindful that the argument `statistic` has been
+#>   replaced by `aggregation_strategy` and `standardize`.
 
 # Plotting the results of the PCT
 plot(
   PCT_result,
   xrange = c(0, 12),
-  title = 'PCT results for testing mean differences'
+  title = "PCT results for testing mean differences"
 )
 
 

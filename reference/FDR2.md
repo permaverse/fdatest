@@ -10,16 +10,6 @@ controls the family-wise error rate asymptotically.
 ## Usage
 
 ``` r
-FDR2(
-  data1,
-  data2,
-  mu = 0,
-  dx = NULL,
-  B = 1000L,
-  paired = FALSE,
-  alternative = c("two.sided", "less", "greater")
-)
-
 fdr2(
   data1,
   data2,
@@ -27,7 +17,21 @@ fdr2(
   dx = NULL,
   n_perm = 1000L,
   paired = FALSE,
-  alternative = c("two.sided", "less", "greater")
+  alternative = c("two.sided", "less", "greater"),
+  standardize = FALSE,
+  verbose = FALSE
+)
+
+FDR2(
+  data1,
+  data2,
+  mu = 0,
+  dx = NULL,
+  B = 1000L,
+  paired = FALSE,
+  alternative = c("two.sided", "less", "greater"),
+  statistic = c("Integral", "Integral_std"),
+  verbose = FALSE
 )
 ```
 
@@ -63,18 +67,14 @@ fdr2(
 
 - dx:
 
-  A numeric value specifying the discretization step of the grid used to
-  evaluate functional data when it is provided as objects of class
-  [`fda::fd`](https://rdrr.io/pkg/fda/man/fd.html). Defaults to `NULL`,
-  in which case a default value of `0.01` is used which corresponds to a
-  grid of size `100L`. Unused if functional data is provided in the form
-  of matrices.
+  A numeric value specifying the step of the uniform grid on which the
+  data are evaluated. If `NULL`, the step is automatically inferred from
+  the data. Defaults to `NULL`.
 
-- B:
+- n_perm:
 
-  An integer value specifying the number of iterations of the MC
-  algorithm to evaluate the p-value of the permutation tests. Defaults
-  to `1000L`.
+  An integer value specifying the number of permutations to use for the
+  local testing procedure. Defaults to `1000L`.
 
 - paired:
 
@@ -86,14 +86,38 @@ fdr2(
   A string specifying the type of alternative hypothesis. Choices are
   `"two.sided"`, `"less"` or `"greater"`. Defaults to `"two.sided"`.
 
-- n_perm:
+- standardize:
 
-  An integer value specifying the number of permutations for the
-  permutation tests. Defaults to `1000L`.
+  A boolean value specifying whether to standardize the test statistic.
+  Defaults to `FALSE`.
+
+- verbose:
+
+  A boolean value specifying whether to print the progress of the
+  computation. Defaults to `FALSE`.
+
+- B:
+
+  An integer value specifying the number of permutations to use for the
+  local testing procedure. Defaults to `1000L`.
+
+- statistic:
+
+  A string specifying the test statistic to use. Possible values are:
+
+  - `"Integral"`: Integral of the squared sample mean difference.
+
+  - `"Max"`: Maximum of the squared sample mean difference.
+
+  - `"Integral_std"`: Integral of the squared t-test statistic.
+
+  - `"Max_std"`: Maximum of the squared t-test statistic.
+
+  Defaults to `"Integral"`.
 
 ## Value
 
-An object of class `ftwosample` containing the following components:
+An object of class `fts` containing the following components:
 
 - `data`: A numeric matrix of shape \\n \times J\\ containing the
   evaluation of the \\n = n_1 + n_2\\ functions on a **common** uniform
@@ -114,6 +138,9 @@ An object of class `ftwosample` containing the following components:
   evaluation of the adjusted p-value functione on the **same** uniform
   grid used to evaluate the functional samples.
 
+- `correction_method`: A string containing the correction method used to
+  compute the adjusted p-value function.
+
 Optionally, the list may contain the following components:
 
 - `global_pvalue`: A numeric value containing the global p-value. Only
@@ -127,13 +154,19 @@ Optionally, the list may contain the following components:
 
 ## References
 
-Lundtorp Olsen, N., Pini, A., & Vantini, S. (2021). False discovery rate
-for functional data *TEST* 30, 784–809.
+- Lundtorp Olsen, Niels, Alessia Pini, and Simone Vantini. 2021. "False
+  discovery rate for functional data." TEST 30, 784–809.
 
 ## See also
 
-See also
-[`plot.ftwosample()`](https://permaverse.github.io/fdatest/reference/plot.ftwosample.md)
+[`global2()`](https://permaverse.github.io/fdatest/reference/Global2.md),
+[`twt2()`](https://permaverse.github.io/fdatest/reference/TWT2.md),
+[`pct2()`](https://permaverse.github.io/fdatest/reference/PCT2.md),
+[`iwt2()`](https://permaverse.github.io/fdatest/reference/IWT2.md) for
+calling directly one of the other tests,
+[`functional_two_sample_test()`](https://permaverse.github.io/fdatest/reference/functional_two_sample_test.md)
+for calling the interface test and
+[`plot.fts()`](https://permaverse.github.io/fdatest/reference/plot.fts.md)
 for plotting the results.
 
 ## Examples
@@ -141,13 +174,13 @@ for plotting the results.
 ``` r
 # Performing the fBH for two populations
 
-FDR_result <- FDR2(NASAtemp$paris, NASAtemp$milan)
+FDR_result <- fdr2(NASAtemp$paris, NASAtemp$milan)
 
 # Plotting the results of the fBH
 plot(
   FDR_result,
   xrange = c(0, 12),
-  title = 'FDR results for testing mean differences'
+  title = "FDR results for testing mean differences"
 )
 
 

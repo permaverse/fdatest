@@ -44,12 +44,18 @@ library(fdatest)
 withr::with_seed(1234, {
   out <- TWT2(NASAtemp$paris, NASAtemp$milan)
 })
+#> Warning: `TWT2()` was deprecated in fdatest 0.2.0.
+#> ℹ Use twt2() instead. Be mindful that the argument `statistic` has been
+#>   replaced by `aggregation_strategy` and `standardize`.
+#> This warning is displayed once per session.
+#> Call `lifecycle::last_lifecycle_warnings()` to see where this warning was
+#> generated.
 
 # Plotting the results of the TWT
 plot(
   out,
   xrange = c(0, 12),
-  main = 'TWT results for testing mean differences'
+  main = "TWT results for testing mean differences"
 )
 ```
 

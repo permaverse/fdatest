@@ -74,16 +74,17 @@ methods:</p><ul><li><p>global testing (controlling the FWER weakly)</p></li>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">functional_two_sample_test</span><span class="op">(</span></span>
 <span>  <span class="va">data1</span>,</span>
 <span>  <span class="va">data2</span>,</span>
-<span>  <span class="va">correction</span>,</span>
+<span>  correction <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Global"</span>, <span class="st">"IWT"</span>, <span class="st">"TWT"</span>, <span class="st">"PCT"</span>, <span class="st">"FDR"</span><span class="op">)</span>,</span>
 <span>  mu <span class="op">=</span> <span class="fl">0</span>,</span>
 <span>  dx <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  B <span class="op">=</span> <span class="fl">1000L</span>,</span>
+<span>  n_perm <span class="op">=</span> <span class="fl">1000L</span>,</span>
 <span>  paired <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  alternative <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"two.sided"</span>, <span class="st">"less"</span>, <span class="st">"greater"</span><span class="op">)</span>,</span>
-<span>  statistic <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Integral"</span>, <span class="st">"Max"</span>, <span class="st">"Integral_std"</span>, <span class="st">"Max_std"</span><span class="op">)</span>,</span>
+<span>  standardize <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  verbose <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  aggregation_strategy <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"integral"</span>, <span class="st">"max"</span><span class="op">)</span>,</span>
 <span>  recycle <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  partition <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  verbose <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span>  partition <span class="op">=</span> <span class="cn">NULL</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -110,7 +111,7 @@ evaluation of each function on a <strong>same</strong> uniform grid of size \(J\
 <dt id="arg-correction">correction<a class="anchor" aria-label="anchor" href="#arg-correction"></a></dt>
 <dd><p>A string specifying the correction method to perform the
 local functional testing procedure and adjust the p-value function. Choices
-are <code>"Global</code>, <code>"IWT"</code>, <code>"TWT"</code>, <code>"PCT"</code> or <code>"FDR"</code>.</p></dd>
+are <code>"Global"</code>, <code>"IWT"</code>, <code>"TWT"</code>, <code>"PCT"</code> or <code>"FDR"</code>.</p></dd>
 
 
 <dt id="arg-mu">mu<a class="anchor" aria-label="anchor" href="#arg-mu"></a></dt>
@@ -123,17 +124,14 @@ data samples. Defaults to <code>0</code>.</p></dd>
 
 
 <dt id="arg-dx">dx<a class="anchor" aria-label="anchor" href="#arg-dx"></a></dt>
-<dd><p>A numeric value specifying the discretization step of the grid used
-to evaluate functional data when it is provided as objects of class
-<code><a href="https://rdrr.io/pkg/fda/man/fd.html" class="external-link">fda::fd</a></code>. Defaults to <code>NULL</code>, in which case a default value of <code>0.01</code> is
-used which corresponds to a grid of size <code>100L</code>. Unused if functional data
-is provided in the form of matrices.</p></dd>
+<dd><p>A numeric value specifying the step of the uniform grid on which
+the data are evaluated. If <code>NULL</code>, the step is automatically inferred from
+the data. Defaults to <code>NULL</code>.</p></dd>
 
 
-<dt id="arg-b">B<a class="anchor" aria-label="anchor" href="#arg-b"></a></dt>
-<dd><p>An integer value specifying the number of iterations of the MC
-algorithm to evaluate the p-value of the permutation tests. Defaults to
-<code>1000L</code>.</p></dd>
+<dt id="arg-n-perm">n_perm<a class="anchor" aria-label="anchor" href="#arg-n-perm"></a></dt>
+<dd><p>An integer value specifying the number of permutations to use
+for the local testing procedure. Defaults to <code>1000L</code>.</p></dd>
 
 
 <dt id="arg-paired">paired<a class="anchor" aria-label="anchor" href="#arg-paired"></a></dt>
@@ -147,19 +145,25 @@ Choices are <code>"two.sided"</code>, <code>"less"</code> or <code>"greater"</co
 <code>"two.sided"</code>.</p></dd>
 
 
-<dt id="arg-statistic">statistic<a class="anchor" aria-label="anchor" href="#arg-statistic"></a></dt>
-<dd><p>A string specifying the test statistic to use. Possible
-values are:</p><ul><li><p><code>"Integral"</code>: Integral of the squared sample mean difference.</p></li>
-<li><p><code>"Max"</code>: Maximum of the squared sample mean difference.</p></li>
-<li><p><code>"Integral_std"</code>: Integral of the squared t-test statistic.</p></li>
-<li><p><code>"Max_std"</code>: Maximum of the squared t-test statistic.</p></li>
-</ul><p>Defaults to <code>"Integral"</code>.</p></dd>
+<dt id="arg-standardize">standardize<a class="anchor" aria-label="anchor" href="#arg-standardize"></a></dt>
+<dd><p>A boolean value specifying whether to standardize the test
+statistic. Defaults to <code>FALSE</code>.</p></dd>
+
+
+<dt id="arg-verbose">verbose<a class="anchor" aria-label="anchor" href="#arg-verbose"></a></dt>
+<dd><p>A boolean value specifying whether to print the progress of
+the computation. Defaults to <code>FALSE</code>.</p></dd>
+
+
+<dt id="arg-aggregation-strategy">aggregation_strategy<a class="anchor" aria-label="anchor" href="#arg-aggregation-strategy"></a></dt>
+<dd><p>A string specifying the strategy to aggregate the
+point-wise test statistics for the correction procedure. Possible values
+are <code>"integral"</code> and <code>"max"</code>. Defaults to <code>"integral"</code>.</p></dd>
 
 
 <dt id="arg-recycle">recycle<a class="anchor" aria-label="anchor" href="#arg-recycle"></a></dt>
-<dd><p>A boolean value specifying whether the recycled version of the
-interval-wise testing procedure should be used. See Pini and Vantini (2017)
-for details. Defaults to <code>TRUE</code>.</p></dd>
+<dd><p>A boolean value specifying whether to recycle the test statistic
+values across permutations for the IWT procedure. Defaults to <code>TRUE</code>.</p></dd>
 
 
 <dt id="arg-partition">partition<a class="anchor" aria-label="anchor" href="#arg-partition"></a></dt>
@@ -168,15 +172,10 @@ membership of each point of the domain to an element of the partition.
 Only used and <strong>must</strong> be set if the <code>correction</code> argument is set to
 <code>"PCT"</code>.</p></dd>
 
-
-<dt id="arg-verbose">verbose<a class="anchor" aria-label="anchor" href="#arg-verbose"></a></dt>
-<dd><p>A boolean value specifying whether to print the progress of
-the computation. Defaults to <code>FALSE</code>.</p></dd>
-
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>An object of class <code>ftwosample</code> containing the following components:</p><ul><li><p><code>data</code>: A numeric matrix of shape \(n \times J\) containing the
+    <p>An object of class <code>fts</code> containing the following components:</p><ul><li><p><code>data</code>: A numeric matrix of shape \(n \times J\) containing the
 evaluation of the \(n = n_1 + n_2\) functions on a <strong>common</strong> uniform
 grid of size \(p\).</p></li>
 <li><p><code>group_labels</code>: An integer vector of size \(n = n_1 + n_2\) containing
@@ -190,6 +189,8 @@ used to evaluate the functional samples.</p></li>
 <li><p><code>adjusted_pvalues</code>: A numeric vector of size \(J\) containing the
 evaluation of the adjusted p-value functione on the <strong>same</strong> uniform grid
 used to evaluate the functional samples.</p></li>
+<li><p><code>correction_method</code>: A string containing the correction method used to
+compute the adjusted p-value function.</p></li>
 </ul><p>Optionally, the list may contain the following components:</p><ul><li><p><code>global_pvalue</code>: A numeric value containing the global p-value. Only
 present if the <code>correction</code> argument is set to <code>"Global"</code>.</p></li>
 <li><p><code>pvalue_matrix</code>: A numeric matrix of shape \(p \times p\) containing
@@ -200,20 +201,43 @@ set to <code>"IWT"</code>.</p></li>
 </ul></div>
     <div class="section level2">
     <h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a></h2>
-    <p>Abramowicz, K., Pini, A., Schelin, L., Stamm, A., &amp; Vantini, S. (2022).
-“Domain selection and familywise error rate for functional data: A unified
-framework. <em>Biometrics</em> 79(2), 1119-1132.</p>
-<p>Pini, A., &amp; Vantini, S. (2017). Interval-wise testing for functional data.
-<em>Journal of Nonparametric Statistics</em>, 29(2), 407-424</p>
-<p>A. Pini and S. Vantini (2017). The Interval Testing Procedure: Inference for
-Functional Data Controlling the Family Wise Error Rate on Intervals.
-Biometrics 73(3): 835–845.</p>
-<p>Lundtorp Olsen, N., Pini, A., &amp; Vantini, S. (2021). False discovery rate for
-functional data <em>TEST</em> 30, 784–809.</p>
-    </div>
+    <p>For the global testing procedure:</p><ul><li><p>Hall, Peter, and Nader Tajvidi. 2002. “Permutation Tests for Equality of
+Distributions in High-Dimensional Settings.” Biometrika 89 (2): 359–74.</p></li>
+<li><p>Pini, Alessia, Aymeric Stamm, and Simone Vantini. 2018. “Hotelling’s T2 in
+Separable Hilbert Spaces.” Journal of Multivariate Analysis 167: 284–305.</p></li>
+</ul><p>For the partition closed testing procedure:</p><ul><li><p>Vsevolozhskaya, Olga A, Mark C Greenwood, GJ Bellante, Scott L Powell, Rick
+L Lawrence, and Kevin S Repasky. 2013. “Combining Functions and the Closure
+Principle for Performing Follow-up Tests in Functional Analysis of Variance.”
+Computational Statistics &amp; Data Analysis 67: 175–84.</p></li>
+<li><p>Vsevolozhskaya, Olga, Mark Greenwood, and Dmitri Holodov. 2014. “Pairwise
+comparison of treatment levels in functional analysis of variance with
+application to erythrocyte hemolysis.” The Annals of Applied Statistics 8 (2):
+905–25. https://doi.org/10.1214/14-AOAS723.</p></li>
+</ul><p>For the interval-wise testing procedure:</p><ul><li><p>Pini, Alessia, and Simone Vantini. 2016. “The interval testing procedure: a
+general framework for inference in functional data analysis.” Biometrics 72 (3):
+835–845.</p></li>
+<li><p>Pini, Alessia, and Simone Vantini. 2017. “Interval-Wise Testing for Functional
+Data.” Journal of Nonparametric Statistics 29 (2): 407–24.</p></li>
+<li><p>Pini, Alessia, Simone Vantini, Bianca Maria Colosimo, and Marco Grasso. 2018.
+“Domain-Selective Functional Analysis of Variance for Supervised Statistical
+Profile Monitoring of Signal Data.” Journal of the Royal Statistical Society
+Series C: Applied Statistics 67 (1): 55–81.</p></li>
+<li><p>Abramowicz, Konrad, Charlotte K Häger, Alessia Pini, Lina Schelin, Sara
+Sjöstedt de Luna, and Simone Vantini. 2018. “Nonparametric Inference for
+Functional-on-Scalar Linear Models Applied to Knee Kinematic Hop Data After
+Injury of the Anterior Cruciate Ligament.” Scandinavian Journal of Statistics 45
+(4): 1036–61.</p></li>
+</ul><p>For the threshold-wise testing procedure:</p><ul><li><p>Abramowicz, Konrad, Alessia Pini, Lina Schelin, Sara Sjöstedt de Luna,
+Aymeric Stamm, and Simone Vantini. 2023. “Domain Selection and Familywise
+Error Rate for Functional Data: A Unified Framework.” Biometrics 79 (2):
+1119–32.</p></li>
+</ul><p>For the functional Benjamini-Hochberg procedure:</p><ul><li><p>Lundtorp Olsen, Niels, Alessia Pini, and Simone Vantini. 2021. "False discovery
+rate for functional data." TEST 30, 784–809.</p></li>
+</ul></div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
-    <div class="dont-index"><p>See also <code><a href="plot.ftwosample.html">plot.ftwosample()</a></code> for plotting the results.</p></div>
+    <div class="dont-index"><p><code><a href="Global2.html">global2()</a></code>, <code><a href="IWT2.html">iwt2()</a></code>, <code><a href="TWT2.html">twt2()</a></code>, <code><a href="PCT2.html">pct2()</a></code>, <code><a href="FDR2.html">fdr2()</a></code> for
+calling directly one specific test and <code><a href="plot.fts.html">plot.fts()</a></code> for plotting the results.</p></div>
     </div>
 
     <div class="section level2">
@@ -221,59 +245,58 @@ functional data <em>TEST</em> 30, 784–809.</p>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># Performing the TWT for two populations</span></span></span>
 <span class="r-in"><span><span class="va">TWT_result</span> <span class="op">&lt;-</span> <span class="fu">functional_two_sample_test</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">NASAtemp</span><span class="op">$</span><span class="va">paris</span>, <span class="va">NASAtemp</span><span class="op">$</span><span class="va">milan</span>,</span></span>
-<span class="r-in"><span>  correction <span class="op">=</span> <span class="st">"TWT"</span>, B <span class="op">=</span> <span class="fl">10L</span></span></span>
+<span class="r-in"><span>  correction <span class="op">=</span> <span class="st">"TWT"</span>, n_perm <span class="op">=</span> <span class="fl">10L</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Plotting the results of the TWT</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">TWT_result</span>,</span></span>
 <span class="r-in"><span>  xrange <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">12</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>  title <span class="op">=</span> <span class="st">'TWT results for testing mean differences'</span></span></span>
+<span class="r-in"><span>  title <span class="op">=</span> <span class="st">"TWT results for testing mean differences"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="functional_two_sample_test-1.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Selecting the significant components at 5% level</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/which.html" class="external-link">which</a></span><span class="op">(</span><span class="va">TWT_result</span><span class="op">$</span><span class="va">adjusted_pval</span> <span class="op">&lt;</span> <span class="fl">0.05</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   [1]  29  49  50  53  61  65  66  68  69  70  71  72  73  81  82  83  86  87</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [19]  88  89  91  92  93  94  95  96  97  98  99 100 101 102 103 104 105 106</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [37] 107 108 109 110 111 112 113 114 115 116 117 118 119 120 121 122 123 124</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [55] 125 126 127 128 129 130 131 132 133 134 135 136 137 138 139 140 141 142</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [73] 143 144 145 146 147 148 149 150 151 152 153 154 155 156 157 158 159 160</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [91] 161 162 163 164 165 166 167 168 169 170 171 172 173 174 175 176 177 178</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [109] 179 180 181 182 183 184 185 186 187 188 189 190 191 192 193 194 195 196</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [127] 197 198 199 200 201 202 203 204 205 206 207 208 209 210 211 212 213 214</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [145] 215 216 217 218 219 220 221 222 223 224 225 226 227 228 229 230 231 232</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [163] 233 234 235 236 237 238 239 240 241 242 243 244 245 246 247 248 249 250</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [181] 251 252 253 254 255 256 257 258 259 260 261 262 263 264 265 266 267 269</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [199] 270 272 273 274 275 276 281 285 286 287 288 289 290 291 295 298 299 304</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [217] 321 328 364</span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/which.html" class="external-link">which</a></span><span class="op">(</span><span class="va">TWT_result</span><span class="op">$</span><span class="va">adjusted_pvalues</span> <span class="op">&lt;</span> <span class="fl">0.05</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   [1]  29  45  49  50  61  64  66  68  69  70  71  72  73  74  75  76  80  88</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [19]  89  90  91  92  93  94  95  96 100 101 102 103 104 105 106 107 108 109</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [37] 110 111 112 113 114 115 117 118 119 120 122 124 125 126 127 128 129 130</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [55] 131 132 133 134 135 136 137 138 141 142 143 144 145 146 147 148 149 151</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [73] 152 153 154 155 156 157 158 159 160 161 162 163 164 165 166 167 168 169</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [91] 170 171 172 173 174 175 176 177 178 179 180 181 182 183 184 185 186 187</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [109] 188 189 190 191 192 193 194 195 196 197 198 199 200 201 202 203 204 205</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [127] 206 207 208 209 210 211 212 213 214 215 216 217 218 219 220 221 222 223</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [145] 224 225 226 227 228 229 230 231 232 233 234 235 236 237 238 239 240 241</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [163] 242 243 244 245 246 247 248 249 250 251 252 254 255 256 257 258 259 260</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [181] 261 262 264 265 266 267 269 270 271 272 273 274 275 276 281 282 288 289</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [199] 291 292 296 297 298 299 328 361</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Performing the IWT for two populations</span></span></span>
 <span class="r-in"><span><span class="va">IWT_result</span> <span class="op">&lt;-</span> <span class="fu">functional_two_sample_test</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">NASAtemp</span><span class="op">$</span><span class="va">paris</span>, <span class="va">NASAtemp</span><span class="op">$</span><span class="va">milan</span>,</span></span>
-<span class="r-in"><span>  correction <span class="op">=</span> <span class="st">"IWT"</span>, B <span class="op">=</span> <span class="fl">10L</span></span></span>
+<span class="r-in"><span>  correction <span class="op">=</span> <span class="st">"IWT"</span>, n_perm <span class="op">=</span> <span class="fl">10L</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Plotting the results of the IWT</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">IWT_result</span>,</span></span>
 <span class="r-in"><span>  xrange <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">12</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>  title <span class="op">=</span> <span class="st">'IWT results for testing mean differences'</span></span></span>
+<span class="r-in"><span>  title <span class="op">=</span> <span class="st">"IWT results for testing mean differences"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="functional_two_sample_test-2.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Selecting the significant components at 5% level</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/which.html" class="external-link">which</a></span><span class="op">(</span><span class="va">IWT_result</span><span class="op">$</span><span class="va">adjusted_pval</span> <span class="op">&lt;</span> <span class="fl">0.05</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   [1] 101 102 103 104 105 106 111 112 113 114 115 116 117 118 119 120 121 122</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [19] 123 124 125 126 127 128 129 130 131 132 133 134 135 136 137 138 139 140</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [37] 141 142 143 144 145 146 147 148 149 150 151 152 153 154 155 156 157 158</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [55] 159 160 161 162 163 164 165 166 167 168 169 170 171 172 173 174 175 176</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [73] 177 178 179 180 181 182 183 184 185 186 187 188 189 190 191 192 193 194</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [91] 195 196 197 198 199 200 201 202 203 204 205 206 207 208 209 210 211 212</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [109] 213 214 215 216 217 218 219 220 221 222 223 224 225 226 227 228 229 230</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [127] 231 232 233 234 235 236 237 238 239 240 241 242 243 244 245 246 247 248</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [145] 249 250 251 252 253 254 255 256 257 258 259 260 261 265 266 267 268 269</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [163] 270 271 272 273 274 275 276 277 278 281</span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/which.html" class="external-link">which</a></span><span class="op">(</span><span class="va">IWT_result</span><span class="op">$</span><span class="va">adjusted_pvalues</span> <span class="op">&lt;</span> <span class="fl">0.05</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   [1]  92  93  94  95  96 101 102 103 104 105 106 107 109 110 111 112 113 114</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [19] 115 116 117 118 119 120 121 122 123 124 125 126 127 128 129 130 131 132</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [37] 133 134 135 136 137 138 139 140 141 142 143 144 145 146 147 148 149 150</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [55] 151 152 153 154 155 156 157 158 159 160 161 162 163 164 165 166 167 168</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [73] 169 170 171 172 173 174 175 176 177 178 179 180 181 182 183 184 185 186</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [91] 187 188 189 190 191 192 193 194 195 196 197 198 199 200 201 202 203 204</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [109] 205 206 207 208 209 210 211 212 213 214 215 216 217 218 219 220 221 222</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [127] 223 224 225 226 227 228 229 230 231 232 233 234 235 236 237 238 239 240</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [145] 241 242 243 244 245 246 247 248 249 250 251 255 256 257 258 259 260 261</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [163] 262 263</span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

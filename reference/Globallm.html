@@ -71,10 +71,9 @@ covariates on a functional population.</p>
 <dl><dt id="arg-formula">formula<a class="anchor" aria-label="anchor" href="#arg-formula"></a></dt>
 <dd><p>An object of class <code><a href="https://rdrr.io/r/stats/formula.html" class="external-link">stats::formula</a></code> (or one that can be
 coerced to that class) specifying the model to be fitted in a symbolic
-fashion. The output variable (left-hand side) of the formula can be either
-a matrix of dimension \(n \times J\) containing the pointwise evaluations
-of \(n\) functions on the <strong>same</strong> grid of \(J\) points, or an object
-of class <code><a href="https://rdrr.io/pkg/fda/man/fd.html" class="external-link">fda::fd</a></code>.</p></dd>
+fashion. The response (left-hand side) can be either a matrix of dimension
+\(n \times J\) containing the pointwise evaluations of \(n\) functions
+on the <strong>same</strong> grid of \(J\) points, or an object of class <code><a href="https://rdrr.io/pkg/fda/man/fd.html" class="external-link">fda::fd</a></code>.</p></dd>
 
 
 <dt id="arg-dx">dx<a class="anchor" aria-label="anchor" href="#arg-dx"></a></dt>
@@ -86,25 +85,22 @@ is provided in the form of matrices.</p></dd>
 
 
 <dt id="arg-b">B<a class="anchor" aria-label="anchor" href="#arg-b"></a></dt>
-<dd><p>An integer value specifying the number of iterations of the MC
-algorithm to evaluate the p-value of the permutation tests. Defaults to
-<code>1000L</code>.</p></dd>
+<dd><p>An integer value specifying the number of permutations used to
+evaluate the p-values of the permutation tests. Defaults to <code>1000L</code>.
+Passed as <code>n_perm</code> in <code><a href="IWTaov.html">iwt_aov()</a></code>, <code><a href="TWTaov.html">twt_aov()</a></code> and <code><a href="global_aov.html">global_aov()</a></code>.</p></dd>
 
 
 <dt id="arg-method">method<a class="anchor" aria-label="anchor" href="#arg-method"></a></dt>
-<dd><p>A string specifying the method used to calculate the p-value of
-permutation tests. Choices are either <code>"residuals"</code> which performs
-permutation of residuals under the reduced model according to the Freedman
-and Lane scheme or <code>"responses"</code>, which performs permutation of the
-responses, according to the Manly scheme. Defaults to <code>"residuals"</code>.</p></dd>
+<dd><p>A string specifying the permutation scheme. <code>"residuals"</code>
+permutes residuals under the reduced model (Freedman-Lane scheme);
+<code>"responses"</code> permutes the responses (Manly scheme). Defaults to
+<code>"residuals"</code>.</p></dd>
 
 
 <dt id="arg-stat">stat<a class="anchor" aria-label="anchor" href="#arg-stat"></a></dt>
 <dd><p>A string specifying the test statistic used for the global test.
-Choices are either <code>"Integral"</code>, in which case the statistic is defined as
-the integral of the F-test statistic over the domain, or <code>"Max"</code>, in which
-case the statistic is defined as the maximum of the F-test statistic over
-the domain. Defaults to  <code>"Integral"</code>.</p></dd>
+<code>"Integral"</code> uses the integral of the F-statistic over the domain;
+<code>"Max"</code> uses the maximum. Defaults to <code>"Integral"</code>.</p></dd>
 
 
 <dt id="arg-n-perm">n_perm<a class="anchor" aria-label="anchor" href="#arg-n-perm"></a></dt>
@@ -117,40 +113,36 @@ permutation tests. Defaults to <code>1000L</code>.</p></dd>
     <p>An object of class <code>flm</code> containing the following components:</p><ul><li><p><code>call</code>: The matched call.</p></li>
 <li><p><code>design_matrix</code>: The design matrix of the functional-on-scalar linear
 model.</p></li>
-<li><p><code>unadjusted_pval_F</code>: Evaluation on a grid of the unadjusted p-value
-function of the functional F-test.</p></li>
-<li><p><code>adjusted_pval_F</code>: Evaluation on a grid of the adjusted p-value function
-of the functional F-test.</p></li>
-<li><p><code>unadjusted_pval_part</code>: Evaluation on a grid of the unadjusted p-value
-function of the functional F-tests on each factor of the analysis of
-variance (rows).</p></li>
-<li><p><code>adjusted_pval_part</code>: Adjusted p-values of the functional F-tests on
-each factor of the analysis of variance (rows) and each basis coefficient
-(columns).</p></li>
-<li><p><code>data_eval</code>: Evaluation on a fine uniform grid of the functional data
-obtained through the basis expansion.</p></li>
-<li><p><code>coeff_regr_eval</code>: Evaluation on a fine uniform grid of the functional
-regression coefficients.</p></li>
-<li><p><code>fitted_eval</code>: Evaluation on a fine uniform grid of the fitted values of
-the functional regression.</p></li>
-<li><p><code>residuals_eval</code>: Evaluation on a fine uniform grid of the residuals of
-the functional regression.</p></li>
-<li><p><code>R2_eval</code>: Evaluation on a fine uniform grid of the functional R-squared
-of the regression.</p></li>
-</ul><p>Optionally, the list may contain the following components:</p><ul><li><p><code>pval_matrix_F</code>: Matrix of dimensions <code>c(p,p)</code> of the p-values of
-the intervalwise F-tests. The element \((i,j)\) of matrix <code>pval_matrix</code>
-contains the p-value of the test of interval indexed by
-\((j,j+1,...,j+(p-i))\); this component is present only if <code>correction</code>
-is set to <code>"IWT"</code>.</p></li>
-<li><p><code>pval_matrix_part</code>: Array of dimensions <code>c(L+1,p,p)</code> of the p-values
-of the multivariate F-tests on factors. The element \((l,i,j)\) of array
-<code>pval_matrix_part</code> contains the p-value of the joint NPC test on factor <code>l</code> of
-the components \((j,j+1,...,j+(p-i))\); this component is present only if
-<code>correction</code> is set to <code>"IWT"</code>.</p></li>
-<li><p><code>Global_pval_F</code>: Global p-value of the overall test F; this component is
-present only if <code>correction</code> is set to <code>"Global"</code>.</p></li>
-<li><p><code>Global_pval_part</code>: Global p-value of test F involving each factor
-separately; this component is present only if <code>correction</code> is set to <code>"Global"</code>.</p></li>
+<li><p><code>unadjusted_pval_F</code>: A numeric vector of length \(J\) containing the
+unadjusted p-value function of the global F-test evaluated on the grid.</p></li>
+<li><p><code>adjusted_pval_F</code>: A numeric vector of length \(J\) containing the
+adjusted p-value function of the global F-test evaluated on the grid.</p></li>
+<li><p><code>unadjusted_pval_part</code>: A numeric matrix with one row per model term
+containing the unadjusted p-value functions of the per-term t-tests.</p></li>
+<li><p><code>adjusted_pval_part</code>: A numeric matrix with one row per model term
+containing the adjusted p-value functions of the per-term t-tests.</p></li>
+<li><p><code>data_eval</code>: A numeric matrix containing the functional response
+evaluated on the grid.</p></li>
+<li><p><code>coeff_regr_eval</code>: A numeric matrix containing the functional regression
+coefficients evaluated on the grid.</p></li>
+<li><p><code>fitted_eval</code>: A numeric matrix containing the fitted values of the
+functional regression evaluated on the grid.</p></li>
+<li><p><code>residuals_eval</code>: A numeric matrix containing the residuals of the
+functional regression evaluated on the grid.</p></li>
+<li><p><code>R2_eval</code>: A numeric vector containing the functional R-squared evaluated
+on the grid.</p></li>
+</ul><p>Optionally, the list may contain the following components:</p><ul><li><p><code>pval_matrix_F</code>: A matrix of dimensions \(p \times p\) of p-values of
+the interval-wise F-tests. Element \((i,j)\) contains the p-value of the
+test on the interval \((j, j+1, \ldots, j+(p-i))\). Present only if
+<code>correction</code> is <code>"IWT"</code>.</p></li>
+<li><p><code>pval_matrix_part</code>: An array of dimensions \((L+1) \times p \times p\)
+of p-values of the per-term interval-wise t-tests. Element \((l,i,j)\)
+contains the p-value of the joint test on term \(l\) and interval
+\((j, j+1, \ldots, j+(p-i))\). Present only if <code>correction</code> is <code>"IWT"</code>.</p></li>
+<li><p><code>global_pval_F</code>: Global p-value of the overall F-test. Present only if
+<code>correction</code> is <code>"Global"</code>.</p></li>
+<li><p><code>global_pval_part</code>: A numeric vector of global p-values of the per-term
+t-tests. Present only if <code>correction</code> is <code>"Global"</code>.</p></li>
 </ul></div>
     <div class="section level2">
     <h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a></h2>
@@ -165,9 +157,9 @@ in Biology</em>. Vol. 70. CRC Press.</p>
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
-    <div class="dont-index"><p>See also <code><a href="plot.flm.html">plot.flm()</a></code> for plotting the results and
-<code><a href="summary.flm.html">summary.flm()</a></code> for summarizing the results of the functional analysis
-of variance.</p></div>
+    <div class="dont-index"><p><code><a href="IWTlm.html">iwt_lm()</a></code>, <code><a href="TWTlm.html">twt_lm()</a></code> and <code>global_lm()</code> for calling a
+specific correction directly. <code><a href="plot.flm.html">plot.flm()</a></code> for plotting the results and
+<code><a href="summary.flm.html">summary.flm()</a></code> for summarizing the results.</p></div>
     </div>
 
     <div class="section level2">
@@ -176,7 +168,7 @@ of variance.</p></div>
 <span class="r-in"><span><span class="va">temperature</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">rbind</a></span><span class="op">(</span><span class="va">NASAtemp</span><span class="op">$</span><span class="va">milan</span>, <span class="va">NASAtemp</span><span class="op">$</span><span class="va">paris</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">groups</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">22</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">22</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># Performing the IWT</span></span></span>
+<span class="r-in"><span><span class="co"># Performing the Global test</span></span></span>
 <span class="r-in"><span><span class="va">Global_result</span> <span class="op">&lt;-</span> <span class="fu">Globallm</span><span class="op">(</span><span class="va">temperature</span> <span class="op">~</span> <span class="va">groups</span>, B <span class="op">=</span> <span class="fl">1000</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">Point-wise tests</span> <span style="color: #00BBBB;">────────────────────────────────────────────────────────────</span></span>
@@ -184,11 +176,11 @@ of variance.</p></div>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">Global test</span> <span style="color: #00BBBB;">─────────────────────────────────────────────────────────────────</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">Global Testing completed</span> <span style="color: #00BBBB;">────────────────────────────────────────────────────</span></span>
-<span class="r-in"><span><span class="co"># Summary of the IWT results</span></span></span>
+<span class="r-in"><span><span class="co"># Summary of the Global test results</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">Global_result</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $call</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> global_lm(formula = formula, dx = dx, n_perm = B, method = method, </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     stat = stat)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> functional_lm_test(formula = formula, correction = "Global", </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     dx = dx, B = n_perm, method = method, stat = stat)</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $ttest</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>             Minimum p-value    </span>
@@ -205,24 +197,15 @@ of variance.</p></div>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1               0 ***</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># Plot of the IWT results</span></span></span>
+<span class="r-in"><span><span class="co"># Plot of the Global test results</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">Global_result</span>,</span></span>
-<span class="r-in"><span>  main <span class="op">=</span> <span class="st">'NASA data'</span>,</span></span>
+<span class="r-in"><span>  main <span class="op">=</span> <span class="st">"NASA data"</span>,</span></span>
 <span class="r-in"><span>  plot_adjpval <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
-<span class="r-in"><span>  xlab <span class="op">=</span> <span class="st">'Day'</span>,</span></span>
+<span class="r-in"><span>  xlab <span class="op">=</span> <span class="st">"Day"</span>,</span></span>
 <span class="r-in"><span>  xrange <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">365</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="Globallm-1.png" alt="" width="700" height="433"></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="va">Global_result</span>,</span></span>
-<span class="r-in"><span>  main <span class="op">=</span> <span class="st">'NASA data'</span>,</span></span>
-<span class="r-in"><span>  plot_adjpval <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
-<span class="r-in"><span>  xlab <span class="op">=</span> <span class="st">'Day'</span>,</span></span>
-<span class="r-in"><span>  xrange <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">365</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-plt img"><img src="Globallm-2.png" alt="" width="700" height="433"></span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

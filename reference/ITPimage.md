@@ -52,12 +52,13 @@ ITP_result <- ITP2bspline(
   B = 10L
 )
 #> Warning: `ITP2bspline()` was deprecated in fdatest 2.2.0.
-#> ℹ Please use `IWT2()` instead.
+#> ℹ Please use `iwt2()` instead.
 
 # Plotting the results of the ITP
 ITPimage(ITP_result, abscissa_range=c(0,12))
 #> Warning: `ITPimage()` was deprecated in fdatest 2.2.0.
 #> ℹ Please use `IWTimage()` instead.
+
 
 # Selecting the significant components for the radius at 5% level
 which(ITP_result$corrected_pval < 0.05)

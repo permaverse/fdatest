@@ -1,11 +1,12 @@
 # Local testing procedures for the functional analysis of variance
 
-The function implements local testing procedures for testing mean
-differences between multiple functional populations. Functional data are
-tested locally and unadjusted and adjusted p-value functions are
-provided. The unadjusted p-value function controls the point-wise error
-rate. The adjusted p-value function can be computed according to the
-following methods:
+Implements local testing procedures for comparing the mean functions of
+multiple functional populations in a one-way or multi-way functional
+analysis of variance (FANOVA) framework. Functional data are tested
+locally and unadjusted and adjusted p-value functions are provided. The
+unadjusted p-value function controls the point-wise error rate. The
+adjusted p-value function can be computed according to the following
+methods:
 
 - global testing (controlling the FWER weakly)
 
@@ -13,16 +14,12 @@ following methods:
 
 - threshold-wise testing (controlling the FWER asymptotically)
 
-- partition closed testing (controlling the FWER on a partition)
-
-- functional Benjamini Hochberg (controlling the FDR)
-
 ## Usage
 
 ``` r
 functional_anova_test(
   formula,
-  correction,
+  correction = c("IWT", "TWT", "Global"),
   dx = NULL,
   B = 1000L,
   method = c("residuals", "responses"),
@@ -38,17 +35,16 @@ functional_anova_test(
   An object of class
   [`stats::formula`](https://rdrr.io/r/stats/formula.html) (or one that
   can be coerced to that class) specifying the model to be fitted in a
-  symbolic fashion. The output variable (left-hand side) of the formula
-  can be either a matrix of dimension \\n \times J\\ containing the
-  pointwise evaluations of \\n\\ functions on the **same** grid of \\J\\
-  points, or an object of class
-  [`fda::fd`](https://rdrr.io/pkg/fda/man/fd.html).
+  symbolic fashion. The response (left-hand side) can be either a matrix
+  of dimension \\n \times J\\ containing the pointwise evaluations of
+  \\n\\ functions on the **same** grid of \\J\\ points, or an object of
+  class [`fda::fd`](https://rdrr.io/pkg/fda/man/fd.html).
 
 - correction:
 
   A string specifying the method used to calculate the adjusted p-value
-  function. Choices are either `"Global"` for global testing, `"IWT"`
-  for interval-wise testing or `"TWT"` for threshold-wise testing.
+  function. Choices are `"Global"` for global testing, `"IWT"` for
+  interval-wise testing, or `"TWT"` for threshold-wise testing.
 
 - dx:
 
@@ -61,17 +57,19 @@ functional_anova_test(
 
 - B:
 
-  An integer value specifying the number of iterations of the MC
-  algorithm to evaluate the p-value of the permutation tests. Defaults
-  to `1000L`.
+  An integer value specifying the number of permutations used to
+  evaluate the p-values of the permutation tests. Defaults to `1000L`.
+  Passed as `n_perm` in
+  [`iwt_aov()`](https://permaverse.github.io/fdatest/reference/IWTaov.md),
+  [`twt_aov()`](https://permaverse.github.io/fdatest/reference/TWTaov.md)
+  and
+  [`global_aov()`](https://permaverse.github.io/fdatest/reference/global_aov.md).
 
 - method:
 
-  A string specifying the method used to calculate the p-value of
-  permutation tests. Choices are either `"residuals"` which performs
-  permutation of residuals under the reduced model according to the
-  Freedman and Lane scheme or `"responses"`, which performs permutation
-  of the responses, according to the Manly scheme. Defaults to
+  A string specifying the permutation scheme. `"residuals"` permutes
+  residuals under the reduced model (Freedman-Lane scheme);
+  `"responses"` permutes the responses (Manly scheme). Defaults to
   `"residuals"`.
 
 - recycle:
@@ -83,78 +81,63 @@ functional_anova_test(
 - stat:
 
   A string specifying the test statistic used for the global test.
-  Choices are either `"Integral"`, in which case the statistic is
-  defined as the integral of the F-test statistic over the domain, or
-  `"Max"`, in which case the statistic is defined as the maximum of the
-  F-test statistic over the domain. Defaults to `"Integral"`.
+  `"Integral"` uses the integral of the F-statistic over the domain;
+  `"Max"` uses the maximum. Defaults to `"Integral"`.
 
 ## Value
 
-An object of class `fanova` containing the following components:
+An object of class `faov` containing the following components:
 
 - `call`: The matched call.
 
-- `design_matrix`: The design matrix of the functional-on-scalar linear
-  model.
+- `design_matrix`: The design matrix of the functional ANOVA model.
 
-- `unadjusted_pval_F`: Evaluation on a grid of the unadjusted p-value
-  function of the functional F-test.
+- `unadjusted_pval_F`: A numeric vector of length \\J\\ containing the
+  unadjusted p-value function of the global F-test evaluated on the
+  grid.
 
-- `adjusted_pval_F`: Evaluation on a grid of the adjusted p-value
-  function of the functional F-test.
+- `adjusted_pval_F`: A numeric vector of length \\J\\ containing the
+  adjusted p-value function of the global F-test evaluated on the grid.
 
-- `unadjusted_pval_factors`: Evaluation on a grid of the unadjusted
-  p-value function of the functional F-tests on each factor of the
-  analysis of variance (rows).
+- `unadjusted_pval_factors`: A numeric matrix with one row per factor
+  containing the unadjusted p-value functions of the per-factor F-tests.
 
-- `adjusted_pval_factors`: Adjusted p-values of the functional F-tests
-  on each factor of the analysis of variance (rows) and each basis
-  coefficient (columns).
+- `adjusted_pval_factors`: A numeric matrix with one row per factor
+  containing the adjusted p-value functions of the per-factor F-tests.
 
-- `data_eval`: Evaluation on a fine uniform grid of the functional data
-  obtained through the basis expansion.
+- `data_eval`: A numeric matrix containing the functional data evaluated
+  on the grid.
 
-- `coeff_regr_eval`: Evaluation on a fine uniform grid of the functional
-  regression coefficients.
+- `coeff_regr_eval`: A numeric matrix containing the functional
+  regression coefficients evaluated on the grid.
 
-- `fitted_eval`: Evaluation on a fine uniform grid of the fitted values
-  of the functional regression.
+- `fitted_eval`: A numeric matrix containing the fitted values of the
+  functional regression evaluated on the grid.
 
-- `residuals_eval`: Evaluation on a fine uniform grid of the residuals
-  of the functional regression.
+- `residuals_eval`: A numeric matrix containing the residuals of the
+  functional regression evaluated on the grid.
 
-- `R2_eval`: Evaluation on a fine uniform grid of the functional
-  R-squared of the regression.
+- `R2_eval`: A numeric vector containing the functional R-squared
+  evaluated on the grid.
 
 Optionally, the list may contain the following components:
 
-- `pval_matrix_F`: Matrix of dimensions `c(p,p)` of the p-values of the
-  intervalwise F-tests. The element \\(i,j)\\ of matrix `pval_matrix`
-  contains the p-value of the test of interval indexed by
-  \\(j,j+1,...,j+(p-i))\\; this component is present only if
-  `correction` is set to `"IWT"`.
+- `pval_matrix_F`: A matrix of dimensions \\p \times p\\ of p-values of
+  the interval-wise F-tests. Element \\(i,j)\\ contains the p-value of
+  the test on the interval \\(j, j+1, \ldots, j+(p-i))\\. Present only
+  if `correction` is `"IWT"`.
 
-- `pval_matrix_factors`: Array of dimensions `c(L+1,p,p)` of the
-  p-values of the multivariate F-tests on factors. The element
-  \\(l,i,j)\\ of array `pval_matrix` contains the p-value of the joint
-  NPC test on factor `l` of the components \\(j,j+1,...,j+(p-i))\\; this
-  component is present only if `correction` is set to `"IWT"`.
+- `pval_matrix_factors`: An array of dimensions \\L \times p \times p\\
+  of p-values of the per-factor interval-wise F-tests. Element
+  \\(l,i,j)\\ contains the p-value of the joint test on factor \\l\\ and
+  interval \\(j, j+1, \ldots, j+(p-i))\\. Present only if `correction`
+  is `"IWT"`.
 
-- `heatmap_matrix_F`: Heatmap matrix of p-values of functional F-test
-  (used only for plots); this component is present only if `correction`
-  is set to `"IWT"`.
+- `global_pval_F`: Global p-value of the overall F-test. Present only if
+  `correction` is `"Global"`.
 
-- `heatmap_matrix_factors`: Heatmap matrix of p-values of functional
-  F-tests on each factor of the analysis of variance (used only for
-  plots); this component is present only if `correction` is set to
-  `"IWT"`.
-
-- `Global_pval_F`: Global p-value of the overall test F; this component
-  is present only if `correction` is set to `"Global"`.
-
-- `Global_pval_factors`: Global p-value of test F involving each factor
-  separately; this component is present only if `correction` is set to
-  `"Global"`.
+- `global_pval_factors`: A numeric vector of global p-values of the
+  per-factor F-tests. Present only if `correction` is `"Global"`.
 
 ## References
 
@@ -185,11 +168,15 @@ Statistics* 45(4), 1036-1061.
 
 ## See also
 
-See also
-[`plot.fanova()`](https://permaverse.github.io/fdatest/reference/plot.fanova.md)
+[`iwt_aov()`](https://permaverse.github.io/fdatest/reference/IWTaov.md),
+[`twt_aov()`](https://permaverse.github.io/fdatest/reference/TWTaov.md)
+and
+[`global_aov()`](https://permaverse.github.io/fdatest/reference/global_aov.md)
+for calling a specific correction directly.
+[`plot.faov()`](https://permaverse.github.io/fdatest/reference/plot.faov.md)
 for plotting the results and
-[`summary.fanova()`](https://permaverse.github.io/fdatest/reference/summary.fanova.md)
-for summarizing the results of the functional analysis of variance.
+[`summary.faov()`](https://permaverse.github.io/fdatest/reference/summary.faov.md)
+for summarizing the results.
 
 ## Examples
 
@@ -197,7 +184,7 @@ for summarizing the results of the functional analysis of variance.
 temperature <- rbind(NASAtemp$milan[, 1:100], NASAtemp$paris[, 1:100])
 groups <- c(rep(0, 22), rep(1, 22))
 
-# Performing the TWT for two populations
+# Performing the TWT for multiple populations
 TWT_result <- functional_anova_test(
   temperature ~ groups,
   correction = "TWT",
@@ -214,15 +201,16 @@ TWT_result <- functional_anova_test(
 plot(
   TWT_result,
   xrange = c(0, 12),
-  main = 'TWT results for testing mean differences'
+  main = "TWT results for testing mean differences"
 )
 
 
 # Selecting the significant components at 5% level
-which(TWT_result$adjusted_pval < 0.05)
-#> integer(0)
+which(TWT_result$adjusted_pval_F < 0.05)
+#>  [1] 29 30 40 46 47 48 49 50 55 57 61 62 63 64 65 66 67 68 69 70 71 72 73 74 75
+#> [26] 76 77 80 81 84 85 86 87 88 89 90 91 92 93 94 95 96 97
 
-# Performing the IWT for two populations
+# Performing the IWT for multiple populations
 IWT_result <- functional_anova_test(
   temperature ~ groups,
   correction = "IWT",
@@ -233,215 +221,17 @@ IWT_result <- functional_anova_test(
 #> 
 #> ── Interval-wise tests ─────────────────────────────────────────────────────────
 #> 
-#> ── Creating the p-value matrix: end of row 2 out of 100 ────────────────────────
-#> 
-#> ── Creating the p-value matrix: end of row 3 out of 100 ────────────────────────
-#> 
-#> ── Creating the p-value matrix: end of row 4 out of 100 ────────────────────────
-#> 
-#> ── Creating the p-value matrix: end of row 5 out of 100 ────────────────────────
-#> 
-#> ── Creating the p-value matrix: end of row 6 out of 100 ────────────────────────
-#> 
-#> ── Creating the p-value matrix: end of row 7 out of 100 ────────────────────────
-#> 
-#> ── Creating the p-value matrix: end of row 8 out of 100 ────────────────────────
-#> 
-#> ── Creating the p-value matrix: end of row 9 out of 100 ────────────────────────
-#> 
-#> ── Creating the p-value matrix: end of row 10 out of 100 ───────────────────────
-#> 
-#> ── Creating the p-value matrix: end of row 11 out of 100 ───────────────────────
-#> 
-#> ── Creating the p-value matrix: end of row 12 out of 100 ───────────────────────
-#> 
-#> ── Creating the p-value matrix: end of row 13 out of 100 ───────────────────────
-#> 
-#> ── Creating the p-value matrix: end of row 14 out of 100 ───────────────────────
-#> 
-#> ── Creating the p-value matrix: end of row 15 out of 100 ───────────────────────
-#> 
-#> ── Creating the p-value matrix: end of row 16 out of 100 ───────────────────────
-#> 
-#> ── Creating the p-value matrix: end of row 17 out of 100 ───────────────────────
-#> 
-#> ── Creating the p-value matrix: end of row 18 out of 100 ───────────────────────
-#> 
-#> ── Creating the p-value matrix: end of row 19 out of 100 ───────────────────────
-#> 
-#> ── Creating the p-value matrix: end of row 20 out of 100 ───────────────────────
-#> 
-#> ── Creating the p-value matrix: end of row 21 out of 100 ───────────────────────
-#> 
-#> ── Creating the p-value matrix: end of row 22 out of 100 ───────────────────────
-#> 
-#> ── Creating the p-value matrix: end of row 23 out of 100 ───────────────────────
-#> 
-#> ── Creating the p-value matrix: end of row 24 out of 100 ───────────────────────
-#> 
-#> ── Creating the p-value matrix: end of row 25 out of 100 ───────────────────────
-#> 
-#> ── Creating the p-value matrix: end of row 26 out of 100 ───────────────────────
-#> 
-#> ── Creating the p-value matrix: end of row 27 out of 100 ───────────────────────
-#> 
-#> ── Creating the p-value matrix: end of row 28 out of 100 ───────────────────────
-#> 
-#> ── Creating the p-value matrix: end of row 29 out of 100 ───────────────────────
-#> 
-#> ── Creating the p-value matrix: end of row 30 out of 100 ───────────────────────
-#> 
-#> ── Creating the p-value matrix: end of row 31 out of 100 ───────────────────────
-#> 
-#> ── Creating the p-value matrix: end of row 32 out of 100 ───────────────────────
-#> 
-#> ── Creating the p-value matrix: end of row 33 out of 100 ───────────────────────
-#> 
-#> ── Creating the p-value matrix: end of row 34 out of 100 ───────────────────────
-#> 
-#> ── Creating the p-value matrix: end of row 35 out of 100 ───────────────────────
-#> 
-#> ── Creating the p-value matrix: end of row 36 out of 100 ───────────────────────
-#> 
-#> ── Creating the p-value matrix: end of row 37 out of 100 ───────────────────────
-#> 
-#> ── Creating the p-value matrix: end of row 38 out of 100 ───────────────────────
-#> 
-#> ── Creating the p-value matrix: end of row 39 out of 100 ───────────────────────
-#> 
-#> ── Creating the p-value matrix: end of row 40 out of 100 ───────────────────────
-#> 
-#> ── Creating the p-value matrix: end of row 41 out of 100 ───────────────────────
-#> 
-#> ── Creating the p-value matrix: end of row 42 out of 100 ───────────────────────
-#> 
-#> ── Creating the p-value matrix: end of row 43 out of 100 ───────────────────────
-#> 
-#> ── Creating the p-value matrix: end of row 44 out of 100 ───────────────────────
-#> 
-#> ── Creating the p-value matrix: end of row 45 out of 100 ───────────────────────
-#> 
-#> ── Creating the p-value matrix: end of row 46 out of 100 ───────────────────────
-#> 
-#> ── Creating the p-value matrix: end of row 47 out of 100 ───────────────────────
-#> 
-#> ── Creating the p-value matrix: end of row 48 out of 100 ───────────────────────
-#> 
-#> ── Creating the p-value matrix: end of row 49 out of 100 ───────────────────────
-#> 
-#> ── Creating the p-value matrix: end of row 50 out of 100 ───────────────────────
-#> 
-#> ── Creating the p-value matrix: end of row 51 out of 100 ───────────────────────
-#> 
-#> ── Creating the p-value matrix: end of row 52 out of 100 ───────────────────────
-#> 
-#> ── Creating the p-value matrix: end of row 53 out of 100 ───────────────────────
-#> 
-#> ── Creating the p-value matrix: end of row 54 out of 100 ───────────────────────
-#> 
-#> ── Creating the p-value matrix: end of row 55 out of 100 ───────────────────────
-#> 
-#> ── Creating the p-value matrix: end of row 56 out of 100 ───────────────────────
-#> 
-#> ── Creating the p-value matrix: end of row 57 out of 100 ───────────────────────
-#> 
-#> ── Creating the p-value matrix: end of row 58 out of 100 ───────────────────────
-#> 
-#> ── Creating the p-value matrix: end of row 59 out of 100 ───────────────────────
-#> 
-#> ── Creating the p-value matrix: end of row 60 out of 100 ───────────────────────
-#> 
-#> ── Creating the p-value matrix: end of row 61 out of 100 ───────────────────────
-#> 
-#> ── Creating the p-value matrix: end of row 62 out of 100 ───────────────────────
-#> 
-#> ── Creating the p-value matrix: end of row 63 out of 100 ───────────────────────
-#> 
-#> ── Creating the p-value matrix: end of row 64 out of 100 ───────────────────────
-#> 
-#> ── Creating the p-value matrix: end of row 65 out of 100 ───────────────────────
-#> 
-#> ── Creating the p-value matrix: end of row 66 out of 100 ───────────────────────
-#> 
-#> ── Creating the p-value matrix: end of row 67 out of 100 ───────────────────────
-#> 
-#> ── Creating the p-value matrix: end of row 68 out of 100 ───────────────────────
-#> 
-#> ── Creating the p-value matrix: end of row 69 out of 100 ───────────────────────
-#> 
-#> ── Creating the p-value matrix: end of row 70 out of 100 ───────────────────────
-#> 
-#> ── Creating the p-value matrix: end of row 71 out of 100 ───────────────────────
-#> 
-#> ── Creating the p-value matrix: end of row 72 out of 100 ───────────────────────
-#> 
-#> ── Creating the p-value matrix: end of row 73 out of 100 ───────────────────────
-#> 
-#> ── Creating the p-value matrix: end of row 74 out of 100 ───────────────────────
-#> 
-#> ── Creating the p-value matrix: end of row 75 out of 100 ───────────────────────
-#> 
-#> ── Creating the p-value matrix: end of row 76 out of 100 ───────────────────────
-#> 
-#> ── Creating the p-value matrix: end of row 77 out of 100 ───────────────────────
-#> 
-#> ── Creating the p-value matrix: end of row 78 out of 100 ───────────────────────
-#> 
-#> ── Creating the p-value matrix: end of row 79 out of 100 ───────────────────────
-#> 
-#> ── Creating the p-value matrix: end of row 80 out of 100 ───────────────────────
-#> 
-#> ── Creating the p-value matrix: end of row 81 out of 100 ───────────────────────
-#> 
-#> ── Creating the p-value matrix: end of row 82 out of 100 ───────────────────────
-#> 
-#> ── Creating the p-value matrix: end of row 83 out of 100 ───────────────────────
-#> 
-#> ── Creating the p-value matrix: end of row 84 out of 100 ───────────────────────
-#> 
-#> ── Creating the p-value matrix: end of row 85 out of 100 ───────────────────────
-#> 
-#> ── Creating the p-value matrix: end of row 86 out of 100 ───────────────────────
-#> 
-#> ── Creating the p-value matrix: end of row 87 out of 100 ───────────────────────
-#> 
-#> ── Creating the p-value matrix: end of row 88 out of 100 ───────────────────────
-#> 
-#> ── Creating the p-value matrix: end of row 89 out of 100 ───────────────────────
-#> 
-#> ── Creating the p-value matrix: end of row 90 out of 100 ───────────────────────
-#> 
-#> ── Creating the p-value matrix: end of row 91 out of 100 ───────────────────────
-#> 
-#> ── Creating the p-value matrix: end of row 92 out of 100 ───────────────────────
-#> 
-#> ── Creating the p-value matrix: end of row 93 out of 100 ───────────────────────
-#> 
-#> ── Creating the p-value matrix: end of row 94 out of 100 ───────────────────────
-#> 
-#> ── Creating the p-value matrix: end of row 95 out of 100 ───────────────────────
-#> 
-#> ── Creating the p-value matrix: end of row 96 out of 100 ───────────────────────
-#> 
-#> ── Creating the p-value matrix: end of row 97 out of 100 ───────────────────────
-#> 
-#> ── Creating the p-value matrix: end of row 98 out of 100 ───────────────────────
-#> 
-#> ── Creating the p-value matrix: end of row 99 out of 100 ───────────────────────
-#> 
-#> ── Creating the p-value matrix: end of row 100 out of 100 ──────────────────────
-#> 
 #> ── Interval-Wise Testing completed ─────────────────────────────────────────────
 
 # Plotting the results of the IWT
 plot(
   IWT_result,
   xrange = c(0, 12),
-  main = 'IWT results for testing mean differences'
+  main = "IWT results for testing mean differences"
 )
 
 
 # Selecting the significant components at 5% level
-which(IWT_result$adjusted_pval < 0.05)
-#> integer(0)
+which(IWT_result$adjusted_pval_F < 0.05)
+#> [1] 69 70 71 72 88 89 90
 ```

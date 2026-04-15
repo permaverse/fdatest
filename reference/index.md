@@ -2,11 +2,11 @@
 
 ## All functions
 
-- [`FDR2()`](https://permaverse.github.io/fdatest/reference/FDR2.md)
-  [`fdr2()`](https://permaverse.github.io/fdatest/reference/FDR2.md) :
+- [`fdr2()`](https://permaverse.github.io/fdatest/reference/FDR2.md)
+  [`FDR2()`](https://permaverse.github.io/fdatest/reference/FDR2.md) :
   Two population functional Benjamini-Hochberg procedure
-- [`Global2()`](https://permaverse.github.io/fdatest/reference/Global2.md)
-  [`global2()`](https://permaverse.github.io/fdatest/reference/Global2.md)
+- [`global2()`](https://permaverse.github.io/fdatest/reference/Global2.md)
+  [`Global2()`](https://permaverse.github.io/fdatest/reference/Global2.md)
   : Two population Global Testing procedure
 - [`Globallm()`](https://permaverse.github.io/fdatest/reference/Globallm.md)
   [`global_lm()`](https://permaverse.github.io/fdatest/reference/Globallm.md)
@@ -22,14 +22,14 @@
   Models with B-spline basis
 - [`ITP1bspline()`](https://permaverse.github.io/fdatest/reference/IWT1.md)
   [`ITP1fourier()`](https://permaverse.github.io/fdatest/reference/IWT1.md)
-  [`IWT1()`](https://permaverse.github.io/fdatest/reference/IWT1.md)
-  [`iwt1()`](https://permaverse.github.io/fdatest/reference/IWT1.md) :
+  [`iwt1()`](https://permaverse.github.io/fdatest/reference/IWT1.md)
+  [`IWT1()`](https://permaverse.github.io/fdatest/reference/IWT1.md) :
   One population Interval Wise Testing procedure
 - [`ITP2bspline()`](https://permaverse.github.io/fdatest/reference/IWT2.md)
   [`ITP2fourier()`](https://permaverse.github.io/fdatest/reference/IWT2.md)
   [`ITP2pafourier()`](https://permaverse.github.io/fdatest/reference/IWT2.md)
-  [`IWT2()`](https://permaverse.github.io/fdatest/reference/IWT2.md)
-  [`iwt2()`](https://permaverse.github.io/fdatest/reference/IWT2.md) :
+  [`iwt2()`](https://permaverse.github.io/fdatest/reference/IWT2.md)
+  [`IWT2()`](https://permaverse.github.io/fdatest/reference/IWT2.md) :
   Two population Interval Wise Testing procedure
 - [`IWTaov()`](https://permaverse.github.io/fdatest/reference/IWTaov.md)
   [`iwt_aov()`](https://permaverse.github.io/fdatest/reference/IWTaov.md)
@@ -43,11 +43,11 @@
   linear models
 - [`NASAtemp`](https://permaverse.github.io/fdatest/reference/NASAtemp.md)
   : NASA daily temperatures data set
-- [`PCT2()`](https://permaverse.github.io/fdatest/reference/PCT2.md)
-  [`pct2()`](https://permaverse.github.io/fdatest/reference/PCT2.md) :
+- [`pct2()`](https://permaverse.github.io/fdatest/reference/PCT2.md)
+  [`PCT2()`](https://permaverse.github.io/fdatest/reference/PCT2.md) :
   Two population Partition Closed Testing procedure
-- [`TWT2()`](https://permaverse.github.io/fdatest/reference/TWT2.md)
-  [`twt2()`](https://permaverse.github.io/fdatest/reference/TWT2.md) :
+- [`twt2()`](https://permaverse.github.io/fdatest/reference/TWT2.md)
+  [`TWT2()`](https://permaverse.github.io/fdatest/reference/TWT2.md) :
   Two population Threshold Wise Testing procedure
 - [`TWTaov()`](https://permaverse.github.io/fdatest/reference/TWTaov.md)
   [`twt_aov()`](https://permaverse.github.io/fdatest/reference/TWTaov.md)
@@ -61,23 +61,27 @@
   : Local testing procedures for the functional analysis of variance
 - [`functional_lm_test()`](https://permaverse.github.io/fdatest/reference/functional_lm_test.md)
   : Local testing procedures for functional-on-scalar linear models
+- [`functional_one_sample_test()`](https://permaverse.github.io/fdatest/reference/functional_one_sample_test.md)
+  : Local testing procedures for the functional one-sample test
 - [`functional_two_sample_test()`](https://permaverse.github.io/fdatest/reference/functional_two_sample_test.md)
   : Local testing procedures for the functional two-sample test
 - [`global_aov()`](https://permaverse.github.io/fdatest/reference/global_aov.md)
   [`Globalaov()`](https://permaverse.github.io/fdatest/reference/global_aov.md)
   : Global testing procedure for testing functional analysis of variance
-- [`plot(`*`<IWT1>`*`)`](https://permaverse.github.io/fdatest/reference/plot.IWT1.md)
-  : Plot method for IWT results on one-population test
-- [`autoplot(`*`<fanova>`*`)`](https://permaverse.github.io/fdatest/reference/plot.fanova.md)
-  [`plot(`*`<fanova>`*`)`](https://permaverse.github.io/fdatest/reference/plot.fanova.md)
+- [`autoplot(`*`<faov>`*`)`](https://permaverse.github.io/fdatest/reference/plot.faov.md)
+  [`plot(`*`<faov>`*`)`](https://permaverse.github.io/fdatest/reference/plot.faov.md)
   : Plot for Functional ANOVA Test Results
 - [`autoplot(`*`<flm>`*`)`](https://permaverse.github.io/fdatest/reference/plot.flm.md)
   [`plot(`*`<flm>`*`)`](https://permaverse.github.io/fdatest/reference/plot.flm.md)
-  : Plot for Functional Regression Test Results
-- [`autoplot(`*`<ftwosample>`*`)`](https://permaverse.github.io/fdatest/reference/plot.ftwosample.md)
-  [`plot(`*`<ftwosample>`*`)`](https://permaverse.github.io/fdatest/reference/plot.ftwosample.md)
+  : Plot for Functional Linear Model Test Results
+- [`autoplot(`*`<fos>`*`)`](https://permaverse.github.io/fdatest/reference/plot.fos.md)
+  [`plot(`*`<fos>`*`)`](https://permaverse.github.io/fdatest/reference/plot.fos.md)
+  [`plot(`*`<IWT1>`*`)`](https://permaverse.github.io/fdatest/reference/plot.fos.md)
+  : Plot for Functional One-Sample Test Results
+- [`autoplot(`*`<fts>`*`)`](https://permaverse.github.io/fdatest/reference/plot.fts.md)
+  [`plot(`*`<fts>`*`)`](https://permaverse.github.io/fdatest/reference/plot.fts.md)
   : Plot for Functional Two-Sample Test Results
-- [`summary(`*`<fanova>`*`)`](https://permaverse.github.io/fdatest/reference/summary.fanova.md)
+- [`summary(`*`<faov>`*`)`](https://permaverse.github.io/fdatest/reference/summary.faov.md)
   : Summarizing Functional Analysis of Variance Fits
 - [`summary(`*`<flm>`*`)`](https://permaverse.github.io/fdatest/reference/summary.flm.md)
   : Summarizing Functional Linear Model Fits

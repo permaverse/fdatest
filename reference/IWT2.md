@@ -38,18 +38,6 @@ ITP2pafourier(
   maxfrequency = floor(dim(data1)[2]/2)
 )
 
-IWT2(
-  data1,
-  data2,
-  mu = 0,
-  dx = NULL,
-  B = 1000L,
-  paired = FALSE,
-  alternative = c("two.sided", "less", "greater"),
-  verbose = FALSE,
-  recycle = TRUE
-)
-
 iwt2(
   data1,
   data2,
@@ -58,6 +46,21 @@ iwt2(
   n_perm = 1000L,
   paired = FALSE,
   alternative = c("two.sided", "less", "greater"),
+  standardize = FALSE,
+  verbose = FALSE,
+  aggregation_strategy = c("integral", "max"),
+  recycle = TRUE
+)
+
+IWT2(
+  data1,
+  data2,
+  mu = 0,
+  dx = NULL,
+  B = 1000L,
+  paired = FALSE,
+  alternative = c("two.sided", "less", "greater"),
+  statistic = c("Integral", "Max", "Integral_std", "Max_std"),
   verbose = FALSE,
   recycle = TRUE
 )
@@ -95,9 +98,8 @@ iwt2(
 
 - B:
 
-  An integer value specifying the number of iterations of the MC
-  algorithm to evaluate the p-value of the permutation tests. Defaults
-  to `1000L`.
+  An integer value specifying the number of permutations to use for the
+  local testing procedure. Defaults to `1000L`.
 
 - paired:
 
@@ -121,37 +123,58 @@ iwt2(
 
 - dx:
 
-  A numeric value specifying the discretization step of the grid used to
-  evaluate functional data when it is provided as objects of class
-  [`fda::fd`](https://rdrr.io/pkg/fda/man/fd.html). Defaults to `NULL`,
-  in which case a default value of `0.01` is used which corresponds to a
-  grid of size `100L`. Unused if functional data is provided in the form
-  of matrices.
+  A numeric value specifying the step of the uniform grid on which the
+  data are evaluated. If `NULL`, the step is automatically inferred from
+  the data. Defaults to `NULL`.
+
+- n_perm:
+
+  An integer value specifying the number of permutations to use for the
+  local testing procedure. Defaults to `1000L`.
 
 - alternative:
 
   A string specifying the type of alternative hypothesis. Choices are
   `"two.sided"`, `"less"` or `"greater"`. Defaults to `"two.sided"`.
 
+- standardize:
+
+  A boolean value specifying whether to standardize the test statistic.
+  Defaults to `FALSE`.
+
 - verbose:
 
   A boolean value specifying whether to print the progress of the
   computation. Defaults to `FALSE`.
 
+- aggregation_strategy:
+
+  A string specifying the strategy to aggregate the point-wise test
+  statistics for the correction procedure. Possible values are
+  `"integral"` and `"max"`. Defaults to `"integral"`.
+
 - recycle:
 
-  A boolean value specifying whether the recycled version of the
-  interval-wise testing procedure should be used. See Pini and
-  Vantini (2017) for details. Defaults to `TRUE`.
+  A boolean value specifying whether to recycle the test statistic
+  values across permutations for the IWT procedure. Defaults to `TRUE`.
 
-- n_perm:
+- statistic:
 
-  An integer value specifying the number of permutations for the
-  permutation tests. Defaults to `1000L`.
+  A string specifying the test statistic to use. Possible values are:
+
+  - `"Integral"`: Integral of the squared sample mean difference.
+
+  - `"Max"`: Maximum of the squared sample mean difference.
+
+  - `"Integral_std"`: Integral of the squared t-test statistic.
+
+  - `"Max_std"`: Maximum of the squared t-test statistic.
+
+  Defaults to `"Integral"`.
 
 ## Value
 
-An object of class `ftwosample` containing the following components:
+An object of class `fts` containing the following components:
 
 - `data`: A numeric matrix of shape \\n \times J\\ containing the
   evaluation of the \\n = n_1 + n_2\\ functions on a **common** uniform
@@ -172,6 +195,9 @@ An object of class `ftwosample` containing the following components:
   evaluation of the adjusted p-value functione on the **same** uniform
   grid used to evaluate the functional samples.
 
+- `correction_method`: A string containing the correction method used to
+  compute the adjusted p-value function.
+
 Optionally, the list may contain the following components:
 
 - `global_pvalue`: A numeric value containing the global p-value. Only
@@ -185,46 +211,66 @@ Optionally, the list may contain the following components:
 
 ## References
 
-A. Pini and S. Vantini (2017). The Interval Testing Procedure: Inference
-for Functional Data Controlling the Family Wise Error Rate on Intervals.
-*Biometrics*, 73(3): 835–845.
+- Pini, Alessia, and Simone Vantini. 2016. “The interval testing
+  procedure: a general framework for inference in functional data
+  analysis.” Biometrics 72 (3): 835–845.
 
-A. Pini and S. Vantini (2017). Interval-wise testing for functional
-data. *Journal of Nonparametric Statistics*, 29(2), 407-424.
+- Pini, Alessia, and Simone Vantini. 2017. “Interval-Wise Testing for
+  Functional Data.” Journal of Nonparametric Statistics 29 (2): 407–24.
+
+- Pini, Alessia, Simone Vantini, Bianca Maria Colosimo, and Marco
+  Grasso. 2018. “Domain-Selective Functional Analysis of Variance for
+  Supervised Statistical Profile Monitoring of Signal Data.” Journal of
+  the Royal Statistical Society Series C: Applied Statistics 67 (1):
+  55–81.
+
+- Abramowicz, Konrad, Charlotte K Häger, Alessia Pini, Lina Schelin,
+  Sara Sjöstedt de Luna, and Simone Vantini. 2018. “Nonparametric
+  Inference for Functional-on-Scalar Linear Models Applied to Knee
+  Kinematic Hop Data After Injury of the Anterior Cruciate Ligament.”
+  Scandinavian Journal of Statistics 45 (4): 1036–61.
 
 ## See also
 
-See also
-[`plot.ftwosample()`](https://permaverse.github.io/fdatest/reference/plot.ftwosample.md)
+[`global2()`](https://permaverse.github.io/fdatest/reference/Global2.md),
+[`twt2()`](https://permaverse.github.io/fdatest/reference/TWT2.md),
+[`pct2()`](https://permaverse.github.io/fdatest/reference/PCT2.md),
+[`fdr2()`](https://permaverse.github.io/fdatest/reference/FDR2.md) for
+calling directly one of the other tests,
+[`functional_two_sample_test()`](https://permaverse.github.io/fdatest/reference/functional_two_sample_test.md)
+for calling the interface test and
+[`plot.fts()`](https://permaverse.github.io/fdatest/reference/plot.fts.md)
 for plotting the results.
 
 ## Examples
 
 ``` r
 # Performing the IWT for two populations
-IWT_result <- IWT2(NASAtemp$paris, NASAtemp$milan, B = 10L)
+IWT_result <- iwt2(NASAtemp$paris, NASAtemp$milan, n_perm = 10L)
 
 # Plotting the results of the IWT
 plot(
   IWT_result,
   xrange = c(0, 12),
-  title = 'IWT results for testing mean differences'
+  title = "IWT results for testing mean differences"
 )
 
 
 # Plotting the p-value heatmap
 IWTimage(IWT_result, abscissa_range = c(0, 12))
 
+
 # Selecting the significant components at 5% level
 which(IWT_result$adjusted_pvalues < 0.05)
-#>   [1]  82  83  87  88  89  90  91  92  93  94  95 101 102 103 104 105 106 107
-#>  [19] 108 109 110 111 112 113 114 115 116 117 118 119 120 121 122 123 124 125
-#>  [37] 126 127 128 129 130 131 132 133 134 135 136 137 138 139 140 141 142 143
-#>  [55] 144 145 146 147 148 149 150 151 152 153 154 155 156 157 158 159 160 161
-#>  [73] 162 163 164 165 166 167 168 169 170 171 172 173 174 175 176 177 178 179
-#>  [91] 180 181 182 183 184 185 186 187 188 189 190 191 192 193 194 195 196 197
-#> [109] 198 199 200 201 202 203 204 205 206 207 208 209 210 211 212 213 214 215
-#> [127] 216 217 218 219 220 221 222 223 224 225 226 227 228 229 230 231 232 233
-#> [145] 234 235 236 237 238 239 240 241 242 243 244 245 247 248 249 250 255 257
-#> [163] 258 259 260 261 262 264 266 267 268 269 270 271 272 273 274 275
+#>   [1]  87  88  89  90  91  92  93  94  95  96  97  98  99 100 101 102 103 104
+#>  [19] 105 106 107 108 109 110 111 112 113 114 115 116 117 118 119 120 121 122
+#>  [37] 123 124 125 126 127 128 129 130 131 132 133 134 135 136 137 138 139 140
+#>  [55] 141 142 143 144 145 146 147 148 149 150 151 152 153 154 155 156 157 158
+#>  [73] 159 160 161 162 163 164 165 166 167 168 169 170 171 172 173 174 175 176
+#>  [91] 177 178 179 180 181 182 183 184 185 186 187 188 189 190 191 192 193 194
+#> [109] 195 196 197 198 199 200 201 202 203 204 205 206 207 208 209 210 211 212
+#> [127] 213 214 215 216 217 218 219 220 221 222 223 224 225 226 227 228 229 230
+#> [145] 231 232 233 234 235 236 237 238 239 240 241 242 243 244 245 246 247 248
+#> [163] 249 254 255 256 257 258 259 260 261 262 263 264 265 266 267 268 269 270
+#> [181] 271 272 273 274 275 276 277 281 282 283 284 285
 ```
