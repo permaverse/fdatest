@@ -9,9 +9,13 @@
 #' @inherit functional_lm_test params return seealso
 #'
 #' @references
+#' Abramowicz, K., Pini, A., Schelin, L., Stamm, A., & Vantini, S. (2022).
+#' “Domain selection and familywise error rate for functional data: A unified
+#' framework. \emph{Biometrics} 79(2), 1119-1132.
+#' 
 #' A. Pini and S. Vantini (2017). The Interval Testing Procedure: Inference for
 #' Functional Data Controlling the Family Wise Error Rate on Intervals.
-#' Biometrics 73(3): 835–845.
+#' \emph{Biometrics} 73(3): 835–845.
 #'
 #' Pini, A., Vantini, S., Colosimo, B. M., & Grasso, M. (2018). Domain‐selective
 #' functional analysis of variance for supervised statistical profile monitoring

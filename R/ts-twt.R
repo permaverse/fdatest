@@ -15,7 +15,7 @@
 #' @references
 #' - Abramowicz, Konrad, Alessia Pini, Lina Schelin, Sara Sjöstedt de Luna,
 #' Aymeric Stamm, and Simone Vantini. 2023. “Domain Selection and Familywise
-#' Error Rate for Functional Data: A Unified Framework.” Biometrics 79 (2):
+#' Error Rate for Functional Data: A Unified Framework.” \emph{Biometrics} 79 (2):
 #' 1119–32.
 #'
 #' @export

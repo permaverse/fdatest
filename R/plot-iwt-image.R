@@ -27,17 +27,17 @@
 #'
 #' @references
 #' Pini, A., & Vantini, S. (2018). Interval-wise testing for functional data.
-#' *Journal of Nonparametric Statistics*, 29(2), 407-424.
+#' \emph{Journal of Nonparametric Statistics}, 29(2), 407-424.
 #'
 #' Pini, A., Vantini, S., Colosimo, B. M., & Grasso, M. (2018). Domain‐selective
 #' functional analysis of variance for supervised statistical profile monitoring
-#' of signal data. *Journal of the Royal Statistical Society: Series C
-#' (Applied Statistics)* 67(1), 55-81.
+#' of signal data. \emph{Journal of the Royal Statistical Society: Series C
+#' (Applied Statistics)} 67(1), 55-81.
 #'
 #' Abramowicz, K., Hager, C. K., Pini, A., Schelin, L., Sjostedt de Luna, S., &
 #' Vantini, S. (2018). Nonparametric inference for functional‐on‐scalar linear
 #' models applied to knee kinematic hop data after injury of the anterior
-#' cruciate ligament. *Scandinavian Journal of Statistics* 45(4),
+#' cruciate ligament. \emph{Scandinavian Journal of Statistics} 45(4),
 #' 1036-1061.
 #'
 #' @export

@@ -144,9 +144,9 @@ which(Global_result$adjusted_pvalues < 0.05)
 \references{
 \itemize{
 \item Hall, Peter, and Nader Tajvidi. 2002. “Permutation Tests for Equality of
-Distributions in High-Dimensional Settings.” Biometrika 89 (2): 359–74.
+Distributions in High-Dimensional Settings.” \emph{Biometrika} 89 (2): 359–74.
 \item Pini, Alessia, Aymeric Stamm, and Simone Vantini. 2018. “Hotelling’s T2 in
-Separable Hilbert Spaces.” Journal of Multivariate Analysis 167: 284–305.
+Separable Hilbert Spaces.” \emph{Journal of Multivariate Analysis} 167: 284–305.
 }
 }
 \seealso{

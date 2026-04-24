@@ -108,6 +108,10 @@ plot(IWT_result, xrange = c(0, 12), title = "Paris temperatures")
 which(IWT_result$adjusted_pvalues < 0.05)
 }
 \references{
+Abramowicz, K., Pini, A., Schelin, L., Stamm, A., & Vantini, S. (2022).
+“Domain selection and familywise error rate for functional data: A unified
+framework. \emph{Biometrics} 79(2), 1119-1132.
+
 Pini, A., & Vantini, S. (2017). Interval-wise testing for functional data.
 \emph{Journal of Nonparametric Statistics}, 29(2), 407-424.
 
