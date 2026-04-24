@@ -25,8 +25,9 @@
 #'   for the plot of analysis of variance results.
 #'
 #' @references
-#' Pini, A., & Vantini, S. (2017). Interval-wise testing for functional data.
-#' *Journal of Nonparametric Statistics*, 29(2), 407-424.
+#' Abramowicz, K., Pini, A., Schelin, L., Stamm, A., & Vantini, S. (2022).
+#' “Domain selection and familywise error rate for functional data: A unified
+#' framework. *Biometrics* 79(2), 1119-1132.
 #'
 #' Pini, A., Vantini, S., Colosimo, B. M., & Grasso, M. (2018). Domain‐selective
 #' functional analysis of variance for supervised statistical profile monitoring
@@ -38,6 +39,10 @@
 #' models applied to knee kinematic hop data after injury of the anterior
 #' cruciate ligament. *Scandinavian Journal of Statistics* 45(4),
 #' 1036-1061.
+#' 
+#' Pini, A., & Vantini, S. (2017). Interval-wise testing for functional data.
+#' *Journal of Nonparametric Statistics*, 29(2), 407-424.
+#'
 #'
 #' @export
 #' @examples

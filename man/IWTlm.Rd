@@ -119,9 +119,9 @@ plot(
 )
 }
 \references{
-A. Pini and S. Vantini (2017). The Interval Testing Procedure: Inference for
-Functional Data Controlling the Family Wise Error Rate on Intervals.
-Biometrics 73(3): 835–845.
+Abramowicz, K., Pini, A., Schelin, L., Stamm, A., & Vantini, S. (2022).
+“Domain selection and familywise error rate for functional data: A unified
+framework. \emph{Biometrics} 79(2), 1119-1132.
 
 Pini, A., Vantini, S., Colosimo, B. M., & Grasso, M. (2018). Domain‐selective
 functional analysis of variance for supervised statistical profile monitoring
@@ -134,12 +134,16 @@ models applied to knee kinematic hop data after injury of the anterior
 cruciate ligament. \emph{Scandinavian Journal of Statistics} 45(4),
 1036-1061.
 
-D. Freedman and D. Lane (1983). A Nonstochastic Interpretation of Reported
-Significance Levels. \emph{Journal of Business & Economic Statistics} 1(4),
-292-298.
+A. Pini and S. Vantini (2017). The Interval Testing Procedure: Inference for
+Functional Data Controlling the Family Wise Error Rate on Intervals.
+\emph{Biometrics} 73(3): 835–845.
 
 B. F. J. Manly (2006). Randomization, \emph{Bootstrap and Monte Carlo Methods
 in Biology}. Vol. 70. CRC Press.
+
+D. Freedman and D. Lane (1983). A Nonstochastic Interpretation of Reported
+Significance Levels. \emph{Journal of Business & Economic Statistics} 1(4),
+292-298.
 }
 \seealso{
 \code{\link[=iwt_lm]{iwt_lm()}}, \code{\link[=twt_lm]{twt_lm()}} and \code{\link[=global_lm]{global_lm()}} for calling a

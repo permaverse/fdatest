@@ -12,11 +12,11 @@
 #' - Abramowicz, K., Pini, A., Schelin, L., Stamm, A., & Vantini, S. (2022).
 #' “Domain selection and familywise error rate for functional data: A unified
 #' framework. *Biometrics* 79(2), 1119-1132.
+#' - B. F. J. Manly (2006). Randomization, *Bootstrap and Monte Carlo
+#' Methods in Biology*. Vol. 70. CRC Press.
 #' - D. Freedman and D. Lane (1983). A Nonstochastic Interpretation of Reported
 #' Significance Levels. *Journal of Business & Economic Statistics* 1.4,
 #' 292-298.
-#' - B. F. J. Manly (2006). Randomization, *Bootstrap and Monte Carlo
-#' Methods in Biology*. Vol. 70. CRC Press.
 #'
 #' @param n_perm An integer value specifying the number of permutations for the
 #'   permutation tests. Defaults to `1000L`.

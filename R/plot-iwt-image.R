@@ -27,7 +27,7 @@
 #'
 #' @references
 #' Pini, A., & Vantini, S. (2018). Interval-wise testing for functional data.
-#' *Journal of Nonparametric Statistics*, 29(2), 407-424.
+#' \emph{Journal of Nonparametric Statistics}, 29(2), 407-424.
 #'
 #' Pini, A., Vantini, S., Colosimo, B. M., & Grasso, M. (2018). Domain‐selective
 #' functional analysis of variance for supervised statistical profile monitoring

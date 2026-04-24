@@ -163,11 +163,11 @@ which(PCT_result$adjusted_pvalues < 0.05)
 \item Vsevolozhskaya, Olga A, Mark C Greenwood, GJ Bellante, Scott L Powell, Rick
 L Lawrence, and Kevin S Repasky. 2013. “Combining Functions and the Closure
 Principle for Performing Follow-up Tests in Functional Analysis of Variance.”
-Computational Statistics & Data Analysis 67: 175–84.
+\emph{Computational Statistics & Data Analysis} 67: 175–84.
 \item Vsevolozhskaya, Olga, Mark Greenwood, and Dmitri Holodov. 2014. “Pairwise
 comparison of treatment levels in functional analysis of variance with
-application to erythrocyte hemolysis.” The Annals of Applied Statistics 8 (2):
-905–25. https://doi.org/10.1214/14-AOAS723.
+application to erythrocyte hemolysis.” \emph{The Annals of Applied Statistics} 8 (2):
+905–25.
 }
 }
 \seealso{

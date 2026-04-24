@@ -141,7 +141,7 @@ which(FDR_result$adjusted_pvalues < 0.05)
 \references{
 \itemize{
 \item Lundtorp Olsen, Niels, Alessia Pini, and Simone Vantini. 2021. "False discovery
-rate for functional data." TEST 30, 784–809.
+rate for functional data." \emph{TEST} 30, 784–809.
 }
 }
 \seealso{
