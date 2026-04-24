@@ -86,16 +86,6 @@
 #' “Domain selection and familywise error rate for functional data: A unified
 #' framework. *Biometrics* 79(2), 1119-1132.
 #'
-#' D. Freedman and D. Lane (1983). A Nonstochastic Interpretation of Reported
-#' Significance Levels. *Journal of Business & Economic Statistics* 1.4,
-#' 292-298.
-#'
-#' B. F. J. Manly (2006). Randomization, *Bootstrap and Monte Carlo Methods
-#' in Biology*. Vol. 70. CRC Press.
-#'
-#' Pini, A., & Vantini, S. (2017). Interval-wise testing for functional data.
-#' *Journal of Nonparametric Statistics*, 29(2), 407-424.
-#'
 #' Pini, A., Vantini, S., Colosimo, B. M., & Grasso, M. (2018). Domain‐selective
 #' functional analysis of variance for supervised statistical profile monitoring
 #' of signal data. *Journal of the Royal Statistical Society: Series C
@@ -106,6 +96,16 @@
 #' models applied to knee kinematic hop data after injury of the anterior
 #' cruciate ligament. *Scandinavian Journal of Statistics* 45(4),
 #' 1036-1061.
+#' 
+#' Pini, A., & Vantini, S. (2017). Interval-wise testing for functional data.
+#' *Journal of Nonparametric Statistics*, 29(2), 407-424.
+#' 
+#' B. F. J. Manly (2006). Randomization, *Bootstrap and Monte Carlo Methods
+#' in Biology*. Vol. 70. CRC Press.
+#'
+#' D. Freedman and D. Lane (1983). A Nonstochastic Interpretation of Reported
+#' Significance Levels. *Journal of Business & Economic Statistics* 1.4,
+#' 292-298.
 #'
 #' @export
 #' @examples

@@ -128,9 +128,6 @@ Abramowicz, K., Pini, A., Schelin, L., Stamm, A., & Vantini, S. (2022).
 “Domain selection and familywise error rate for functional data: A unified
 framework. \emph{Biometrics} 79(2), 1119-1132.
 
-Pini, A., & Vantini, S. (2017). Interval-wise testing for functional data.
-\emph{Journal of Nonparametric Statistics}, 29(2), 407-424.
-
 Pini, A., Vantini, S., Colosimo, B. M., & Grasso, M. (2018). Domain‐selective
 functional analysis of variance for supervised statistical profile monitoring
 of signal data. \emph{Journal of the Royal Statistical Society: Series C
@@ -142,12 +139,15 @@ models applied to knee kinematic hop data after injury of the anterior
 cruciate ligament. \emph{Scandinavian Journal of Statistics} 45(4),
 1036-1061.
 
-D. Freedman and D. Lane (1983). A Nonstochastic Interpretation of Reported
-Significance Levels. \emph{Journal of Business & Economic Statistics} 1.4,
-292-298.
+Pini, A., & Vantini, S. (2017). Interval-wise testing for functional data.
+\emph{Journal of Nonparametric Statistics}, 29(2), 407-424.
 
 B. F. J. Manly (2006). Randomization, \emph{Bootstrap and Monte Carlo Methods
 in Biology}. Vol. 70. CRC Press.
+
+D. Freedman and D. Lane (1983). A Nonstochastic Interpretation of Reported
+Significance Levels. \emph{Journal of Business & Economic Statistics} 1.4,
+292-298.
 }
 \seealso{
 \code{\link[=iwt_aov]{iwt_aov()}}, \code{\link[=twt_aov]{twt_aov()}} and \code{\link[=global_aov]{global_aov()}} for calling a

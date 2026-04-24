@@ -11,15 +11,16 @@
 #' @references
 #' Abramowicz, K., Pini, A., Schelin, L., Stamm, A., & Vantini, S. (2022).
 #' “Domain selection and familywise error rate for functional data: A unified
-#' framework. \emph{Biometrics} 79(2), 1119-1132.
+#' framework. *Biometrics* 79(2), 1119-1132.
+#'
+#'
+#' B. F. J. Manly (2006). Randomization, *Bootstrap and Monte Carlo Methods
+#' in Biology*. Vol. 70. CRC Press.
 #'
 #' D. Freedman and D. Lane (1983). A Nonstochastic Interpretation of Reported
-#' Significance Levels. \emph{Journal of Business & Economic Statistics} 1(4),
+#' Significance Levels. *Journal of Business & Economic Statistics* 1(4),
 #' 292-298.
-#'
-#' B. F. J. Manly (2006). Randomization, \emph{Bootstrap and Monte Carlo Methods
-#' in Biology}. Vol. 70. CRC Press.
-#'
+#' 
 #' @export
 #' @examples
 #' # Defining the covariates

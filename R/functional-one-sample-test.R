@@ -66,11 +66,11 @@
 #'
 #' @references
 #' For the interval-wise testing procedure:
-#' - Pini, Alessia, and Simone Vantini. 2016. "The interval testing procedure: a
-#' general framework for inference in functional data analysis." Biometrics 72 (3):
-#' 835–845.
 #' - Pini, Alessia, and Simone Vantini. 2017. "Interval-Wise Testing for Functional
-#' Data." Journal of Nonparametric Statistics 29 (2): 407–24.
+#' Data." *Journal of Nonparametric Statistics* 29 (2): 407–24.
+#' - Pini, Alessia, and Simone Vantini. 2016. "The interval testing procedure: a
+#' general framework for inference in functional data analysis." *Biometrics* 72 (3):
+#' 835–845.
 #'
 #' @export
 #' @examples

@@ -51,9 +51,6 @@ Abramowicz, K., Pini, A., Schelin, L., Stamm, A., & Vantini, S. (2022).
 “Domain selection and familywise error rate for functional data: A unified
 framework. \emph{Biometrics} 79(2), 1119-1132.
 
-Pini, A., & Vantini, S. (2017). Interval-wise testing for functional data.
-\emph{Journal of Nonparametric Statistics}, 29(2), 407-424.
-
 Pini, A., Vantini, S., Colosimo, B. M., & Grasso, M. (2018). Domain‐selective
 functional analysis of variance for supervised statistical profile monitoring
 of signal data. \emph{Journal of the Royal Statistical Society: Series C
@@ -64,6 +61,9 @@ Vantini, S. (2018). Nonparametric inference for functional‐on‐scalar linear
 models applied to knee kinematic hop data after injury of the anterior
 cruciate ligament. \emph{Scandinavian Journal of Statistics} 45(4),
 1036-1061.
+
+Pini, A., & Vantini, S. (2017). Interval-wise testing for functional data.
+\emph{Journal of Nonparametric Statistics}, 29(2), 407-424.
 }
 \seealso{
 \code{\link[=IWTimage]{IWTimage()}} for the plot of p-value heatmaps and \code{\link[=plot.faov]{plot.faov()}}

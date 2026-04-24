@@ -160,9 +160,9 @@ which(IWT_result$adjusted_pvalues < 0.05)
 For the global testing procedure:
 \itemize{
 \item Hall, Peter, and Nader Tajvidi. 2002. “Permutation Tests for Equality of
-Distributions in High-Dimensional Settings.” Biometrika 89 (2): 359–74.
+Distributions in High-Dimensional Settings.” \emph{Biometrika} 89 (2): 359–74.
 \item Pini, Alessia, Aymeric Stamm, and Simone Vantini. 2018. “Hotelling’s T2 in
-Separable Hilbert Spaces.” Journal of Multivariate Analysis 167: 284–305.
+Separable Hilbert Spaces.” \emph{Journal of Multivariate Analysis} 167: 284–305.
 }
 
 For the partition closed testing procedure:
@@ -170,43 +170,43 @@ For the partition closed testing procedure:
 \item Vsevolozhskaya, Olga A, Mark C Greenwood, GJ Bellante, Scott L Powell, Rick
 L Lawrence, and Kevin S Repasky. 2013. “Combining Functions and the Closure
 Principle for Performing Follow-up Tests in Functional Analysis of Variance.”
-Computational Statistics & Data Analysis 67: 175–84.
+\emph{Computational Statistics & Data Analysis} 67: 175–84.
 \item Vsevolozhskaya, Olga, Mark Greenwood, and Dmitri Holodov. 2014. “Pairwise
 comparison of treatment levels in functional analysis of variance with
-application to erythrocyte hemolysis.” The Annals of Applied Statistics 8 (2):
+application to erythrocyte hemolysis.” \emph{The Annals of Applied Statistics} 8 (2):
 905–25. https://doi.org/10.1214/14-AOAS723.
 }
 
 For the interval-wise testing procedure:
 \itemize{
-\item Pini, Alessia, and Simone Vantini. 2016. “The interval testing procedure: a
-general framework for inference in functional data analysis.” Biometrics 72 (3):
-835–845.
-\item Pini, Alessia, and Simone Vantini. 2017. “Interval-Wise Testing for Functional
-Data.” Journal of Nonparametric Statistics 29 (2): 407–24.
 \item Pini, Alessia, Simone Vantini, Bianca Maria Colosimo, and Marco Grasso. 2018.
 “Domain-Selective Functional Analysis of Variance for Supervised Statistical
-Profile Monitoring of Signal Data.” Journal of the Royal Statistical Society
-Series C: Applied Statistics 67 (1): 55–81.
+Profile Monitoring of Signal Data.” \emph{Journal of the Royal Statistical Society
+Series C: Applied Statistics} 67 (1): 55–81.
 \item Abramowicz, Konrad, Charlotte K Häger, Alessia Pini, Lina Schelin, Sara
 Sjöstedt de Luna, and Simone Vantini. 2018. “Nonparametric Inference for
 Functional-on-Scalar Linear Models Applied to Knee Kinematic Hop Data After
-Injury of the Anterior Cruciate Ligament.” Scandinavian Journal of Statistics 45
+Injury of the Anterior Cruciate Ligament.” \emph{Scandinavian Journal of Statistics} 45
 (4): 1036–61.
+\item Pini, Alessia, and Simone Vantini. 2017. “Interval-Wise Testing for Functional
+Data.” \emph{Journal of Nonparametric Statistics} 29 (2): 407–24.
+\item Pini, Alessia, and Simone Vantini. 2016. “The interval testing procedure: a
+general framework for inference in functional data analysis.” \emph{Biometrics} 72 (3):
+835–845.
 }
 
 For the threshold-wise testing procedure:
 \itemize{
 \item Abramowicz, Konrad, Alessia Pini, Lina Schelin, Sara Sjöstedt de Luna,
 Aymeric Stamm, and Simone Vantini. 2023. “Domain Selection and Familywise
-Error Rate for Functional Data: A Unified Framework.” Biometrics 79 (2):
+Error Rate for Functional Data: A Unified Framework.” \emph{Biometrics} 79 (2):
 1119–32.
 }
 
 For the functional Benjamini-Hochberg procedure:
 \itemize{
 \item Lundtorp Olsen, Niels, Alessia Pini, and Simone Vantini. 2021. "False discovery
-rate for functional data." TEST 30, 784–809.
+rate for functional data." \emph{TEST} 30, 784–809.
 }
 }
 \seealso{
