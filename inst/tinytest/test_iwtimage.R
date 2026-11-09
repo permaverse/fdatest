@@ -38,7 +38,7 @@ p_fos_unadj <- IWTimage(
 )
 expect_true(inherits(p_fos_unadj, "patchwork"))
 
-# Vector mu exercises the `else mu` branch in .iwt_image_panels()
+# Vector mu exercises the `else as.vector(mu)` branch in .iwt_image_panels()
 set.seed(42)
 res_fos_vmu <- functional_one_sample_test(
   d1,
@@ -47,6 +47,18 @@ res_fos_vmu <- functional_one_sample_test(
 )
 p_fos_vmu <- IWTimage(res_fos_vmu, abscissa_range = c(0, 1))
 expect_true(inherits(p_fos_vmu, "patchwork"))
+
+# fd mu — stored as a 1 x p matrix, drawn as a vector in .iwt_image_panels()
+basis_fd <- fda::create.bspline.basis(rangeval = c(0, 1), nbasis = 5L)
+set.seed(42)
+data_fd <- fda::fd(
+  matrix(stats::rnorm(5L * 6L), nrow = 5L, ncol = 6L),
+  basis_fd
+)
+mu_fd <- fda::fd(matrix(0.2, nrow = 5L, ncol = 1L), basis_fd)
+set.seed(42)
+res_fos_fdmu <- functional_one_sample_test(data_fd, mu = mu_fd, n_perm = 5L)
+expect_silent(IWTimage(res_fos_fdmu))
 
 # fos without pvalue_matrix must error (correction other than "IWT")
 fake_fos_no_matrix <- structure(

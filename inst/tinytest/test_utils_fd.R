@@ -93,6 +93,14 @@ expect_error(
 )
 
 # ---------------------------------------------------------------------------
+# fd mu with matrix data → error
+# ---------------------------------------------------------------------------
+mat1 <- matrix(stats::rnorm(n1 * 8L), nrow = n1)
+mat2 <- matrix(stats::rnorm(n2 * 8L), nrow = n2)
+expect_error(fdatest:::os_to_coeffs(mat1, mu = fd_mu), "only")
+expect_error(fdatest:::ts_to_coeffs(mat1, mat2, mu = fd_mu), "only")
+
+# ---------------------------------------------------------------------------
 # formula2coeff — fd on LHS of formula
 # ---------------------------------------------------------------------------
 groups <- seq_len(n1)

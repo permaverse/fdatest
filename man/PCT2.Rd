@@ -55,7 +55,8 @@ Only used and \strong{must} be set if the \code{correction} argument is set to
 hypothesis. If \code{mu} is a constant, then a constant function is used. If
 \code{mu} is a numeric vector, it must correspond to evaluation of the mean
 difference function on the \strong{same} grid that has been used to evaluate the
-data samples. Defaults to \code{0}.}
+data samples. An object of class \code{\link[fda:fd]{fda::fd}} can be used only when
+\code{data1} and \code{data2} are as well. Defaults to \code{0}.}
 
 \item{dx}{A numeric value specifying the step of the uniform grid on which
 the data are evaluated. If \code{NULL}, the step is automatically inferred from

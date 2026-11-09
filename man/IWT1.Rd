@@ -35,7 +35,8 @@ each function on a \strong{same} uniform grid of size \eqn{J}.}
 hypothesis. If \code{mu} is a constant, then a constant function is used. If
 \code{mu} is a numeric vector, it must correspond to evaluations of the center
 function on the \strong{same} grid that has been used to evaluate the data
-sample. Defaults to \code{0}.}
+sample. An object of class \code{\link[fda:fd]{fda::fd}} can be used only when \code{data} is
+one as well. Defaults to \code{0}.}
 
 \item{B}{The number of iterations of the MC algorithm to evaluate the
 p-values of the permutation tests. Defaults to \code{1000L}.}

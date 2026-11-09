@@ -26,6 +26,13 @@ ts_to_coeffs <- function(data1, data2, mu, dx = NULL) {
 
   if (fda::is.fd(mu)) {
     # mu is a functional data
+    if (!fda::is.fd(data1)) {
+      cli::cli_abort(
+        "The {.arg mu} argument can be a functional data object of class
+        {.cls fd} only when {.arg data1} and {.arg data2} are also of class
+        {.cls fd}."
+      )
+    }
     rangeval_mu <- mu$basis$rangeval
     if (sum(rangeval_mu == rangeval1) != 2) {
       cli::cli_abort(
@@ -95,7 +102,7 @@ ts_single_perm <- function(coeff, n1, alternative, paired, standardize) {
       }
     }
   } else {
-    coeff_perm <- coeff[sample(n), ]
+    coeff_perm <- coeff[sample(n), , drop = FALSE]
   }
 
   ts_pointwise_stat(
@@ -171,7 +178,7 @@ ts_prepare_data <- function(
 
   # Re-center data by mu_eval for permutation test so that mean of sample 1
   # matches mean of sample 2 under null hypothesis.
-  coeff1 <- coeff1 - matrix(data = mu_eval, nrow = n1, ncol = p)
+  coeff1 <- coeff1 - matrix(data = mu_eval, nrow = n1, ncol = p, byrow = TRUE)
   coeff <- rbind(coeff1, coeff2)
   group_labels <- c(rep(1, n1), rep(2, n2))
 

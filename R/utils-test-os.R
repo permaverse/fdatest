@@ -18,6 +18,12 @@ os_to_coeffs <- function(data, mu, dx = NULL) {
 
   if (fda::is.fd(mu)) {
     # mu is a functional data
+    if (!fda::is.fd(data)) {
+      cli::cli_abort(
+        "The {.arg mu} argument can be a functional data object of class
+        {.cls fd} only when {.arg data} is also of class {.cls fd}."
+      )
+    }
     rangeval_mu <- mu$basis$rangeval
     if (sum(rangeval_mu == rangeval) != 2) {
       cli::cli_abort(

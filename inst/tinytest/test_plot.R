@@ -317,6 +317,19 @@ p_fos_vmu <- autoplot(res_fos_vmu)
 expect_true(inherits(p_fos_vmu, "gg") || inherits(p_fos_vmu, "patchwork"))
 expect_snapshot_plot(p_fos_vmu, "autoplot_fonesample_vecmu")
 
+# fd mu — stored as a 1 x p matrix, drawn as a vector
+basis_fd <- fda::create.bspline.basis(rangeval = c(0, 1), nbasis = 5L)
+set.seed(42)
+data_fd <- fda::fd(
+  matrix(stats::rnorm(5L * 6L), nrow = 5L, ncol = 6L),
+  basis_fd
+)
+mu_fd <- fda::fd(matrix(0.2, nrow = 5L, ncol = 1L), basis_fd)
+set.seed(42)
+res_fos_fdmu <- iwt1(data_fd, mu = mu_fd, n_perm = 5L)
+p_fos_fdmu <- autoplot(res_fos_fdmu)
+expect_silent(print(p_fos_fdmu))
+
 # Swapped alpha (alpha1 < alpha2 triggers internal swap)
 p_fos_swap <- autoplot(res_fos, alpha1 = 0.01, alpha2 = 0.05)
 expect_true(inherits(p_fos_swap, "gg") || inherits(p_fos_swap, "patchwork"))
