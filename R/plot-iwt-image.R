@@ -21,7 +21,7 @@
 #' @return An object of class `patchwork` containing the assembled ggplot2
 #'   panels, returned invisibly. The plot is also printed as a side effect.
 #'
-#' @seealso See [`plot.fos()`], [`plot.fts()`], [`plot.flm()`] and
+#' @seealso See [`plot.fos()`], [`plot.ftwos()`], [`plot.flm()`] and
 #'   [`plot.faov()`] for the plot method applied to the IWT results of one-
 #'   and two-population tests, linear models, and ANOVA, respectively.
 #'
@@ -79,7 +79,7 @@ IWTimage <- function(
       nlevel = nlevel,
       plot_unadjusted = plot_unadjusted
     )
-  } else if (inherits(IWT_result, "fts")) {
+  } else if (inherits(IWT_result, "ftwos")) {
     if (is.null(IWT_result$pvalue_matrix)) {
       cli::cli_abort(
         "IWTimage() requires an IWT result with a p-value matrix.
@@ -122,7 +122,7 @@ IWTimage <- function(
   } else {
     cli::cli_abort(
       "Unsupported class {.cls {class(IWT_result)}}. \\
-       {.fn IWTimage} accepts objects of class {.cls fos}, {.cls fts}, \\
+       {.fn IWTimage} accepts objects of class {.cls fos}, {.cls ftwos}, \\
        {.cls IWT1}, or {.cls IWTaov}."
     )
   }

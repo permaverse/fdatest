@@ -10,7 +10,7 @@
 #'
 #' @seealso [`global2()`], [`twt2()`], [`iwt2()`], [`fdr2()`] for calling directly
 #' one of the other tests, [`functional_two_sample_test()`] for calling the
-#' interface test and [`plot.fts()`] for plotting the results.
+#' interface test and [`plot.ftwos()`] for plotting the results.
 #'
 #' @references
 #' - Vsevolozhskaya, Olga A, Mark C Greenwood, GJ Bellante, Scott L Powell, Rick

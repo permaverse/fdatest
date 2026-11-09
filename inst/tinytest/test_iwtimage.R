@@ -2,11 +2,11 @@
 #
 # IWTimage dispatches on class:
 #   * "fos"    → new one-sample IWT API (iwt1 / functional_one_sample_test)
-#   * "fts"    → new two-sample IWT API (iwt2 / functional_two_sample_test)
+#   * "ftwos"  → new two-sample IWT API (iwt2 / functional_two_sample_test)
 #   * "IWT1"   → legacy one-sample class (IWT1() backward-compat wrapper)
 #   * "IWTaov" → legacy ANOVA class (IWTaov() now returns "faov")
 #
-# IWT2 is NOT a live class: IWT2() returns class "fts", not "IWT2".
+# IWT2 is NOT a live class: IWT2() returns class "ftwos", not "IWT2".
 # There is therefore no test for a hypothetical "IWT2" object.
 library(ggplot2)
 library(tinysnapshot)
@@ -62,7 +62,7 @@ fake_fos_no_matrix <- structure(
 expect_error(IWTimage(fake_fos_no_matrix), "IWT")
 
 # ===========================================================================
-# IWTimage — fts class (new two-sample API)
+# IWTimage — ftwos class (new two-sample API)
 # ===========================================================================
 set.seed(42)
 res_fts <- iwt2(d1, d2, n_perm = 5L)
@@ -72,7 +72,7 @@ p_fts <- IWTimage(res_fts, abscissa_range = c(0, 1))
 expect_true(inherits(p_fts, "patchwork"))
 expect_snapshot_plot(p_fts, "iwtimage_fts")
 
-# fts without pvalue_matrix must error (e.g. functional_two_sample_test + TWT)
+# ftwos without pvalue_matrix must error (e.g. functional_two_sample_test + TWT)
 fake_fts_no_matrix <- structure(
   list(
     data = rbind(d1, d2),
@@ -82,7 +82,7 @@ fake_fts_no_matrix <- structure(
     unadjusted_pvalues = rep(0.3, p),
     correction_method = "TWT"
   ),
-  class = "fts"
+  class = "ftwos"
 )
 expect_error(IWTimage(fake_fts_no_matrix), "IWT")
 

@@ -77,7 +77,7 @@ Only used and \strong{must} be set if the \code{correction} argument is set to
 \code{"PCT"}.}
 }
 \value{
-An object of class \code{fts} containing the following components:
+An object of class \code{ftwos} containing the following components:
 \itemize{
 \item \code{data}: A numeric matrix of shape \eqn{n \times J} containing the
 evaluation of the \eqn{n = n_1 + n_2} functions on a \strong{common} uniform
@@ -211,5 +211,5 @@ rate for functional data." TEST 30, 784–809.
 }
 \seealso{
 \code{\link[=global2]{global2()}}, \code{\link[=iwt2]{iwt2()}}, \code{\link[=twt2]{twt2()}}, \code{\link[=pct2]{pct2()}}, \code{\link[=fdr2]{fdr2()}} for
-calling directly one specific test and \code{\link[=plot.fts]{plot.fts()}} for plotting the results.
+calling directly one specific test and \code{\link[=plot.ftwos]{plot.ftwos()}} for plotting the results.
 }

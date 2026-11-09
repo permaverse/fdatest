@@ -74,7 +74,7 @@ mirai::daemons(1L, seed = 42L, dispatcher = FALSE)
 res_iwt2 <- IWT2(data1 = d1, data2 = d2, mu = 0, B = 5L, verbose = FALSE)
 mirai::daemons(0)
 
-expect_inherits(res_iwt2, "fts")
+expect_inherits(res_iwt2, "ftwos")
 expect_equal(length(res_iwt2$adjusted_pvalues), p)
 expect_equal(length(res_iwt2$unadjusted_pvalues), p)
 expect_true(all(
@@ -98,7 +98,7 @@ res_iwt2_nr <- IWT2(
 )
 mirai::daemons(0)
 
-expect_inherits(res_iwt2_nr, "fts")
+expect_inherits(res_iwt2_nr, "ftwos")
 expect_true(is.na(res_iwt2_nr$pvalue_matrix[1, p]))
 
 # TWT2 — exercises only the utils-ts.R point-wise mirai branch
@@ -107,7 +107,7 @@ mirai::daemons(1L, seed = 42L, dispatcher = FALSE)
 res_twt2 <- TWT2(data1 = d1, data2 = d2, mu = 0, B = 5L, verbose = FALSE)
 mirai::daemons(0)
 
-expect_inherits(res_twt2, "fts")
+expect_inherits(res_twt2, "ftwos")
 expect_equal(length(res_twt2$adjusted_pvalues), p)
 
 # FDR2 — same utils-ts.R mirai path via a different entry point
@@ -115,7 +115,7 @@ mirai::daemons(1L, seed = 42L, dispatcher = FALSE)
 res_fdr2 <- FDR2(data1 = d1, data2 = d2, mu = 0, B = 5L)
 mirai::daemons(0)
 
-expect_inherits(res_fdr2, "fts")
+expect_inherits(res_fdr2, "ftwos")
 expect_equal(length(res_fdr2$adjusted_pvalues), p)
 
 # alternative = "greater" — exercises the alternative switch inside the
@@ -130,7 +130,7 @@ res_iwt2_gr <- IWT2(
 )
 mirai::daemons(0)
 
-expect_inherits(res_iwt2_gr, "fts")
+expect_inherits(res_iwt2_gr, "ftwos")
 
 # alternative = "less"
 mirai::daemons(1L, seed = 42L, dispatcher = FALSE)
@@ -143,7 +143,7 @@ res_iwt2_lt <- IWT2(
 )
 mirai::daemons(0)
 
-expect_inherits(res_iwt2_lt, "fts")
+expect_inherits(res_iwt2_lt, "ftwos")
 
 # paired = TRUE — exercises the paired-permutation branch inside the parallel
 # lambda (utils-ts.R line 7–14)
@@ -157,7 +157,7 @@ res_iwt2_p <- IWT2(
 )
 mirai::daemons(0)
 
-expect_inherits(res_iwt2_p, "fts")
+expect_inherits(res_iwt2_p, "ftwos")
 
 # ===========================================================================
 # R/utils-aov.R — aov_permtest point-wise path

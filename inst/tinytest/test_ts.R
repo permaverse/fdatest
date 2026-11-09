@@ -14,7 +14,7 @@ partition <- c(rep(1L, 4L), rep(2L, 4L)) # 2 partitions over 8 grid pts
 set.seed(42)
 res_iwt <- IWT2(data1 = d1, data2 = d2, mu = 0, B = 5L, verbose = FALSE)
 
-expect_inherits(res_iwt, "fts")
+expect_inherits(res_iwt, "ftwos")
 expect_equal(length(res_iwt$adjusted_pvalues), p)
 expect_equal(length(res_iwt$unadjusted_pvalues), p)
 expect_true(all(res_iwt$adjusted_pvalues >= 0 & res_iwt$adjusted_pvalues <= 1))
@@ -27,7 +27,7 @@ expect_true(all(res_iwt$adjusted_pvalues >= res_iwt$unadjusted_pvalues))
 # verbose = TRUE (exercises CLI progress path)
 set.seed(42)
 res_iwt_v <- IWT2(data1 = d1, data2 = d2, mu = 0, B = 5L, verbose = TRUE)
-expect_inherits(res_iwt_v, "fts")
+expect_inherits(res_iwt_v, "ftwos")
 
 # recycle disabled
 set.seed(42)
@@ -39,7 +39,7 @@ res_iwt_nr <- IWT2(
   recycle = FALSE,
   verbose = FALSE
 )
-expect_inherits(res_iwt_nr, "fts")
+expect_inherits(res_iwt_nr, "ftwos")
 expect_true(is.na(res_iwt_nr$pvalue_matrix[1, p])) # upper-right is NA
 
 # recycle = FALSE + verbose = TRUE (exercises the cli progress line in the else branch)
@@ -52,7 +52,7 @@ res_iwt_nr_v <- IWT2(
   recycle = FALSE,
   verbose = TRUE
 )
-expect_inherits(res_iwt_nr_v, "fts")
+expect_inherits(res_iwt_nr_v, "ftwos")
 
 # paired samples
 set.seed(42)
@@ -64,7 +64,7 @@ res_iwt_p <- IWT2(
   paired = TRUE,
   verbose = FALSE
 )
-expect_inherits(res_iwt_p, "fts")
+expect_inherits(res_iwt_p, "ftwos")
 
 # aggregation_strategy = "max" (tested via new API)
 set.seed(42)
@@ -75,7 +75,7 @@ res_iwt_max <- iwt2(
   n_perm = 5L,
   aggregation_strategy = "max"
 )
-expect_inherits(res_iwt_max, "fts")
+expect_inherits(res_iwt_max, "ftwos")
 expect_equal(length(res_iwt_max$adjusted_pvalues), p)
 
 # ===========================================================================
@@ -98,7 +98,7 @@ for (std in c(FALSE, TRUE)) {
       " aggregation_strategy=",
       agg
     )
-    expect_inherits(res_g, "fts", info = info_label)
+    expect_inherits(res_g, "ftwos", info = info_label)
     expect_true(
       !is.null(res_g$global_pvalue),
       info = info_label
@@ -119,12 +119,12 @@ res_g_p <- Global2(
   B = 5L,
   paired = TRUE
 )
-expect_inherits(res_g_p, "fts")
+expect_inherits(res_g_p, "ftwos")
 
 # Global2 verbose = TRUE
 set.seed(42)
 res_g_v <- Global2(data1 = d1, data2 = d2, mu = 0, B = 5L, verbose = TRUE)
-expect_inherits(res_g_v, "fts")
+expect_inherits(res_g_v, "ftwos")
 
 # ===========================================================================
 # TWT2 — all three alternative options
@@ -139,7 +139,7 @@ for (alt in c("two.sided", "less", "greater")) {
     alternative = alt,
     verbose = FALSE
   )
-  expect_inherits(res_t, "fts", info = paste("TWT2 alternative =", alt))
+  expect_inherits(res_t, "ftwos", info = paste("TWT2 alternative =", alt))
   expect_equal(
     length(res_t$adjusted_pvalues),
     p,
@@ -157,12 +157,12 @@ res_t_p <- TWT2(
   paired = TRUE,
   verbose = FALSE
 )
-expect_inherits(res_t_p, "fts")
+expect_inherits(res_t_p, "ftwos")
 
 # TWT2 verbose = TRUE
 set.seed(42)
 res_t_v <- TWT2(data1 = d1, data2 = d2, mu = 0, B = 5L, verbose = TRUE)
-expect_inherits(res_t_v, "fts")
+expect_inherits(res_t_v, "ftwos")
 
 # aggregation_strategy = "max" (tested via new API)
 set.seed(42)
@@ -173,7 +173,7 @@ res_t_max <- twt2(
   n_perm = 5L,
   aggregation_strategy = "max"
 )
-expect_inherits(res_t_max, "fts")
+expect_inherits(res_t_max, "ftwos")
 expect_equal(length(res_t_max$adjusted_pvalues), p)
 
 # ===========================================================================
@@ -181,7 +181,7 @@ expect_equal(length(res_t_max$adjusted_pvalues), p)
 # ===========================================================================
 set.seed(42)
 res_fdr <- FDR2(data1 = d1, data2 = d2, mu = 0, B = 5L)
-expect_inherits(res_fdr, "fts")
+expect_inherits(res_fdr, "ftwos")
 expect_equal(length(res_fdr$adjusted_pvalues), p)
 
 set.seed(42)
@@ -192,7 +192,7 @@ res_fdr_less <- FDR2(
   B = 5L,
   alternative = "less"
 )
-expect_inherits(res_fdr_less, "fts")
+expect_inherits(res_fdr_less, "ftwos")
 
 set.seed(42)
 res_fdr_gr <- FDR2(
@@ -202,24 +202,24 @@ res_fdr_gr <- FDR2(
   B = 5L,
   alternative = "greater"
 )
-expect_inherits(res_fdr_gr, "fts")
+expect_inherits(res_fdr_gr, "ftwos")
 
 # FDR2 paired
 set.seed(42)
 res_fdr_p <- FDR2(data1 = d1, data2 = d2, mu = 0, B = 5L, paired = TRUE)
-expect_inherits(res_fdr_p, "fts")
+expect_inherits(res_fdr_p, "ftwos")
 
 # FDR2 verbose = TRUE
 set.seed(42)
 res_fdr_v <- FDR2(data1 = d1, data2 = d2, mu = 0, B = 5L, verbose = TRUE)
-expect_inherits(res_fdr_v, "fts")
+expect_inherits(res_fdr_v, "ftwos")
 
 # ===========================================================================
 # PCT2
 # ===========================================================================
 set.seed(42)
 res_pct <- PCT2(data1 = d1, data2 = d2, mu = 0, B = 5L, partition = partition)
-expect_inherits(res_pct, "fts")
+expect_inherits(res_pct, "ftwos")
 expect_equal(length(res_pct$adjusted_pvalues), p)
 
 # PCT2 verbose = TRUE
@@ -232,7 +232,7 @@ res_pct_v <- PCT2(
   partition = partition,
   verbose = TRUE
 )
-expect_inherits(res_pct_v, "fts")
+expect_inherits(res_pct_v, "ftwos")
 
 # aggregation_strategy = "max" (tested via new API)
 set.seed(42)
@@ -244,7 +244,7 @@ res_pct_max <- pct2(
   partition = partition,
   aggregation_strategy = "max"
 )
-expect_inherits(res_pct_max, "fts")
+expect_inherits(res_pct_max, "ftwos")
 expect_equal(length(res_pct_max$adjusted_pvalues), p)
 
 # ===========================================================================
@@ -258,7 +258,7 @@ res_ft_iwt <- functional_two_sample_test(
   n_perm = 5L,
   verbose = FALSE
 )
-expect_inherits(res_ft_iwt, "fts")
+expect_inherits(res_ft_iwt, "ftwos")
 expect_equal(res_ft_iwt$correction, "IWT")
 
 set.seed(42)
@@ -269,7 +269,7 @@ res_ft_twt <- functional_two_sample_test(
   n_perm = 5L,
   verbose = FALSE
 )
-expect_inherits(res_ft_twt, "fts")
+expect_inherits(res_ft_twt, "ftwos")
 expect_equal(res_ft_twt$correction, "TWT")
 
 set.seed(42)
@@ -279,7 +279,7 @@ res_ft_g <- functional_two_sample_test(
   correction = "Global",
   n_perm = 5L
 )
-expect_inherits(res_ft_g, "fts")
+expect_inherits(res_ft_g, "ftwos")
 expect_equal(res_ft_g$correction, "Global")
 
 set.seed(42)
@@ -289,7 +289,7 @@ res_ft_fdr <- functional_two_sample_test(
   correction = "FDR",
   n_perm = 5L
 )
-expect_inherits(res_ft_fdr, "fts")
+expect_inherits(res_ft_fdr, "ftwos")
 expect_equal(res_ft_fdr$correction, "FDR")
 
 # PCT without partition → error
@@ -311,7 +311,7 @@ res_ft_pct <- functional_two_sample_test(
   n_perm = 5L,
   partition = partition
 )
-expect_inherits(res_ft_pct, "fts")
+expect_inherits(res_ft_pct, "ftwos")
 expect_equal(res_ft_pct$correction, "PCT")
 
 # ===========================================================================
@@ -331,7 +331,7 @@ for (alt in c("less", "greater")) {
   )
   expect_inherits(
     res_std,
-    "fts",
+    "ftwos",
     info = paste("iwt2 alternative =", alt, "standardize = TRUE")
   )
   expect_equal(
@@ -365,7 +365,7 @@ res_itp2b <- suppressWarnings(ITP2bspline(
   mu = 0,
   B = 5L
 ))
-expect_inherits(res_itp2b, "fts")
+expect_inherits(res_itp2b, "ftwos")
 
 set.seed(42)
 res_itp2f <- suppressWarnings(ITP2fourier(
@@ -374,7 +374,7 @@ res_itp2f <- suppressWarnings(ITP2fourier(
   mu = 0,
   B = 5L
 ))
-expect_inherits(res_itp2f, "fts")
+expect_inherits(res_itp2f, "ftwos")
 
 set.seed(42)
 res_itp2pa <- suppressWarnings(ITP2pafourier(
@@ -383,6 +383,14 @@ res_itp2pa <- suppressWarnings(ITP2pafourier(
   mu = 0,
   B = 5L
 ))
-expect_inherits(res_itp2pa, "fts")
+expect_inherits(res_itp2pa, "ftwos")
+
+# ===========================================================================
+# No clash with the "fts" class of rainbow (functional time series), which is
+# loaded with fda: results are not "fts" and fdatest registers no fts methods
+# ===========================================================================
+expect_false(inherits(res_iwt, "fts"))
+s3_methods <- getNamespaceInfo(asNamespace("fdatest"), "S3methods")
+expect_false(any(s3_methods[, 2L] == "fts"))
 
 set.seed(NULL)
