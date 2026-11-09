@@ -161,7 +161,11 @@ autoplot.fos <- function(
   )
 
   # mu reference line
-  mu_eval <- if (length(object$mu) == 1L) rep(object$mu, p) else object$mu
+  mu_eval <- if (length(object$mu) == 1L) {
+    rep(object$mu, p)
+  } else {
+    as.vector(object$mu)
+  }
   mu_data <- data.frame(x = abscissa_pval, y = mu_eval)
 
   # Functional data panel

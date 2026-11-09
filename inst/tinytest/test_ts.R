@@ -385,4 +385,36 @@ res_itp2pa <- suppressWarnings(ITP2pafourier(
 ))
 expect_inherits(res_itp2pa, "fts")
 
+# ===========================================================================
+# Non-constant mu is subtracted grid point by grid point
+# ===========================================================================
+# d2_shift is d1 centred by mu exactly as the test centres it, so the observed
+# statistic is 0 at every grid point and every p-value is 1
+mu_vec <- seq(0, 10, length.out = p)
+d2_shift <- d1 - matrix(mu_vec, nrow = nrow(d1), ncol = p, byrow = TRUE)
+set.seed(42)
+res_mu_paired <- iwt2(d1, d2_shift, mu = mu_vec, n_perm = 5L, paired = TRUE)
+expect_true(all(res_mu_paired$adjusted_pvalues == 1))
+set.seed(42)
+res_mu_unpaired <- iwt2(d1, d2_shift, mu = mu_vec, n_perm = 5L)
+expect_true(all(res_mu_unpaired$adjusted_pvalues == 1))
+
+# ===========================================================================
+# Unpaired tests on a one-point grid keep the matrix shape
+# ===========================================================================
+set.seed(42)
+res_one_point <- iwt2(
+  d1[, 1L, drop = FALSE],
+  d2[, 1L, drop = FALSE],
+  n_perm = 5L
+)
+expect_equal(length(res_one_point$adjusted_pvalues), 1L)
+set.seed(42)
+res_one_point_global <- global2(
+  d1[, 1L, drop = FALSE],
+  d2[, 1L, drop = FALSE],
+  n_perm = 5L
+)
+expect_equal(length(res_one_point_global$adjusted_pvalues), 1L)
+
 set.seed(NULL)

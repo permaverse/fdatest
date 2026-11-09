@@ -31,7 +31,8 @@
 #'   hypothesis. If `mu` is a constant, then a constant function is used. If
 #'   `mu` is a numeric vector, it must correspond to evaluation of the mean
 #'   difference function on the **same** grid that has been used to evaluate the
-#'   data samples. Defaults to `0`.
+#'   data samples. An object of class [`fda::fd`] can be used only when
+#'   `data1` and `data2` are as well. Defaults to `0`.
 #' @param dx A numeric value specifying the step of the uniform grid on which
 #'   the data are evaluated. If `NULL`, the step is automatically inferred from
 #'   the data. Defaults to `NULL`.

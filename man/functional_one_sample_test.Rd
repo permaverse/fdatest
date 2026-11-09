@@ -31,7 +31,8 @@ Currently only \code{"IWT"} is available.}
 hypothesis. If \code{mu} is a constant, then a constant function is used. If
 \code{mu} is a numeric vector, it must correspond to evaluations of the center
 function on the \strong{same} grid that has been used to evaluate the data
-sample. Defaults to \code{0}.}
+sample. An object of class \code{\link[fda:fd]{fda::fd}} can be used only when \code{data} is
+one as well. Defaults to \code{0}.}
 
 \item{dx}{A numeric value specifying the step of the uniform grid on which
 the data are evaluated. If \code{NULL}, the step is automatically inferred from

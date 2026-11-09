@@ -283,7 +283,7 @@ IWTimage <- function(
     ggplot2::theme_minimal()
 
   if (!is.null(mu)) {
-    mu_vals <- if (length(mu) == 1L) rep(mu, p) else mu
+    mu_vals <- if (length(mu) == 1L) rep(mu, p) else as.vector(mu)
     mu_df <- data.frame(x = abscissa_pts, y = mu_vals)
     p_data <- p_data +
       ggplot2::geom_line(
