@@ -11,7 +11,7 @@
 #'
 #' @seealso [`global2()`], [`twt2()`], [`pct2()`], [`iwt2()`] for calling directly
 #' one of the other tests, [`functional_two_sample_test()`] for calling the
-#' interface test and [`plot.fts()`] for plotting the results.
+#' interface test and [`plot.ftwos()`] for plotting the results.
 #'
 #' @references
 #' - Lundtorp Olsen, Niels, Alessia Pini, and Simone Vantini. 2021. "False discovery

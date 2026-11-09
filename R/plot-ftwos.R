@@ -1,13 +1,13 @@
 #' Plot for Functional Two-Sample Test Results
 #'
-#' The `S3` methods `autoplot.fts()` and `plot.fts()` are methods
+#' The `S3` methods `autoplot.ftwos()` and `plot.ftwos()` are methods
 #' for plotting results of functional two-sample tests. They visualize the
 #' functional data and the adjusted p-values obtained from the testing
 #' procedures for mean comparison of two groups. The plots highlight significant
 #' effects at two levels of significance, `alpha1` and `alpha2`, using shaded
 #' areas.
 #'
-#' @param object,x An object of class `fts`, usually a result of a call
+#' @param object,x An object of class `ftwos`, usually a result of a call
 #'   to [`functional_two_sample_test()`], [`iwt2()`], [`twt2()`], [`fdr2()`],
 #'   [`pct2()`] or [`global2()`].
 #' @param xrange A length-2 numeric vector specifying the range of the x-axis
@@ -28,10 +28,10 @@
 #' @param ... Other arguments passed to specific methods. Not used in this
 #'   function.
 #'
-#' @returns The `autoplot.fts()` function creates a ggplot object that
+#' @returns The `autoplot.ftwos()` function creates a ggplot object that
 #'   displays the functional data and the adjusted p-values. The significant
 #'   intervals at levels `alpha1` and `alpha2` are highlighted in the plots. The
-#'   `plot.fts()` function is a wrapper around `autoplot.fts()`
+#'   `plot.ftwos()` function is a wrapper around `autoplot.ftwos()`
 #'   that prints the plot directly.
 #'
 #' @seealso [`IWTimage()`] for the plot of p-values heatmaps (for IWT).
@@ -51,7 +51,7 @@
 #' cruciate ligament. \emph{Scandinavian Journal of Statistics} 45(4),
 #' 1036-1061.
 #'
-#' @name plot.fts
+#' @name plot.ftwos
 #'
 #' @examples
 #' # Performing the TWT for two populations
@@ -87,11 +87,11 @@
 #' which(IWT_result$adjusted_pval < 0.05)
 NULL
 
-#' @rdname plot.fts
+#' @rdname plot.ftwos
 #' @importFrom ggplot2 autoplot
 #' @importFrom rlang .data
 #' @export
-autoplot.fts <- function(
+autoplot.ftwos <- function(
   object,
   xrange = c(0, 1),
   alpha1 = 0.05,
@@ -237,10 +237,10 @@ autoplot.fts <- function(
     )
 }
 
-#' @rdname plot.fts
+#' @rdname plot.ftwos
 #' @importFrom graphics plot
 #' @export
-plot.fts <- function(
+plot.ftwos <- function(
   x,
   xrange = c(0, 1),
   alpha1 = 0.05,

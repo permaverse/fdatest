@@ -84,7 +84,7 @@ values are:
 Defaults to \code{"Integral"}.}
 }
 \value{
-An object of class \code{fts} containing the following components:
+An object of class \code{ftwos} containing the following components:
 \itemize{
 \item \code{data}: A numeric matrix of shape \eqn{n \times J} containing the
 evaluation of the \eqn{n = n_1 + n_2} functions on a \strong{common} uniform
@@ -147,5 +147,5 @@ rate for functional data." TEST 30, 784–809.
 \seealso{
 \code{\link[=global2]{global2()}}, \code{\link[=twt2]{twt2()}}, \code{\link[=pct2]{pct2()}}, \code{\link[=iwt2]{iwt2()}} for calling directly
 one of the other tests, \code{\link[=functional_two_sample_test]{functional_two_sample_test()}} for calling the
-interface test and \code{\link[=plot.fts]{plot.fts()}} for plotting the results.
+interface test and \code{\link[=plot.ftwos]{plot.ftwos()}} for plotting the results.
 }

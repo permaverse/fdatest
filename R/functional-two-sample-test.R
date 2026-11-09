@@ -56,7 +56,7 @@
 #'   Only used and **must** be set if the `correction` argument is set to
 #'   `"PCT"`.
 #'
-#' @returns An object of class `fts` containing the following components:
+#' @returns An object of class `ftwos` containing the following components:
 #'
 #'   - `data`: A numeric matrix of shape \eqn{n \times J} containing the
 #'   evaluation of the \eqn{n = n_1 + n_2} functions on a **common** uniform
@@ -86,7 +86,7 @@
 #'   set to `"IWT"`.
 #'
 #' @seealso [`global2()`], [`iwt2()`], [`twt2()`], [`pct2()`], [`fdr2()`] for
-#' calling directly one specific test and [`plot.fts()`] for plotting the results.
+#' calling directly one specific test and [`plot.ftwos()`] for plotting the results.
 #'
 #' @references
 #' For the global testing procedure:
@@ -275,6 +275,6 @@ functional_two_sample_test <- function(
     out$pvalue_matrix <- adjustment_results$pvalue_matrix
   }
 
-  class(out) <- "fts"
+  class(out) <- "ftwos"
   out
 }

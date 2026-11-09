@@ -1,5 +1,5 @@
 # Tests for plot and autoplot methods:
-# plot-fts.R:       autoplot.fts, plot.fts
+# plot-ftwos.R:     autoplot.ftwos, plot.ftwos
 # plot-faov.R:      autoplot.faov, plot.faov
 # plot-flm.R:       autoplot.flm, plot.flm
 # plot-fos.R:       autoplot.fos, plot.fos
@@ -51,7 +51,7 @@ set.seed(42)
 res_twtlm2 <- TWTlm(temperature ~ grp_a + grp_b, B = 5L)
 
 # ===========================================================================
-# autoplot.fts, plot.fts
+# autoplot.ftwos, plot.ftwos
 # ===========================================================================
 # autoplot returns a ggplot / patchwork object
 p_fts <- autoplot(res_iwt2)
@@ -60,11 +60,11 @@ expect_true(inherits(p_fts, "gg") || inherits(p_fts, "patchwork"))
 # Snapshot the default plot (IWT — has pvalue_matrix so heatmap is shown)
 expect_snapshot_plot(p_fts, "autoplot_ftwosample_iwt")
 
-# plot.fts is an alias for autoplot
+# plot.ftwos is an alias for autoplot
 p_fts2 <- plot(res_iwt2)
 expect_true(inherits(p_fts2, "gg") || inherits(p_fts2, "patchwork"))
 
-# TWT result (no pvalue_matrix) — different branch inside autoplot.fts
+# TWT result (no pvalue_matrix) — different branch inside autoplot.ftwos
 p_fts_twt <- autoplot(res_twt2)
 expect_true(inherits(p_fts_twt, "gg") || inherits(p_fts_twt, "patchwork"))
 expect_snapshot_plot(p_fts_twt, "autoplot_ftwosample_twt")

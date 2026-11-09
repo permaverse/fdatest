@@ -10,7 +10,7 @@
 #'
 #' @seealso [`global2()`], [`iwt2()`], [`pct2()`], [`fdr2()`] for calling directly
 #' one of the other tests, [`functional_two_sample_test()`] for calling the
-#' interface test and [`plot.fts()`] for plotting the results.
+#' interface test and [`plot.ftwos()`] for plotting the results.
 #'
 #' @references
 #' - Abramowicz, Konrad, Alessia Pini, Lina Schelin, Sara Sjöstedt de Luna,

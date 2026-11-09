@@ -10,7 +10,7 @@
 #'
 #' @seealso [`iwt2()`], [`twt2()`], [`pct2()`], [`fdr2()`] for calling directly
 #' one of the other tests, [`functional_two_sample_test()`] for calling the
-#' interface test and [`plot.fts()`] for plotting the results.
+#' interface test and [`plot.ftwos()`] for plotting the results.
 #'
 #' @references
 #' - Hall, Peter, and Nader Tajvidi. 2002. “Permutation Tests for Equality of
